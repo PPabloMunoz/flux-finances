@@ -1,5 +1,3 @@
-//  @ts-check
-
 /** @type {import('prettier').Config} */
 const config = {
   singleQuote: true,
@@ -9,6 +7,7 @@ const config = {
   printWidth: 150,
 
   plugins: ['@trivago/prettier-plugin-sort-imports'],
+  importOrder: ['^react$', '^react/', '<BUILTIN_MODULES>', '<THIRD_PARTY_MODULES>', '^@/', '^[./]'],
 }
 
 export default config

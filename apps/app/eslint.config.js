@@ -5,7 +5,7 @@ export default [
   ...tanstackConfig,
   {
     rules: {
-      'import/order': 'off',
+      'import/order': 'warn',
     },
   },
   {

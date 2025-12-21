@@ -1,6 +1,4 @@
-import GithubIcon from '@/components/shared/github'
-import GoogleIcon from '@/components/shared/google'
-import { SignupSchema } from '@/features/auth/schema'
+import { useState } from 'react'
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
@@ -11,7 +9,9 @@ import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import GithubIcon from '@/components/shared/github'
+import GoogleIcon from '@/components/shared/google'
+import { SignupSchema } from '@/features/auth/schema'
 
 export const Route = createFileRoute('/auth/signup')({
   component: RouteComponent,

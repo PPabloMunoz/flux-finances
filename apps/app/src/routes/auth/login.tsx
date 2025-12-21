@@ -1,5 +1,4 @@
-import GithubIcon from '@/components/shared/github'
-import GoogleIcon from '@/components/shared/google'
+import { useState } from 'react'
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
@@ -10,8 +9,9 @@ import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
 import { toast } from 'sonner'
+import GithubIcon from '@/components/shared/github'
+import GoogleIcon from '@/components/shared/google'
 
 export const Route = createFileRoute('/auth/login')({
   component: RouteComponent,
