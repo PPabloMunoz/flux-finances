@@ -17,6 +17,8 @@
     "clean": "pnpm --recursive --parallel exec rm -rf node_modules dist .turbo"
   },
   "devDependencies": {
+    "eslint": "^9.17.0",
+    "prettier": "^3.7.4",
     "turbo": "^2.7.1",
     "typescript": "^5.9.3"
   },

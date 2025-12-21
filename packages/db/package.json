@@ -17,9 +17,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.19.3",
-    "@tanstack/eslint-config": "^0.3.4",
-    "eslint": "^9.17.0",
-    "prettier": "^3.7.4"
+    "@tanstack/eslint-config": "^0.3.4"
   },
   "exports": {
     ".": "./src/index.ts",
