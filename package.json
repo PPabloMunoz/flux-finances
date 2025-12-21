@@ -1,0 +1,26 @@
+{
+  "name": "flux-finances",
+  "version": "0.0.1",
+  "description": "",
+  "workspaces": [
+    "apps/*",
+    "packages/**/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "check": "turbo check",
+    "dev": "turbo dev",
+    "dev:app": "turbo dev --filter=app",
+    "test": "turbo test",
+    "clean": "pnpm --recursive --parallel exec rm -rf node_modules dist .turbo"
+  },
+  "devDependencies": {
+    "turbo": "^2.7.1",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [],
+  "author": "",
+  "packageManager": "pnpm@10.26.1"
+}
