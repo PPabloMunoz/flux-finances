@@ -6,9 +6,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.26.1",
   "scripts": {
-    "format": "prettier --write .",
-    "lint": "eslint",
-    "check": "prettier --write . && eslint --fix",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "biome check . && biome format --write .",
     "build": "tsc"
   },
   "dependencies": {
@@ -16,10 +16,7 @@
     "postgres": "3.4.7"
   },
   "devDependencies": {
-    "@tanstack/eslint-config": "^0.3.4",
-    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
-    "@types/node": "^22.19.3",
-    "eslint-plugin-import": "^2.32.0"
+    "@types/node": "^22.19.3"
   },
   "exports": {
     ".": "./src/index.ts",

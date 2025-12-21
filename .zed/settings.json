@@ -1,13 +1,8 @@
 {
   "format_on_save": "on",
-  "formatter": "prettier",
-  "lsp": {
-    "eslint": {
-      "settings": {
-        "codeActionOnSave": {
-          "source.fixAll.eslint": true,
-        },
-      },
-    },
+  "formatter": "auto",
+  "code_actions_on_format": {
+    "source.organizeImports.biome": true,
+    "source.fixAll.biome": true,
   },
 }

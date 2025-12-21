@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
@@ -8,7 +7,8 @@ import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import GithubIcon from '@/components/shared/github'
 import GoogleIcon from '@/components/shared/google'
@@ -51,10 +51,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className='bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
+    <div className='flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10'>
       <div className='flex w-full max-w-sm flex-col gap-6'>
         <Link className='flex items-center gap-2 self-center font-medium' to='/'>
-          <div className='bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md'>
+          <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
             <HugeiconsIcon className='size-4' icon={Dollar02Icon} />
           </div>
           Flux Finances
