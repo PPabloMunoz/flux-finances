@@ -1,5 +1,5 @@
 ---
-
+import '../styles/global.css'
 ---
 
 <html lang='en'>
@@ -10,7 +10,417 @@
     <meta name='generator' content={Astro.generator} />
     <title>Astro</title>
   </head>
-  <body>
-    <h1>Astro</h1>
+  <body class='bg-neutral-950 font-light text-neutral-400 antialiased selection:bg-teal-500/30 selection:text-teal-200'>
+    <!-- Navigation -->
+    <nav class='fixed top-0 z-50 w-full border-b border-white/5 bg-neutral-950/80 backdrop-blur-md'>
+      <div class='mx-auto flex h-16 max-w-7xl items-center justify-between px-6'>
+        <div class='flex items-center gap-2'>
+          <div class='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-teal-500 to-cyan-600 shadow-lg shadow-teal-500/20'>
+            <span class='iconify text-white' data-icon='lucide:zap' data-width='18' data-stroke-width='1.5'></span>
+          </div>
+          <span class='text-lg font-medium tracking-tight text-white'>FLUX</span>
+        </div>
+
+        <div class='hidden items-center gap-8 text-sm font-normal md:flex'>
+          <a href='#' class='transition-colors hover:text-white'>Features</a>
+          <a href='#' class='transition-colors hover:text-white'>Self-Hosted</a>
+          <a href='#' class='transition-colors hover:text-white'>Manifesto</a>
+          <a href='#' class='transition-colors hover:text-white'>Pricing</a>
+        </div>
+
+        <div class='flex items-center gap-4'>
+          <a href='#' class='hidden text-sm transition-colors hover:text-white sm:block'>Sign In</a>
+          <button class='rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-neutral-200'> Get Started </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class='relative overflow-hidden pt-32 pb-20 lg:pt-48 lg:pb-32'>
+      <div class='grid-bg pointer-events-none absolute inset-0 z-0'></div>
+
+      <div class='relative z-10 mx-auto max-w-7xl px-6 text-center'>
+        <div
+          class='mb-8 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-xs font-medium text-teal-400'
+        >
+          <span class='iconify' data-icon='lucide:git-branch' data-width='14'></span>
+          <span>v2.0 Open Source Release</span>
+        </div>
+
+        <h1 class='mb-8 text-5xl leading-[1.1] font-medium tracking-tighter text-white md:text-7xl lg:text-8xl'>
+          Your finances,<br />
+          <span class='bg-gradient-to-r from-teal-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent'>uncompromised.</span>
+        </h1>
+
+        <p class='mx-auto mb-12 max-w-2xl text-lg leading-relaxed font-light text-neutral-400 md:text-xl'>
+          The modern operating system for your wealth. Stop wrestling with spreadsheets. Flux offers institutional-grade insights with the freedom of
+          open source.
+        </p>
+
+        <div class='flex flex-col items-center justify-center gap-4 sm:flex-row'>
+          <button
+            class='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-8 font-medium text-black transition-all hover:bg-neutral-200 sm:w-auto'
+          >
+            Start for free
+            <span class='iconify' data-icon='lucide:arrow-right' data-width='16'></span>
+          </button>
+          <button
+            class='flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/10 sm:w-auto'
+          >
+            <span class='iconify' data-icon='lucide:github' data-width='16'></span>
+            Star on GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Preview Abstract -->
+      <div class='relative mx-auto mt-20 max-w-6xl px-6'>
+        <div class='absolute -inset-1 rounded-xl bg-gradient-to-b from-teal-500/20 to-transparent opacity-30 blur-2xl'></div>
+        <div class='relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 shadow-2xl shadow-black/50'>
+          <!-- Browser Bar -->
+          <div class='flex h-10 items-center gap-2 border-b border-white/5 bg-neutral-900/50 px-4'>
+            <div class='flex gap-2'>
+              <div class='h-3 w-3 rounded-full border border-red-500/50 bg-red-500/20'></div>
+              <div class='h-3 w-3 rounded-full border border-yellow-500/50 bg-yellow-500/20'></div>
+              <div class='h-3 w-3 rounded-full border border-green-500/50 bg-green-500/20'></div>
+            </div>
+            <div class='mx-auto font-mono text-xs text-neutral-500'>flux.finances/dashboard</div>
+          </div>
+
+          <!-- UI Content -->
+          <div class='grid min-h-[500px] grid-cols-12 gap-0'>
+            <!-- Sidebar -->
+            <div class='col-span-2 flex hidden flex-col gap-4 border-r border-white/5 p-4 md:block'>
+              <div class='space-y-1'>
+                <div class='flex h-8 w-full items-center gap-2 rounded-md border border-white/5 bg-white/5 px-2 text-xs text-white'>
+                  <span class='iconify' data-icon='lucide:layout-dashboard' data-width='14'></span> Dashboard
+                </div>
+                <div
+                  class='flex h-8 w-full cursor-default items-center gap-2 rounded-md px-2 text-xs text-neutral-500 transition-colors hover:bg-white/5'
+                >
+                  <span class='iconify' data-icon='lucide:wallet' data-width='14'></span> Accounts
+                </div>
+                <div
+                  class='flex h-8 w-full cursor-default items-center gap-2 rounded-md px-2 text-xs text-neutral-500 transition-colors hover:bg-white/5'
+                >
+                  <span class='iconify' data-icon='lucide:pie-chart' data-width='14'></span> Allocation
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Area -->
+            <div class='col-span-12 bg-neutral-950/50 p-6 md:col-span-10 md:p-8'>
+              <div class='mb-8 flex items-end justify-between'>
+                <div>
+                  <div class='mb-1 text-xs text-neutral-500'>Total Net Worth</div>
+                  <div class='text-3xl font-medium tracking-tight text-white'>$1,240,592.45</div>
+                </div>
+                <div class='flex gap-2'>
+                  <div class='flex items-center gap-1 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs text-green-400'>
+                    <span class='iconify' data-icon='lucide:trending-up' data-width='12'></span> +4.2%
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grid Bento -->
+              <div class='grid grid-cols-1 gap-6 md:grid-cols-3'>
+                <!-- Chart Placeholder -->
+                <div class='group relative col-span-2 h-64 overflow-hidden rounded-lg border border-white/5 bg-neutral-900/50 p-6'>
+                  <div class='absolute inset-x-0 bottom-0 flex h-40 items-end justify-between gap-2 px-6 opacity-50'>
+                    <div class='h-[40%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[60%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[45%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[70%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[55%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[85%] w-full rounded-t-sm bg-teal-500/40 shadow-[0_0_15px_rgba(20,184,166,0.5)]'></div>
+                    <div class='h-[65%] w-full rounded-t-sm bg-teal-500/20'></div>
+                    <div class='h-[75%] w-full rounded-t-sm bg-teal-500/20'></div>
+                  </div>
+                  <div class='relative z-10 text-xs font-medium text-neutral-500'>Portfolio Performance</div>
+                </div>
+
+                <!-- List -->
+                <div class='flex h-64 flex-col rounded-lg border border-white/5 bg-neutral-900/50 p-6'>
+                  <div class='mb-4 text-xs font-medium text-neutral-500'>Recent Transactions</div>
+                  <div class='space-y-4'>
+                    <div class='flex items-center justify-between'>
+                      <div class='flex items-center gap-3'>
+                        <div class='flex h-8 w-8 items-center justify-center rounded-full bg-white/5'>
+                          <span class='iconify text-neutral-400' data-icon='lucide:shopping-bag' data-width='14'></span>
+                        </div>
+                        <div class='text-xs text-neutral-300'>Whole Foods</div>
+                      </div>
+                      <div class='text-xs text-white'>-$142.00</div>
+                    </div>
+                    <div class='flex items-center justify-between'>
+                      <div class='flex items-center gap-3'>
+                        <div class='flex h-8 w-8 items-center justify-center rounded-full bg-white/5'>
+                          <span class='iconify text-neutral-400' data-icon='lucide:server' data-width='14'></span>
+                        </div>
+                        <div class='text-xs text-neutral-300'>AWS</div>
+                      </div>
+                      <div class='text-xs text-white'>-$34.50</div>
+                    </div>
+                    <div class='flex items-center justify-between'>
+                      <div class='flex items-center gap-3'>
+                        <div class='flex h-8 w-8 items-center justify-center rounded-full bg-white/5'>
+                          <span class='iconify text-neutral-400' data-icon='lucide:arrow-down-left' data-width='14'></span>
+                        </div>
+                        <div class='text-xs text-neutral-300'>Dividend</div>
+                      </div>
+                      <div class='text-xs text-teal-400'>+$240.00</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </section>
+
+    <!-- Trusted By -->
+    <section class='border-y border-white/5 bg-neutral-950/50 py-12'>
+      <div class='mx-auto max-w-7xl px-6'>
+        <p class='mb-8 text-center text-xs font-medium tracking-widest text-neutral-500 uppercase'>Built with the modern stack</p>
+        <div class='flex flex-wrap justify-center gap-12 opacity-40 grayscale transition-all duration-500 hover:grayscale-0'>
+          <!-- Mock Logos (Using Text for accuracy/simplicity as requested) -->
+          <div class='flex items-center gap-2'>
+            <span class='iconify' data-icon='lucide:box' data-width='20'></span>
+            <span class='font-semibold tracking-tight text-white'>React</span>
+          </div>
+          <div class='flex items-center gap-2'>
+            <span class='iconify' data-icon='lucide:triangle' data-width='20'></span>
+            <span class='font-semibold tracking-tight text-white'>Vercel</span>
+          </div>
+          <div class='flex items-center gap-2'>
+            <span class='iconify' data-icon='lucide:database' data-width='20'></span>
+            <span class='font-semibold tracking-tight text-white'>Postgres</span>
+          </div>
+          <div class='flex items-center gap-2'>
+            <span class='iconify' data-icon='lucide:container' data-width='20'></span>
+            <span class='font-semibold tracking-tight text-white'>Docker</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Dual Model Section -->
+    <section class='relative py-24 lg:py-32'>
+      <div class='mx-auto max-w-7xl px-6'>
+        <div class='mb-16 text-center'>
+          <h2 class='mb-6 text-3xl font-medium tracking-tight text-white md:text-5xl'>Choose your deployment</h2>
+          <p class='mx-auto max-w-xl text-neutral-400'>
+            Flux gives you the power of choice. Use our managed secure cloud, or host it on your own metal. It's your data.
+          </p>
+        </div>
+
+        <div class='mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2'>
+          <!-- Cloud Option -->
+          <div
+            class='group relative rounded-2xl bg-gradient-to-b from-white/10 to-white/0 p-px transition-all duration-500 hover:from-teal-500/50 hover:to-teal-500/10'
+          >
+            <div class='relative h-full overflow-hidden rounded-[15px] bg-neutral-900 p-8'>
+              <div class='absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl'></div>
+
+              <div class='mb-8 flex items-center justify-between'>
+                <div class='flex h-12 w-12 items-center justify-center rounded-lg border border-white/5 bg-neutral-800'>
+                  <span class='iconify text-white' data-icon='lucide:cloud' data-width='24'></span>
+                </div>
+                <div class='rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white'>Most Popular</div>
+              </div>
+
+              <h3 class='mb-2 text-2xl font-medium text-white'>Flux Cloud</h3>
+              <p class='mb-8 h-10 text-sm text-neutral-400'>Instant access, zero maintenance. We handle security, backups, and updates for you.</p>
+
+              <ul class='mb-8 space-y-3'>
+                <li class='flex items-center gap-3 text-sm text-neutral-300'>
+                  <span class='iconify text-teal-400' data-icon='lucide:check' data-width='16'></span> Bank Sync (Plaid/Teller)
+                </li>
+                <li class='flex items-center gap-3 text-sm text-neutral-300'>
+                  <span class='iconify text-teal-400' data-icon='lucide:check' data-width='16'></span> Automatic Daily Backups
+                </li>
+                <li class='flex items-center gap-3 text-sm text-neutral-300'>
+                  <span class='iconify text-teal-400' data-icon='lucide:check' data-width='16'></span> Mobile App Access
+                </li>
+              </ul>
+
+              <button class='w-full rounded-lg bg-white py-3 text-sm font-medium text-black transition-colors hover:bg-neutral-200'
+                >Start Free Trial</button
+              >
+            </div>
+          </div>
+
+          <!-- Self Hosted Option -->
+          <div
+            class='group relative rounded-2xl bg-gradient-to-b from-white/10 to-white/0 p-px transition-all duration-500 hover:from-purple-500/50 hover:to-purple-500/10'
+          >
+            <div class='relative h-full overflow-hidden rounded-[15px] bg-neutral-950 p-8'>
+              <!-- Terminal aesthetic decoration -->
+              <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+
+              <div class='relative z-10 mb-8 flex items-center justify-between'>
+                <div class='flex h-12 w-12 items-center justify-center rounded-lg border border-white/5 bg-neutral-900'>
+                  <span class='iconify text-white' data-icon='lucide:server' data-width='24'></span>
+                </div>
+                <div class='rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300'>
+                  For Developers
+                </div>
+              </div>
+
+              <h3 class='relative z-10 mb-2 text-2xl font-medium text-white'>Self-Hosted</h3>
+              <p class='relative z-10 mb-8 h-10 text-sm text-neutral-400'>
+                Total control. Run Flux on your home server, VPS, or Raspberry Pi via Docker.
+              </p>
+
+              <!-- Terminal Code Block -->
+              <div class='relative z-10 mb-8 rounded-lg border border-white/10 bg-black p-4 font-mono text-xs shadow-lg'>
+                <div class='mb-3 flex gap-1.5 opacity-50'>
+                  <div class='h-2.5 w-2.5 rounded-full bg-red-500'></div>
+                  <div class='h-2.5 w-2.5 rounded-full bg-yellow-500'></div>
+                  <div class='h-2.5 w-2.5 rounded-full bg-green-500'></div>
+                </div>
+                <div class='text-neutral-400'>
+                  <span class='text-purple-400'>~</span> git clone https://github.com/flux/finances<br />
+                  <span class='text-purple-400'>~</span> cd flux<br />
+                  <span class='text-purple-400'>~</span> docker compose up -d<br />
+                  <span class='mt-2 block text-teal-400'>✓ Flux is running on localhost:3000</span>
+                </div>
+              </div>
+
+              <button
+                class='relative z-10 w-full rounded-lg border border-white/10 bg-white/5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10'
+                >View Documentation</button
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class='border-t border-white/5 bg-neutral-900/20 py-24'>
+      <div class='mx-auto max-w-7xl px-6'>
+        <h2 class='mb-16 text-center text-3xl font-medium tracking-tight text-white md:text-4xl'>
+          Everything you need to<br />compound your wealth.
+        </h2>
+
+        <div class='grid grid-cols-1 gap-6 md:grid-cols-3'>
+          <!-- Feature 1 -->
+          <div class='group rounded-2xl border border-white/5 bg-neutral-950 p-8 transition-colors hover:border-teal-500/30'>
+            <div
+              class='mb-6 flex h-10 w-10 items-center justify-center rounded-full border border-white/5 bg-neutral-900 transition-transform group-hover:scale-110'
+            >
+              <span class='iconify text-teal-400' data-icon='lucide:globe' data-width='20'></span>
+            </div>
+            <h3 class='mb-3 text-lg font-medium text-white'>Multi-currency</h3>
+            <p class='text-sm leading-relaxed text-neutral-400'>
+              Hold assets in USD, EUR, BTC, or ETH. Flux normalizes everything to your base currency in real-time.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class='group rounded-2xl border border-white/5 bg-neutral-950 p-8 transition-colors hover:border-teal-500/30'>
+            <div
+              class='mb-6 flex h-10 w-10 items-center justify-center rounded-full border border-white/5 bg-neutral-900 transition-transform group-hover:scale-110'
+            >
+              <span class='iconify text-teal-400' data-icon='lucide:waypoints' data-width='20'></span>
+            </div>
+            <h3 class='mb-3 text-lg font-medium text-white'>Scenario Planning</h3>
+            <p class='text-sm leading-relaxed text-neutral-400'>
+              "What if I buy a house?" Simulate major financial decisions and see the impact on your net worth over time.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class='group rounded-2xl border border-white/5 bg-neutral-950 p-8 transition-colors hover:border-teal-500/30'>
+            <div
+              class='mb-6 flex h-10 w-10 items-center justify-center rounded-full border border-white/5 bg-neutral-900 transition-transform group-hover:scale-110'
+            >
+              <span class='iconify text-teal-400' data-icon='lucide:lock' data-width='20'></span>
+            </div>
+            <h3 class='mb-3 text-lg font-medium text-white'>Privacy First</h3>
+            <p class='text-sm leading-relaxed text-neutral-400'>
+              Your data is encrypted at rest. We don't sell your data. We don't show ads. You are the customer, not the product.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class='relative overflow-hidden py-24'>
+      <div class='radial-gradient absolute inset-0 bg-teal-900/10'></div>
+      <div class='relative z-10 mx-auto max-w-4xl px-6 text-center'>
+        <h2 class='mb-8 text-4xl font-medium tracking-tighter text-white md:text-5xl'>Ready to take control?</h2>
+        <div class='flex flex-col items-center justify-center gap-4 sm:flex-row'>
+          <button class='h-12 w-full rounded-full bg-white px-8 font-medium text-black transition-colors hover:bg-neutral-200 sm:w-auto'>
+            Get Started Now
+          </button>
+          <button
+            class='h-12 w-full rounded-full border border-white/10 bg-transparent px-8 font-medium text-white transition-colors hover:bg-white/5 sm:w-auto'
+          >
+            Read the Docs
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class='border-t border-white/5 bg-neutral-950 py-16'>
+      <div class='mx-auto max-w-7xl px-6'>
+        <div class='mb-16 grid grid-cols-2 gap-10 md:grid-cols-4'>
+          <div class='col-span-2 md:col-span-1'>
+            <div class='mb-6 flex items-center gap-2'>
+              <div class='flex h-6 w-6 items-center justify-center rounded bg-gradient-to-tr from-teal-500 to-cyan-600'>
+                <span class='iconify text-white' data-icon='lucide:zap' data-width='14'></span>
+              </div>
+              <span class='font-medium tracking-tight text-white'>FLUX</span>
+            </div>
+            <p class='text-xs leading-relaxed text-neutral-500'>Open source personal finance for those who want more control.</p>
+          </div>
+
+          <div>
+            <h4 class='mb-4 text-sm font-medium text-white'>Product</h4>
+            <ul class='space-y-3 text-sm text-neutral-500'>
+              <li><a href='#' class='transition-colors hover:text-white'>Features</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Pricing</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Roadmap</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Changelog</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class='mb-4 text-sm font-medium text-white'>Developers</h4>
+            <ul class='space-y-3 text-sm text-neutral-500'>
+              <li><a href='#' class='transition-colors hover:text-white'>Documentation</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>GitHub</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>API Reference</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Contributing</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class='mb-4 text-sm font-medium text-white'>Company</h4>
+            <ul class='space-y-3 text-sm text-neutral-500'>
+              <li><a href='#' class='transition-colors hover:text-white'>About</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Blog</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Careers</a></li>
+              <li><a href='#' class='transition-colors hover:text-white'>Contact</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class='flex flex-col items-center justify-between border-t border-white/5 pt-8 text-xs text-neutral-600 md:flex-row'>
+          <p>&copy; 2023 Flux Finances Inc. All rights reserved.</p>
+          <div class='mt-4 flex gap-6 md:mt-0'>
+            <a href='#' class='hover:text-neutral-400'>Privacy Policy</a>
+            <a href='#' class='hover:text-neutral-400'>Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
