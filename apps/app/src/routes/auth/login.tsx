@@ -1,7 +1,20 @@
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from '@flux/ui/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@flux/ui/components/ui/card'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
@@ -83,7 +96,9 @@ function RouteComponent() {
                       Login with Google
                     </Button>
                   </Field>
-                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>Or continue with</FieldSeparator>
+                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+                    Or continue with
+                  </FieldSeparator>
                   <form.Field name='email'>
                     {(field) => {
                       const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
@@ -112,7 +127,10 @@ function RouteComponent() {
                         <Field>
                           <div className='flex items-center'>
                             <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                            <Link className='ml-auto text-xs underline-offset-4 hover:underline' to='/auth/forgot-password'>
+                            <Link
+                              className='ml-auto text-xs underline-offset-4 hover:underline'
+                              to='/auth/forgot-password'
+                            >
                               Forgot your password?
                             </Link>
                           </div>
@@ -141,7 +159,8 @@ function RouteComponent() {
             </CardContent>
           </Card>
           <FieldDescription className='px-6 text-center'>
-            By clicking continue, you agree to our <a href='/#'>Terms of Service</a> and <a href='/#'>Privacy Policy</a>.
+            By clicking continue, you agree to our <a href='/#'>Terms of Service</a> and{' '}
+            <a href='/#'>Privacy Policy</a>.
           </FieldDescription>
         </div>
       </div>

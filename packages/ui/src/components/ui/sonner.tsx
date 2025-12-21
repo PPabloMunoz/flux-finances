@@ -1,4 +1,10 @@
-import { Alert02Icon, CheckmarkCircle02Icon, InformationCircleIcon, Loading03Icon, MultiplicationSignCircleIcon } from '@hugeicons/core-free-icons'
+import {
+  Alert02Icon,
+  CheckmarkCircle02Icon,
+  InformationCircleIcon,
+  Loading03Icon,
+  MultiplicationSignCircleIcon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useTheme } from 'next-themes'
 import type { ToasterProps } from 'sonner'
@@ -14,8 +20,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
         success: <HugeiconsIcon className='size-4' icon={CheckmarkCircle02Icon} strokeWidth={2} />,
         info: <HugeiconsIcon className='size-4' icon={InformationCircleIcon} strokeWidth={2} />,
         warning: <HugeiconsIcon className='size-4' icon={Alert02Icon} strokeWidth={2} />,
-        error: <HugeiconsIcon className='size-4' icon={MultiplicationSignCircleIcon} strokeWidth={2} />,
-        loading: <HugeiconsIcon className='size-4 animate-spin' icon={Loading03Icon} strokeWidth={2} />,
+        error: (
+          <HugeiconsIcon className='size-4' icon={MultiplicationSignCircleIcon} strokeWidth={2} />
+        ),
+        loading: (
+          <HugeiconsIcon className='size-4 animate-spin' icon={Loading03Icon} strokeWidth={2} />
+        ),
       }}
       style={
         {

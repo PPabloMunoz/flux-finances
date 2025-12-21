@@ -1,6 +1,12 @@
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@flux/ui/components/ui/card'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { cn } from '@flux/ui/lib/utils'
@@ -62,7 +68,9 @@ function RouteComponent() {
           <Card>
             <CardHeader className='text-center'>
               <CardTitle className='text-xl'>Reset your password</CardTitle>
-              <CardDescription>Enter your new password below to reset your account password.</CardDescription>
+              <CardDescription>
+                Enter your new password below to reset your account password.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form

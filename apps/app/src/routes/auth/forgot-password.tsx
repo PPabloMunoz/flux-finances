@@ -1,7 +1,19 @@
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@flux/ui/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@flux/ui/components/ui/card'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
@@ -42,7 +54,9 @@ function RouteComponent() {
       if (error) {
         toast.error('Intentalo de nuevo')
       } else {
-        toast.success('Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa también tu carpeta de spam.')
+        toast.success(
+          'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa también tu carpeta de spam.'
+        )
         navigate({ to: '/auth/login' })
       }
     },
@@ -61,7 +75,9 @@ function RouteComponent() {
           <Card>
             <CardHeader className='text-center'>
               <CardTitle className='text-xl'>Forgot your password?</CardTitle>
-              <CardDescription>Enter your email address and we&apos;ll send you a link to reset your password.</CardDescription>
+              <CardDescription>
+                Enter your email address and we&apos;ll send you a link to reset your password.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form

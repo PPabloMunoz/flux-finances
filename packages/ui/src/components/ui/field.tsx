@@ -8,17 +8,27 @@ import { Separator } from './separator'
 function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
     <fieldset
-      className={cn('flex flex-col gap-4 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3', className)}
+      className={cn(
+        'flex flex-col gap-4 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3',
+        className
+      )}
       data-slot='field-set'
       {...props}
     />
   )
 }
 
-function FieldLegend({ className, variant = 'legend', ...props }: React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }) {
+function FieldLegend({
+  className,
+  variant = 'legend',
+  ...props
+}: React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }) {
   return (
     <legend
-      className={cn('mb-2.5 font-medium data-[variant=label]:text-xs data-[variant=legend]:text-sm', className)}
+      className={cn(
+        'mb-2.5 font-medium data-[variant=label]:text-xs data-[variant=legend]:text-sm',
+        className
+      )}
       data-slot='field-legend'
       data-variant={variant}
       {...props}
@@ -54,13 +64,31 @@ const fieldVariants = cva('group/field flex w-full gap-2 data-[invalid=true]:tex
   },
 })
 
-function Field({ className, orientation = 'vertical', ...props }: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
-  // biome-ignore lint/a11y/useSemanticElements: Custom field wrapper
-  return <div className={cn(fieldVariants({ orientation }), className)} data-orientation={orientation} data-slot='field' role='group' {...props} />
+function Field({
+  className,
+  orientation = 'vertical',
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
+  return (
+    // biome-ignore lint/a11y/useSemanticElements: Custom field wrapper
+    <div
+      className={cn(fieldVariants({ orientation }), className)}
+      data-orientation={orientation}
+      data-slot='field'
+      role='group'
+      {...props}
+    />
+  )
 }
 
 function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('group/field-content flex flex-1 flex-col gap-0.5 leading-snug', className)} data-slot='field-content' {...props} />
+  return (
+    <div
+      className={cn('group/field-content flex flex-1 flex-col gap-0.5 leading-snug', className)}
+      data-slot='field-content'
+      {...props}
+    />
+  )
 }
 
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
@@ -80,7 +108,10 @@ function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>)
 function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('flex w-fit items-center gap-2 text-xs/relaxed leading-snug group-data-[disabled=true]/field:opacity-50', className)}
+      className={cn(
+        'flex w-fit items-center gap-2 text-xs/relaxed leading-snug group-data-[disabled=true]/field:opacity-50',
+        className
+      )}
       data-slot='field-label'
       {...props}
     />
@@ -111,14 +142,20 @@ function FieldSeparator({
 }) {
   return (
     <div
-      className={cn('relative -my-2 h-5 text-xs group-data-[variant=outline]/field-group:-mb-2', className)}
+      className={cn(
+        'relative -my-2 h-5 text-xs group-data-[variant=outline]/field-group:-mb-2',
+        className
+      )}
       data-content={!!children}
       data-slot='field-separator'
       {...props}
     >
       <Separator className='absolute inset-0 top-1/2' />
       {children && (
-        <span className='relative mx-auto block w-fit bg-background px-2 text-muted-foreground' data-slot='field-separator-content'>
+        <span
+          className='relative mx-auto block w-fit bg-background px-2 text-muted-foreground'
+          data-slot='field-separator-content'
+        >
           {children}
         </span>
       )}
@@ -161,10 +198,26 @@ function FieldError({
   }
 
   return (
-    <div className={cn('font-normal text-destructive text-xs', className)} data-slot='field-error' role='alert' {...props}>
+    <div
+      className={cn('font-normal text-destructive text-xs', className)}
+      data-slot='field-error'
+      role='alert'
+      {...props}
+    >
       {content}
     </div>
   )
 }
 
-export { Field, FieldLabel, FieldDescription, FieldError, FieldGroup, FieldLegend, FieldSeparator, FieldSet, FieldContent, FieldTitle }
+export {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldContent,
+  FieldTitle,
+}

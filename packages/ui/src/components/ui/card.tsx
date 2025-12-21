@@ -1,7 +1,11 @@
 import type * as React from 'react'
 import { cn } from '../../lib/utils'
 
-function Card({ className, size = 'default', ...props }: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
+function Card({
+  className,
+  size = 'default',
+  ...props
+}: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
   return (
     <div
       className={cn(
@@ -29,24 +33,55 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('font-medium text-sm group-data-[size=sm]/card:text-sm', className)} data-slot='card-title' {...props} />
+  return (
+    <div
+      className={cn('font-medium text-sm group-data-[size=sm]/card:text-sm', className)}
+      data-slot='card-title'
+      {...props}
+    />
+  )
 }
 
 function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('text-muted-foreground text-xs/relaxed', className)} data-slot='card-description' {...props} />
+  return (
+    <div
+      className={cn('text-muted-foreground text-xs/relaxed', className)}
+      data-slot='card-description'
+      {...props}
+    />
+  )
 }
 
 function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)} data-slot='card-action' {...props} />
+  return (
+    <div
+      className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
+      data-slot='card-action'
+      {...props}
+    />
+  )
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('px-4 group-data-[size=sm]/card:px-3', className)} data-slot='card-content' {...props} />
+  return (
+    <div
+      className={cn('px-4 group-data-[size=sm]/card:px-3', className)}
+      data-slot='card-content'
+      {...props}
+    />
+  )
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div className={cn('flex items-center rounded-none border-t p-4 group-data-[size=sm]/card:p-3', className)} data-slot='card-footer' {...props} />
+    <div
+      className={cn(
+        'flex items-center rounded-none border-t p-4 group-data-[size=sm]/card:p-3',
+        className
+      )}
+      data-slot='card-footer'
+      {...props}
+    />
   )
 }
 

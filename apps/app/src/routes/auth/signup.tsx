@@ -1,7 +1,20 @@
 import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@flux/ui/components/ui/card'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from '@flux/ui/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@flux/ui/components/ui/card'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
@@ -85,7 +98,9 @@ function RouteComponent() {
                     </Button>
                   </Field>
 
-                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>Or continue with</FieldSeparator>
+                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+                    Or continue with
+                  </FieldSeparator>
 
                   <FieldGroup className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                     <form.Field name='firstName'>
@@ -204,7 +219,8 @@ function RouteComponent() {
             </CardContent>
           </Card>
           <FieldDescription className='px-6 text-center'>
-            By clicking continue, you agree to our <a href='/#'>Terms of Service</a> and <a href='/#'>Privacy Policy</a>.
+            By clicking continue, you agree to our <a href='/#'>Terms of Service</a> and{' '}
+            <a href='/#'>Privacy Policy</a>.
           </FieldDescription>
         </div>
       </div>
