@@ -13,6 +13,7 @@
     "check": "turbo check",
     "dev": "turbo dev",
     "dev:app": "turbo dev --filter=app",
+    "dev:marketing": "turbo dev --filter=marketing",
     "test": "turbo test",
     "clean": "pnpm --recursive --parallel exec rm -rf node_modules dist .turbo"
   },
