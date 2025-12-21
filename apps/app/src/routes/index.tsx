@@ -1,3 +1,4 @@
+import GithubIcon from '@/components/shared/github'
 import {
   AnalyticsUpIcon,
   ArrowDownLeft01Icon,
@@ -21,7 +22,6 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import GithubIcon from '@/components/shared/github'
 
 export const Route = createFileRoute('/')({ component: App })
 

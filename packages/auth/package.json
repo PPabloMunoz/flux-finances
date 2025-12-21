@@ -16,8 +16,10 @@
     "better-auth": "1.4.7"
   },
   "devDependencies": {
+    "@tanstack/eslint-config": "^0.3.4",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
     "@types/node": "^22.19.3",
-    "@tanstack/eslint-config": "^0.3.4"
+    "eslint-plugin-import": "^2.32.0"
   },
   "exports": {
     "./client": "./src/client.ts",

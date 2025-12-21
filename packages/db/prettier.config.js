@@ -7,6 +7,8 @@ const config = {
   semi: false,
   trailingComma: 'es5',
   printWidth: 150,
+
+  plugins: ['@trivago/prettier-plugin-sort-imports'],
 }
 
 export default config

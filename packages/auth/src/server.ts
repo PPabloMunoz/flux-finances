@@ -1,8 +1,8 @@
+import { db } from '@flux/db'
+import * as schema from '@flux/db/schema'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import { db } from '@flux/db'
-import * as schema from '@flux/db/schema'
 
 const {
   GOOGLE_CLIENT_ID: googleClientId,

@@ -8,7 +8,7 @@ const config = {
   trailingComma: 'es5',
   printWidth: 150,
 
-  plugins: ['prettier-plugin-astro', 'prettier-plugin-tailwindcss'],
+  plugins: ['@trivago/prettier-plugin-sort-imports', 'prettier-plugin-astro', 'prettier-plugin-tailwindcss'],
 }
 
 export default config
