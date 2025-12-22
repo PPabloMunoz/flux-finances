@@ -18,10 +18,6 @@ import { quickActionsDialog } from '@/features/general/quick-actions-modal'
 export default function AppHeader() {
   const session = authClient.useSession()
 
-  async function handleLogout() {
-    await authClient.signOut()
-  }
-
   return (
     <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
       <div className='flex h-14 items-center justify-between px-6'>
