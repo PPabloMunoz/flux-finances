@@ -20,7 +20,7 @@ export default function AppHeader() {
 
   return (
     <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
-      <div className='flex h-14 items-center justify-between px-6'>
+      <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-6'>
         <div className='flex items-center gap-8'>
           <div className='flex cursor-pointer items-center gap-2 text-white'>
             <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
@@ -32,7 +32,7 @@ export default function AppHeader() {
           <div className='hidden items-center gap-1 md:flex'>
             <Link
               activeProps={{ className: 'bg-white/5 text-white' }}
-              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              className='px-3 py-1.5 font-medium text-xs transition-colors'
               inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/'
             >
@@ -40,7 +40,7 @@ export default function AppHeader() {
             </Link>
             <Link
               activeProps={{ className: 'bg-white/5 text-white' }}
-              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              className='px-3 py-1.5 font-medium text-xs transition-colors'
               inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/transactions'
             >
@@ -48,7 +48,7 @@ export default function AppHeader() {
             </Link>
             <Link
               activeProps={{ className: 'bg-white/5 text-white' }}
-              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              className='px-3 py-1.5 font-medium text-xs transition-colors'
               inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/accounts'
             >
@@ -56,7 +56,7 @@ export default function AppHeader() {
             </Link>
             <Link
               activeProps={{ className: 'bg-white/5 text-white' }}
-              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              className='px-3 py-1.5 font-medium text-xs transition-colors'
               inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/investments'
             >
@@ -67,7 +67,7 @@ export default function AppHeader() {
               <PopoverTrigger
                 render={
                   <button
-                    className='flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    className='flex items-center gap-1.5 px-3 py-1.5 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
                     type='button'
                   >
                     More
@@ -100,7 +100,6 @@ export default function AppHeader() {
           </div>
         </div>
 
-        {/*<!-- Right: Search & Profile -->*/}
         <div className='flex items-center gap-3'>
           <DialogTrigger
             handle={quickActionsDialog}
@@ -139,13 +138,6 @@ export default function AppHeader() {
               }
             />
             <PopoverContent className='max-w-45 gap-0.5 p-2'>
-              <button
-                className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
-                type='button'
-              >
-                <HugeiconsIcon className='size-3.5' icon={Settings01Icon} />
-                Profile Settings
-              </button>
               <Link
                 className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-red-400'
                 to='/auth/logout'
