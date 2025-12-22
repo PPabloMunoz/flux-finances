@@ -10,9 +10,13 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import DashboardCard from '@/components/dashboard-card'
 import AppHeader from '@/components/header'
+import { authStateFn } from '@/features/auth/queries'
 import { TRANSACTIONS_ICONS } from '@/lib/constants'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  component: App,
+  beforeLoad: async () => await authStateFn(),
+})
 
 function App() {
   return (
