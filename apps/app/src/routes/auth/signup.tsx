@@ -22,8 +22,8 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import GithubIcon from '@/components/shared/github'
-import GoogleIcon from '@/components/shared/google'
+import GithubIcon from '@/components/github'
+import GoogleIcon from '@/components/google'
 import { SignupSchema } from '@/features/auth/schema'
 
 export const Route = createFileRoute('/auth/signup')({

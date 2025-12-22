@@ -23,8 +23,8 @@ import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import GithubIcon from '@/components/shared/github'
-import GoogleIcon from '@/components/shared/google'
+import GithubIcon from '@/components/github'
+import GoogleIcon from '@/components/google'
 
 export const Route = createFileRoute('/auth/login')({
   component: RouteComponent,
