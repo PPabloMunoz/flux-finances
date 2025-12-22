@@ -1,3 +1,4 @@
+import { Badge } from '@flux/ui/components/ui/badge'
 import { Button } from '@flux/ui/components/ui/button'
 import {
   Card,
@@ -27,9 +28,9 @@ export default function SecuritySettings() {
             <div className='flex-1'>
               <div className='flex items-center gap-2'>
                 <p className='font-medium'>Authenticator App</p>
-                {/*<Badge className='bg-muted text-muted-foreground' variant='secondary'>
+                <Badge className='bg-muted text-muted-foreground' variant='secondary'>
                   Disabled
-                </Badge>*/}
+                </Badge>
               </div>
               <p className='mt-1 text-muted-foreground text-sm'>
                 Use an authentication app to generate verification codes
@@ -66,9 +67,9 @@ export default function SecuritySettings() {
               <div className='flex-1'>
                 <div className='flex items-center gap-2'>
                   <p className='font-medium'>MacBook Pro - Chrome</p>
-                  {/*<Badge className='bg-primary/10 text-primary' variant='secondary'>
+                  <Badge className='bg-primary/10 text-primary' variant='secondary'>
                     Current
-                  </Badge>*/}
+                  </Badge>
                 </div>
                 <p className='mt-1 text-muted-foreground text-sm'>
                   San Francisco, CA • Last active now

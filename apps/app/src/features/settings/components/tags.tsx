@@ -1,3 +1,4 @@
+import { Badge } from '@flux/ui/components/ui/badge'
 import { Button } from '@flux/ui/components/ui/button'
 import {
   Card,
@@ -104,9 +105,9 @@ export default function TagsSettings() {
                   <div className={`h-3 w-3 rounded-full ${tag.color}`} />
                   <span className='font-medium text-sm'>{tag.name}</span>
                 </div>
-                {/*<Badge className='font-mono' variant='secondary'>
+                <Badge className='font-mono' variant='secondary'>
                   {Math.floor(Math.random() * 50)} transactions
-                </Badge>*/}
+                </Badge>
               </div>
             ))}
           </div>
