@@ -12,12 +12,37 @@ import {
 } from 'drizzle-orm/pg-core'
 import { ulid } from 'ulid'
 
+// --- ENUMS ---
+
+export const accountTypeEnum = pgEnum('account_type', [
+  'depository',
+  'credit',
+  'investment',
+  'loan',
+  'other_asset',
+  'other_liability',
+])
+
+export const transactionTypeEnum = pgEnum('transaction_type', ['inflow', 'outflow'])
+
+export const household = pgTable('households', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => ulid()),
+  name: text('name').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').default(false).notNull(),
   image: text('image'),
+
+  // Custom
+  householdId: text('household_id').references(() => household.id),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
@@ -44,8 +69,8 @@ export const session = pgTable(
   (table) => [index('session_userId_idx').on(table.userId)]
 )
 
-export const account = pgTable(
-  'account',
+export const accountProvider = pgTable(
+  'account_provider',
   {
     id: text('id').primaryKey(),
     accountId: text('account_id').notNull(),
@@ -84,8 +109,19 @@ export const verification = pgTable(
   (table) => [index('verification_identifier_idx').on(table.identifier)]
 )
 
-export const userRelations = relations(user, ({ many }) => ({
+export const householdRelations = relations(household, ({ many }) => ({
+  users: many(user),
+  categories: many(category),
+  tags: many(tag),
+}))
+
+export const userRelations = relations(user, ({ one, many }) => ({
+  household: one(household, {
+    fields: [user.householdId],
+    references: [household.id],
+  }),
   sessions: many(session),
+  accountProviders: many(accountProvider),
   accounts: many(account),
 }))
 
@@ -96,9 +132,9 @@ export const sessionRelations = relations(session, ({ one }) => ({
   }),
 }))
 
-export const accountRelations = relations(account, ({ one }) => ({
+export const accountProviderRelations = relations(accountProvider, ({ one }) => ({
   user: one(user, {
-    fields: [account.userId],
+    fields: [accountProvider.userId],
     references: [user.id],
   }),
 }))
@@ -107,40 +143,7 @@ export const accountRelations = relations(account, ({ one }) => ({
 // ============================= Finish Auth Schema =============================
 // ==============================================================================
 
-// --- ENUMS ---
-
-export const accountTypeEnum = pgEnum('account_type', [
-  'depository',
-  'credit',
-  'investment',
-  'loan',
-  'other_asset',
-  'other_liability',
-])
-
-export const transactionTypeEnum = pgEnum('transaction_type', ['inflow', 'outflow'])
-
-// --- TABLES ---
-
-export const households = pgTable('households', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  name: text('name').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-})
-
-export const users = pgTable('users', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  email: text('email').notNull().unique(),
-  name: text('name').notNull(),
-  householdId: text('household_id').references(() => households.id),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-})
-
-export const institutions = pgTable('institutions', {
+export const institution = pgTable('institution', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
@@ -149,14 +152,14 @@ export const institutions = pgTable('institutions', {
   logoUrl: text('logo_url'),
 })
 
-export const accounts = pgTable('accounts', {
+export const account = pgTable('account', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   userId: text('user_id')
-    .references(() => users.id)
+    .references(() => user.id)
     .notNull(),
-  institutionId: text('institution_id').references(() => institutions.id),
+  institutionId: text('institution_id').references(() => institution.id),
   name: text('name').notNull(),
   type: accountTypeEnum('type').notNull(),
   subtype: text('subtype'),
@@ -166,12 +169,12 @@ export const accounts = pgTable('accounts', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const categories = pgTable('categories', {
+export const category = pgTable('category', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   householdId: text('household_id')
-    .references(() => households.id)
+    .references(() => household.id)
     .notNull(),
   name: text('name').notNull(),
   icon: text('icon'),
@@ -179,7 +182,7 @@ export const categories = pgTable('categories', {
   parentId: text('parent_id'),
 })
 
-export const merchants = pgTable('merchants', {
+export const merchant = pgTable('merchant', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
@@ -187,25 +190,25 @@ export const merchants = pgTable('merchants', {
   logoUrl: text('logo_url'),
 })
 
-export const tags = pgTable('tags', {
+export const tag = pgTable('tag', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   householdId: text('household_id')
-    .references(() => households.id)
+    .references(() => household.id)
     .notNull(),
   name: text('name').notNull(),
 })
 
-export const transactions = pgTable('transactions', {
+export const transaction = pgTable('transaction', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   accountId: text('account_id')
-    .references(() => accounts.id)
+    .references(() => account.id)
     .notNull(),
-  categoryId: text('category_id').references(() => categories.id),
-  merchantId: text('merchant_id').references(() => merchants.id),
+  categoryId: text('category_id').references(() => category.id),
+  merchantId: text('merchant_id').references(() => merchant.id),
   date: date('date').notNull(),
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
   type: transactionTypeEnum('type').notNull(),
@@ -215,14 +218,14 @@ export const transactions = pgTable('transactions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const transactionTags = pgTable(
-  'transaction_tags',
+export const transactionTag = pgTable(
+  'transaction_tag',
   {
     transactionId: text('transaction_id')
-      .references(() => transactions.id)
+      .references(() => transaction.id)
       .notNull(),
     tagId: text('tag_id')
-      .references(() => tags.id)
+      .references(() => tag.id)
       .notNull(),
   },
   (t) => [uniqueIndex('transaction_tag_pk').on(t.transactionId, t.tagId)]
@@ -230,7 +233,7 @@ export const transactionTags = pgTable(
 
 // --- INVESTMENT TABLES ---
 
-export const securities = pgTable('securities', {
+export const security = pgTable('security', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
@@ -240,14 +243,14 @@ export const securities = pgTable('securities', {
   currency: text('currency').default('USD').notNull(),
 })
 
-export const securityPrices = pgTable(
-  'security_prices',
+export const securityPrice = pgTable(
+  'security_price',
   {
     id: text('id')
       .primaryKey()
       .$defaultFn(() => ulid()),
     securityId: text('security_id')
-      .references(() => securities.id)
+      .references(() => security.id)
       .notNull(),
     date: date('date').notNull(),
     price: numeric('price', { precision: 19, scale: 4 }).notNull(),
@@ -255,39 +258,39 @@ export const securityPrices = pgTable(
   (t) => [uniqueIndex('sec_price_date_idx').on(t.securityId, t.date)]
 )
 
-export const holdings = pgTable('holdings', {
+export const holding = pgTable('holding', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   accountId: text('account_id')
-    .references(() => accounts.id)
+    .references(() => account.id)
     .notNull(),
   securityId: text('security_id')
-    .references(() => securities.id)
+    .references(() => security.id)
     .notNull(),
   quantity: numeric('quantity', { precision: 19, scale: 6 }).notNull(),
 })
 
 // For assets like real estate or cars that don't have a ticker
-export const valuations = pgTable('valuations', {
+export const valuation = pgTable('valuation', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
   accountId: text('account_id')
-    .references(() => accounts.id)
+    .references(() => account.id)
     .notNull(),
   date: date('date').notNull(),
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
 })
 
-export const accountBalances = pgTable(
-  'account_balances',
+export const accountBalance = pgTable(
+  'account_balance',
   {
     id: text('id')
       .primaryKey()
       .$defaultFn(() => ulid()),
     accountId: text('account_id')
-      .references(() => accounts.id)
+      .references(() => account.id)
       .notNull(),
     date: date('date').notNull(),
     balance: numeric('balance', { precision: 19, scale: 4 }).notNull(),
@@ -295,7 +298,7 @@ export const accountBalances = pgTable(
   (t) => [uniqueIndex('account_date_idx').on(t.accountId, t.date)]
 )
 
-export const exchangeRates = pgTable('exchange_rates', {
+export const exchangeRate = pgTable('exchange_rate', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
@@ -305,16 +308,55 @@ export const exchangeRates = pgTable('exchange_rates', {
   rate: numeric('rate', { precision: 19, scale: 6 }).notNull(),
 })
 
-// --- RELATIONS --- (Summary)
+// --- RELATIONS ---
 
-export const accountsRelations = relations(accounts, ({ many }) => ({
-  transactions: many(transactions),
-  holdings: many(holdings),
-  balances: many(accountBalances),
-  valuations: many(valuations),
+export const accountRelations = relations(account, ({ one, many }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+  institution: one(institution, {
+    fields: [account.institutionId],
+    references: [institution.id],
+  }),
+  transactions: many(transaction),
+  holdings: many(holding),
+  balances: many(accountBalance),
+  valuations: many(valuation),
 }))
 
-export const securityRelations = relations(securities, ({ many }) => ({
-  prices: many(securityPrices),
-  holdings: many(holdings),
+export const categoryRelations = relations(category, ({ one, many }) => ({
+  household: one(household, {
+    fields: [category.householdId],
+    references: [household.id],
+  }),
+  parent: one(category, {
+    fields: [category.parentId],
+    references: [category.id],
+    relationName: 'category_parent',
+  }),
+  subcategories: many(category, {
+    relationName: 'category_parent',
+  }),
+}))
+
+export const transactionRelations = relations(transaction, ({ one, many }) => ({
+  account: one(account, {
+    fields: [transaction.accountId],
+    references: [account.id],
+  }),
+  category: one(category, {
+    fields: [transaction.categoryId],
+    references: [category.id],
+  }),
+  merchant: one(merchant, {
+    fields: [transaction.merchantId],
+    references: [merchant.id],
+  }),
+  tags: many(transactionTag),
+}))
+
+export const securityRelations = relations(security, ({ many }) => ({
+  prices: many(securityPrice),
+  holdings: many(holding),
 }))
