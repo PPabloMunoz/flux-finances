@@ -23,7 +23,6 @@ function App() {
     <>
       <AppHeader />
 
-      <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
       <main className='container mx-auto px-5 py-10'>
         <header className='mb-10 flex items-center justify-between'>
           <div>

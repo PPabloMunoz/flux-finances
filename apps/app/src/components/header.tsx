@@ -21,9 +21,7 @@ export default function AppHeader() {
   return (
     <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
       <div className='flex h-14 items-center justify-between px-6'>
-        {/*<!-- Left: Logo & Main Links -->*/}
         <div className='flex items-center gap-8'>
-          {/*<!-- Logo -->*/}
           <div className='flex cursor-pointer items-center gap-2 text-white'>
             <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
               <HugeiconsIcon className='size-4.5' icon={Dollar02FreeIcons} />
@@ -31,28 +29,35 @@ export default function AppHeader() {
             <span className='font-medium text-sm tracking-tight'>Flux Finances</span>
           </div>
 
-          {/*<!-- Desktop Navigation Links -->*/}
           <div className='hidden items-center gap-1 md:flex'>
             <Link
-              className='rounded-md bg-white/5 px-3 py-1.5 font-medium text-white text-xs transition-colors'
+              activeProps={{ className: 'bg-white/5 text-white' }}
+              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/'
             >
               Dashboard
             </Link>
             <Link
-              className='flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+              activeProps={{ className: 'bg-white/5 text-white' }}
+              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/transactions'
             >
               Transactions
             </Link>
             <Link
-              className='flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+              activeProps={{ className: 'bg-white/5 text-white' }}
+              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/accounts'
             >
               Accounts
             </Link>
             <Link
-              className='flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+              activeProps={{ className: 'bg-white/5 text-white' }}
+              className='rounded-md px-3 py-1.5 font-medium text-xs transition-colors'
+              inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
               to='/investments'
             >
               Investments
@@ -72,7 +77,11 @@ export default function AppHeader() {
               />
               <PopoverContent className='max-w-45 gap-0.5 p-2'>
                 <Link
+                  activeProps={{ className: 'bg-white/5 text-white' }}
                   className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                  inactiveProps={{
+                    className: 'text-neutral-400 hover:bg-white/5 hover:text-white',
+                  }}
                   to='/settings'
                 >
                   <HugeiconsIcon className='size-3.5' icon={Settings01Icon} />
@@ -115,7 +124,6 @@ export default function AppHeader() {
 
           <div className='mx-1 h-4 w-px bg-neutral-800' />
 
-          {/*<!-- Profile Dropdown Trigger (Simplified for visuals) -->*/}
           <Popover>
             <PopoverTrigger
               render={
