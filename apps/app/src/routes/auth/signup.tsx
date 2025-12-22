@@ -216,7 +216,7 @@ function RouteComponent() {
                   </form.Field>
 
                   <Field>
-                    <Button type='submit'>Login</Button>
+                    <Button type='submit'>Sign up</Button>
                     <FieldDescription className='text-center'>
                       Already have an account? <Link to='/auth/login'>Login</Link>
                     </FieldDescription>
