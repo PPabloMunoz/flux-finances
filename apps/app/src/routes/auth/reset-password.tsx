@@ -51,7 +51,7 @@ function RouteComponent() {
         toast.error('Ha ocurrido un error al cambiar la contraseña. Intentalo de nuevo')
       } else {
         toast.success('Contraseña cambiada con éxito')
-        navigate({ to: '/app' })
+        navigate({ to: '/' })
       }
     },
   })

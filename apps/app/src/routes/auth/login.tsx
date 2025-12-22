@@ -50,7 +50,7 @@ function RouteComponent() {
       if (error) {
         toast.error(error.message)
       } else {
-        navigate({ to: '/app' })
+        navigate({ to: '/' })
       }
     },
   })

@@ -20,8 +20,9 @@ import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import GithubIcon from '@/components/github'
 import GoogleIcon from '@/components/google'
 import { SignupSchema } from '@/features/auth/schema'
@@ -32,6 +33,7 @@ export const Route = createFileRoute('/auth/signup')({
 
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const form = useForm({
     defaultValues: {
@@ -46,13 +48,18 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
-      const res = await authClient.signUp.email({
+      const { error } = await authClient.signUp.email({
         name: `${value.firstName} ${value.lastName}`,
         email: value.email,
         password: value.password,
       })
       setIsLoading(false)
-      console.log('Form submitted Response:', res)
+
+      if (error) {
+        toast.error(error.message)
+      } else {
+        navigate({ to: '/' })
+      }
     },
   })
 
