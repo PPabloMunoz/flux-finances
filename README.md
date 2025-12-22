@@ -51,7 +51,7 @@ _[Screenshots will be added here once available]_
    bun dev
    ```
 
-Visit http://localhost:3000 to get started.
+Visit http://localhost:3001 to get started.
 
 ## 🏠 Installation
 
@@ -89,7 +89,7 @@ bunx drizzle-kit push
 bun dev
 ```
 
-App runs at http://localhost:3000.
+App runs at http://localhost:3001.
 
 ## 🤝 Contributing
 
