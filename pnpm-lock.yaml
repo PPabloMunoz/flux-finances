@@ -101,9 +101,6 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
-      ulid:
-        specifier: ^3.0.2
-        version: 3.0.2
       vite-tsconfig-paths:
         specifier: 5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
@@ -132,9 +129,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^5.1.2
         version: 5.1.2(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
-      drizzle-kit:
-        specifier: ^0.31.8
-        version: 0.31.8
       jsdom:
         specifier: ^27.3.0
         version: 27.3.0
@@ -192,6 +186,9 @@ importers:
       '@types/node':
         specifier: ^22.19.3
         version: 22.19.3
+      drizzle-kit:
+        specifier: ^0.31.8
+        version: 0.31.8
 
   packages/ui:
     dependencies:

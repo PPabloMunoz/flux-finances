@@ -15,7 +15,10 @@
     "dev:app": "turbo dev --filter=app",
     "dev:marketing": "turbo dev --filter=marketing",
     "test": "turbo test",
-    "clean": "pnpm --recursive --parallel exec rm -rf node_modules dist .turbo"
+    "clean": "pnpm --recursive --parallel exec rm -rf node_modules dist .turbo",
+    "db:generate": "pnpm --filter=@flux/db db:generate",
+    "db:migrate": "pnpm --filter=@flux/db db:migrate",
+    "db:push": "pnpm --filter=@flux/db db:push"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
