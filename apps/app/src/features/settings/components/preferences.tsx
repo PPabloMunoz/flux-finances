@@ -122,39 +122,6 @@ export default function PreferencesSettings() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Transaction Defaults */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Transaction Defaults</CardTitle>
-          <CardDescription>Set default values for transaction views and filters</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='defaultPeriod'>Default Period</Label>
-            <Select defaultValue='month'>
-              <SelectTrigger id='defaultPeriod'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='week'>This Week</SelectItem>
-                <SelectItem value='month'>This Month</SelectItem>
-                <SelectItem value='quarter'>This Quarter</SelectItem>
-                <SelectItem value='year'>This Year</SelectItem>
-                <SelectItem value='all'>All Time</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className='text-muted-foreground text-xs'>
-              The default time period shown when viewing transactions
-            </p>
-          </div>
-
-          <div className='flex justify-end gap-2 pt-4'>
-            <Button variant='outline'>Cancel</Button>
-            <Button>Save Changes</Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

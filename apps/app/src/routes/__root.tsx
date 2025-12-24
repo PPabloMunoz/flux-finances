@@ -20,13 +20,13 @@ export const Route = createRootRoute({
   }),
   shellComponent: RootDocument,
   errorComponent: ({ error }) => (
-    <div>
-      <h1>Root Error Boundary</h1>
+    <div className='p-10'>
+      <h1>Root Error Template</h1>
       <pre>{String(error)}</pre>
     </div>
   ),
   notFoundComponent: () => (
-    <div>
+    <div className='p-10'>
       <h1>404 - Not Found</h1>
       <p>The page you are looking for does not exist.</p>
     </div>
@@ -50,12 +50,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {import.meta.env.DEV && (
           <TanStackDevtools
             config={{ position: 'bottom-right' }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
+            plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
           />
         )}
       </body>

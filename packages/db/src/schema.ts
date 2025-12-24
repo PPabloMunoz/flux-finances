@@ -143,6 +143,18 @@ export const accountProviderRelations = relations(accountProvider, ({ one }) => 
 // ============================= Finish Auth Schema =============================
 // ==============================================================================
 
+export const userPreferences = pgTable('user_preferences', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => ulid()),
+  userId: text('user_id')
+    .references(() => user.id)
+    .notNull(),
+  currency: text('currency').default('EUR').notNull(),
+  dateFormat: text('date_format').default('DD/MM/YYYY').notNull(),
+  timezone: text('timezone').default('UTC').notNull(),
+})
+
 export const institution = pgTable('institution', {
   id: text('id')
     .primaryKey()

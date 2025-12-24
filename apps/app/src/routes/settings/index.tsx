@@ -1,4 +1,7 @@
+import { authClient } from '@flux/auth/client'
+import { Spinner } from '@flux/ui/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
+import { cn } from '@flux/ui/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import AppHeader from '@/components/header'
 import CategoriesSettings from '@/features/settings/components/categories'
@@ -11,10 +14,13 @@ export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
 })
 
-const tabsTriggerClassName =
+const tabsTriggerClassName = cn(
   'flex h-8 items-center justify-center border-0 px-2 text-sm font-medium break-keep whitespace-nowrap text-gray-600 outline-none select-none hover:text-gray-900'
+)
 
 function RouteComponent() {
+  const { data, error } = authClient.useSession()
+
   return (
     <>
       <AppHeader />
@@ -44,7 +50,22 @@ function RouteComponent() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value='profile'>
-            <ProfileSettings />
+            {!error && data && (
+              <ProfileSettings
+                household={{ id: 'home', householdName: 'Mi casa' }}
+                personalInfo={{ email: data.user.email, fullName: data.user.name }}
+              />
+            )}
+            {error && (
+              <div className='h-full w-full text-lg text-red-500'>
+                Error loading profile information.
+              </div>
+            )}
+            {!data && !error && (
+              <div className='flex h-full min-h-40 w-full items-center justify-center'>
+                <Spinner />
+              </div>
+            )}
           </TabsContent>
           <TabsContent value='preferences'>
             <PreferencesSettings />

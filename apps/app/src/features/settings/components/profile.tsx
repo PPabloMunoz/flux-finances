@@ -1,3 +1,4 @@
+import { authClient } from '@flux/auth/client'
 import { Button } from '@flux/ui/components/ui/button'
 import {
   Card,
@@ -6,12 +7,55 @@ import {
   CardHeader,
   CardTitle,
 } from '@flux/ui/components/ui/card'
+import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
-import { Label } from '@flux/ui/components/ui/label'
 import { Alert02Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useForm } from '@tanstack/react-form'
+import { useServerFn } from '@tanstack/react-start'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { updateHouseholdAction } from '../actions'
 
-export default function ProfileSettings() {
+interface Props {
+  personalInfo: { email: string; fullName: string }
+  household: { id: string; householdName: string }
+}
+
+const PersonalInfoValidator = z.object({
+  fullName: z.string().min(2, 'Full name must be at least 2 characters long'),
+})
+const HouseholdValidator = z.object({
+  householdName: z.string().min(2, 'Household name must be at least 2 characters long'),
+})
+
+export default function ProfileSettings({ personalInfo, household }: Props) {
+  const updateHouseHold = useServerFn(updateHouseholdAction)
+
+  const personalInfoForm = useForm({
+    defaultValues: { fullName: personalInfo.fullName },
+    validators: { onChange: PersonalInfoValidator },
+    onSubmit: async ({ value }) => {
+      if (value.fullName === personalInfo.fullName) return toast.info('No changes detected')
+      const { error } = await authClient.updateUser({ name: value.fullName })
+      if (error) toast.error(`Error updating profile: ${error.message}`)
+      else toast.success('Profile updated successfully')
+    },
+  })
+
+  const householdForm = useForm({
+    defaultValues: { householdName: household.householdName },
+    validators: { onChange: HouseholdValidator },
+    onSubmit: async ({ value }) => {
+      if (value.householdName === household.householdName) return toast.info('No changes detected')
+      const res = await updateHouseHold({
+        data: { id: household.id, newName: value.householdName },
+      })
+
+      console.log(res)
+    },
+  })
+
   return (
     <div className='space-y-6'>
       <Card>
@@ -19,28 +63,63 @@ export default function ProfileSettings() {
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>Your basic account details</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='email'>Email Address</Label>
-            <Input
-              className='bg-muted'
-              defaultValue='john.doe@example.com'
-              disabled
-              id='email'
-              type='email'
-            />
-            <p className='text-muted-foreground text-xs'>Email address cannot be changed</p>
-          </div>
+        <CardContent>
+          <form
+            className='space-y-4'
+            onSubmit={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              personalInfoForm.handleSubmit(e)
+            }}
+          >
+            <Field className='space-y-2'>
+              <FieldLabel htmlFor='email'>Email Address</FieldLabel>
+              <Input
+                className='bg-muted'
+                defaultValue={personalInfo.email}
+                disabled
+                name='email'
+                required
+                type='email'
+              />
+              <p className='text-muted-foreground text-xs'>Email address cannot be changed</p>
+            </Field>
 
-          <div className='space-y-2'>
-            <Label htmlFor='name'>Full Name</Label>
-            <Input defaultValue='John Doe' id='name' placeholder='John Doe' />
-          </div>
+            <personalInfoForm.Field name='fullName'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder={personalInfo.fullName}
+                      required
+                      type='text'
+                      value={field.state.value}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </personalInfoForm.Field>
 
-          <div className='flex justify-end gap-2 pt-4'>
-            <Button variant='outline'>Cancel</Button>
-            <Button>Save Changes</Button>
-          </div>
+            <div className='flex justify-end gap-2 pt-4'>
+              <Button
+                disabled={personalInfoForm.state.isDirty}
+                onClick={() => personalInfoForm.reset()}
+                variant='outline'
+              >
+                Reset
+              </Button>
+              <Button disabled={personalInfoForm.state.isDirty} type='submit'>
+                Save Changes
+              </Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
 
@@ -52,40 +131,80 @@ export default function ProfileSettings() {
           </CardTitle>
           <CardDescription>Manage shared account and household members</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='householdName'>Household Name</Label>
-            <Input defaultValue='The Doe Family' id='householdName' placeholder='The Doe Family' />
-          </div>
+        <CardContent>
+          <form
+            className='space-y-4'
+            onSubmit={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              householdForm.handleSubmit(e)
+            }}
+          >
+            <householdForm.Field name='householdName'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>Household Name</FieldLabel>
+                    <Input
+                      defaultValue={field.state.value}
+                      id={field.name}
+                      name={field.name}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder={household.householdName}
+                      required
+                      type='text'
+                      value={field.state.value}
+                    />
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </householdForm.Field>
 
-          <div className='border border-border bg-muted/50 p-4'>
-            <h4 className='mb-3 font-medium text-sm'>Household Members</h4>
-            <div className='space-y-2'>
-              <div className='flex items-center justify-between rounded-md bg-card px-3 py-2'>
-                <div>
-                  <p className='font-medium text-sm'>John Doe</p>
-                  <p className='text-muted-foreground text-xs'>john.doe@example.com • Admin</p>
+            <div className='border border-border bg-muted/50 p-4'>
+              <h4 className='mb-3 font-medium text-muted-foreground text-sm'>
+                Household Members (Coming Soon)
+              </h4>
+              <div className='space-y-2'>
+                <div className='flex items-center justify-between rounded-md bg-card px-3 py-2'>
+                  <div>
+                    <p className='font-medium text-sm'>
+                      {personalInfo.fullName}{' '}
+                      <span className='text-muted-foreground text-xs'>(You)</span>
+                    </p>
+                    <p className='text-muted-foreground text-xs'>{personalInfo.email} • Admin</p>
+                  </div>
+                </div>
+                <div className='flex items-center justify-between rounded-md bg-card px-3 py-2 opacity-50'>
+                  <div>
+                    <p className='font-medium text-sm'>Jane Doe</p>
+                    <p className='text-muted-foreground text-xs'>jane.doe@example.com • Member</p>
+                  </div>
+                  <Button className='text-muted-foreground' disabled size='sm' variant='ghost'>
+                    Remove
+                  </Button>
                 </div>
               </div>
-              <div className='flex items-center justify-between rounded-md bg-card px-3 py-2'>
-                <div>
-                  <p className='font-medium text-sm'>Jane Doe</p>
-                  <p className='text-muted-foreground text-xs'>jane.doe@example.com • Member</p>
-                </div>
-                <Button className='text-muted-foreground' size='sm' variant='ghost'>
-                  Remove
-                </Button>
-              </div>
+              <Button className='mt-3 w-full bg-transparent' disabled size='sm' variant='outline'>
+                Invite Member
+              </Button>
             </div>
-            <Button className='mt-3 w-full bg-transparent' size='sm' variant='outline'>
-              Invite Member
-            </Button>
-          </div>
 
-          <div className='flex justify-end gap-2 pt-4'>
-            <Button variant='outline'>Cancel</Button>
-            <Button>Save Changes</Button>
-          </div>
+            <div className='flex justify-end gap-2 pt-4'>
+              <Button
+                disabled={householdForm.state.isDirty}
+                onClick={() => householdForm.reset()}
+                variant='outline'
+              >
+                Reset
+              </Button>
+              <Button disabled={householdForm.state.isDirty} type='submit'>
+                Save Changes
+              </Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
 

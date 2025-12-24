@@ -12,6 +12,7 @@ const {
 } = process.env
 
 export const auth = betterAuth({
+  trustedOrigins: ['http://localhost:3001'],
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {
@@ -19,6 +20,17 @@ export const auth = betterAuth({
       account: schema.accountProvider,
     },
   }),
+  user: {
+    additionalFields: {
+      householdId: {
+        type: 'string',
+        fieldName: 'household_id',
+        required: false,
+        input: false,
+        returned: true,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url, token }, _request) => {
