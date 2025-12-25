@@ -2,6 +2,7 @@ import { db } from '@flux/db'
 import * as schema from '@flux/db/schema'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { organization } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
 const {
@@ -65,5 +66,5 @@ export const auth = betterAuth({
       clientSecret: githubClientSecret ?? '',
     },
   },
-  plugins: [tanstackStartCookies()], // make sure tanstackStartCookies is the last plugin in the array
+  plugins: [organization(), tanstackStartCookies()], // make sure tanstackStartCookies is the last plugin in the array
 })
