@@ -102,6 +102,8 @@ export default function AppHeader() {
 
         <div className='flex items-center gap-3'>
           <DialogTrigger
+            aria-expanded='false'
+            aria-haspopup='dialog'
             handle={quickActionsDialog}
             render={
               <button
