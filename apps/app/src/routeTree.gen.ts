@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
@@ -34,6 +35,11 @@ const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/accounts': typeof AccountsIndexRoute
   '/investments': typeof InvestmentsIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/accounts': typeof AccountsIndexRoute
   '/investments': typeof InvestmentsIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/accounts/': typeof AccountsIndexRoute
   '/investments/': typeof InvestmentsIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/accounts'
     | '/investments'
+    | '/onboarding'
     | '/settings'
     | '/transactions'
     | '/api/auth/$'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/accounts'
     | '/investments'
+    | '/onboarding'
     | '/settings'
     | '/transactions'
     | '/api/auth/$'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/accounts/'
     | '/investments/'
+    | '/onboarding/'
     | '/settings/'
     | '/transactions/'
     | '/api/auth/$'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   AuthSignupRoute: typeof AuthSignupRoute
   AccountsIndexRoute: typeof AccountsIndexRoute
   InvestmentsIndexRoute: typeof InvestmentsIndexRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investments/': {
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignupRoute: AuthSignupRoute,
   AccountsIndexRoute: AccountsIndexRoute,
   InvestmentsIndexRoute: InvestmentsIndexRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
