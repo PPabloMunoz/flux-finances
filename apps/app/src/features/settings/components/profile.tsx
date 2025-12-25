@@ -189,17 +189,22 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
               </Button>
             </div>
 
-            <div className='flex justify-end gap-2 pt-4'>
-              <Button
-                disabled={householdForm.state.isDirty}
-                onClick={() => householdForm.reset()}
-                variant='outline'
-              >
-                Reset
+            <div className='flex w-full justify-between gap-2 pt-4'>
+              <Button disabled={householdForm.state.isDirty} variant='destructive'>
+                Leave Household
               </Button>
-              <Button disabled={householdForm.state.isDirty} type='submit'>
-                Save Changes
-              </Button>
+              <div className='flex gap-2'>
+                <Button
+                  disabled={householdForm.state.isDirty}
+                  onClick={() => householdForm.reset()}
+                  variant='outline'
+                >
+                  Reset
+                </Button>
+                <Button disabled={householdForm.state.isDirty} type='submit'>
+                  Save Changes
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>
