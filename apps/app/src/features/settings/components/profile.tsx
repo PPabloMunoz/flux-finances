@@ -14,7 +14,6 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { updateHouseholdAction } from '../actions'
 
 interface Props {
   personalInfo: { email: string; fullName: string }
@@ -29,6 +28,8 @@ const HouseholdValidator = z.object({
 })
 
 export default function ProfileSettings({ personalInfo, household }: Props) {
+  const { data: org } = authClient.useActiveOrganization()
+
   const personalInfoForm = useForm({
     defaultValues: { fullName: personalInfo.fullName },
     validators: { onChange: PersonalInfoValidator },
@@ -41,15 +42,20 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
   })
 
   const householdForm = useForm({
-    defaultValues: { householdName: household.householdName },
+    defaultValues: { householdName: org?.name || 'loading...' },
     validators: { onChange: HouseholdValidator },
     onSubmit: async ({ value }) => {
       if (value.householdName === household.householdName) return toast.info('No changes detected')
-      const res = await updateHouseholdAction({
-        data: { id: household.id, newName: value.householdName },
+      const res = await authClient.organization.update({
+        organizationId: org?.id || '',
+        data: { name: value.householdName },
       })
 
-      console.log(res)
+      if (res.error) {
+        toast.error(`Error updating household: ${res.error.message}`)
+      } else {
+        toast.success('Household updated successfully')
+      }
     },
   })
 
@@ -190,20 +196,12 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
             </div>
 
             <div className='flex w-full justify-between gap-2 pt-4'>
-              <Button disabled={householdForm.state.isDirty} variant='destructive'>
-                Leave Household
-              </Button>
+              <Button variant='destructive'>Leave Household</Button>
               <div className='flex gap-2'>
-                <Button
-                  disabled={householdForm.state.isDirty}
-                  onClick={() => householdForm.reset()}
-                  variant='outline'
-                >
+                <Button onClick={() => householdForm.reset()} variant='outline'>
                   Reset
                 </Button>
-                <Button disabled={householdForm.state.isDirty} type='submit'>
-                  Save Changes
-                </Button>
+                <Button type='submit'>Save Changes</Button>
               </div>
             </div>
           </form>
