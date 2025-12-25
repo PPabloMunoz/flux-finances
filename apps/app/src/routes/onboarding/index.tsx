@@ -55,6 +55,39 @@ function RouteComponent() {
 
   return (
     <>
+      {!session.data?.user ? (
+        <button
+          className='absolute top-6 right-0 left-0 mx-auto flex max-w-fit items-center gap-3 rounded-full transition-colors'
+          type='button'
+        >
+          <Skeleton className='h-9 w-40 rounded-full bg-neutral-800' />
+        </button>
+      ) : (
+        <button
+          className='group absolute top-6 right-0 left-0 mx-auto flex max-w-fit items-center gap-3 rounded-full border border-neutral-800 bg-neutral-900/50 px-3 py-2 transition-colors hover:border-red-500/50 hover:bg-neutral-800/20'
+          onClick={() => {
+            authClient.signOut()
+            navigate({ to: '/auth/login' })
+          }}
+          type='button'
+        >
+          <div className='flex h-6 w-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
+            {session.data.user.name.slice(0, 2).toUpperCase()}
+          </div>
+          <div className='flex flex-col'>
+            <span className='font-medium text-[10px] text-white leading-none'>
+              {session.data.user.name}
+            </span>
+            <span className='mt-0.5 text-[10px] text-neutral-500 leading-none'>
+              {session.data.user.email}
+            </span>
+          </div>
+          <span className='ml-2 text-neutral-500 transition-colors group-hover:text-red-500'>
+            <HugeiconsIcon className='size-3' icon={Logout05Icon} />
+          </span>
+        </button>
+      )}
+
       <div className='flex min-h-screen items-center justify-center bg-gradient-to-b from-black via-neutral-900 to-neutral-950 px-4 py-12'>
         <main className='relative z-10 w-full max-w-md px-6 py-12'>
           <div className='mb-8 flex animate-fade-in flex-col items-center text-center'>
@@ -163,39 +196,6 @@ function RouteComponent() {
           </div>
         </main>
       </div>
-
-      {!session.data?.user ? (
-        <button
-          className='absolute top-6 right-0 left-0 mx-auto flex max-w-fit items-center gap-3 rounded-full transition-colors'
-          type='button'
-        >
-          <Skeleton className='h-9 w-40 rounded-full bg-neutral-800' />
-        </button>
-      ) : (
-        <button
-          className='group absolute top-6 right-0 left-0 mx-auto flex max-w-fit items-center gap-3 rounded-full bg-neutral-900/50 px-3 py-2 transition-colors hover:bg-neutral-800/50'
-          onClick={() => {
-            authClient.signOut()
-            navigate({ to: '/auth/login' })
-          }}
-          type='button'
-        >
-          <div className='flex h-6 w-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
-            {session.data.user.name.slice(0, 2).toUpperCase()}
-          </div>
-          <div className='flex flex-col'>
-            <span className='font-medium text-[10px] text-white leading-none'>
-              {session.data.user.name}
-            </span>
-            <span className='mt-0.5 text-[10px] text-neutral-500 leading-none'>
-              {session.data.user.email}
-            </span>
-          </div>
-          <span className='ml-2 text-neutral-500 transition-colors group-hover:text-red-500'>
-            <HugeiconsIcon className='size-3' icon={Logout05Icon} />
-          </span>
-        </button>
-      )}
     </>
   )
 }
