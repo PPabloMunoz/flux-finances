@@ -12,7 +12,6 @@ import { Input } from '@flux/ui/components/ui/input'
 import { Alert02Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
-import { useServerFn } from '@tanstack/react-start'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { updateHouseholdAction } from '../actions'
@@ -30,8 +29,6 @@ const HouseholdValidator = z.object({
 })
 
 export default function ProfileSettings({ personalInfo, household }: Props) {
-  const updateHouseHold = useServerFn(updateHouseholdAction)
-
   const personalInfoForm = useForm({
     defaultValues: { fullName: personalInfo.fullName },
     validators: { onChange: PersonalInfoValidator },
@@ -48,7 +45,7 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
     validators: { onChange: HouseholdValidator },
     onSubmit: async ({ value }) => {
       if (value.householdName === household.householdName) return toast.info('No changes detected')
-      const res = await updateHouseHold({
+      const res = await updateHouseholdAction({
         data: { id: household.id, newName: value.householdName },
       })
 
