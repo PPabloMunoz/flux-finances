@@ -195,13 +195,20 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
               </Button>
             </div>
 
-            <div className='flex w-full justify-between gap-2 pt-4'>
+            <div className='flex w-full flex-col-reverse justify-between gap-2 pt-4 sm:flex-row'>
               <Button variant='destructive'>Leave Household</Button>
-              <div className='flex gap-2'>
-                <Button onClick={() => householdForm.reset()} variant='outline'>
+              <Button variant='destructive'>Delete Household</Button>
+              <div className='mb-4 flex w-full flex-col justify-end gap-2 sm:mb-0 sm:flex-row'>
+                <Button
+                  className='w-full sm:w-auto'
+                  onClick={() => householdForm.reset()}
+                  variant='outline'
+                >
                   Reset
                 </Button>
-                <Button type='submit'>Save Changes</Button>
+                <Button className='w-full sm:w-auto' type='submit'>
+                  Save Changes
+                </Button>
               </div>
             </div>
           </form>
