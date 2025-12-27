@@ -212,7 +212,7 @@ export const userPreferences = pgTable('user_preferences', {
   userId: text('user_id')
     .references(() => user.id)
     .notNull(),
-  currency: text('currency').default('EUR').notNull(),
+  region: text('region').default('US').notNull(), // For currency formatting, etc.
   dateFormat: text('date_format').default('DD/MM/YYYY').notNull(),
   timezone: text('timezone').default('UTC').notNull(),
 })
