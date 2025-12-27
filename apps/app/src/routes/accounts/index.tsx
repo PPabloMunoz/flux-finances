@@ -6,6 +6,9 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
+import EditAccountModal, {
+  editAccountDialogHandle,
+} from '@/features/accounts/components/edit-account-modal'
 import { newAccountDialogHandle } from '@/features/accounts/components/new-account-modal'
 import { getCashAccountsAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
@@ -26,13 +29,14 @@ function RouteComponent() {
         toast.error('Failed to load cash accounts')
         return []
       }
-      console.log(res.data)
       return res.data
     },
   })
 
   return (
     <>
+      <EditAccountModal />
+
       <AppHeader />
 
       <main className='container mx-auto space-y-8 px-5 py-10'>
@@ -83,51 +87,61 @@ function RouteComponent() {
               </div>
             ) : cashAccounts.length > 0 ? (
               cashAccounts.map((account) => (
-                <div
-                  className='group flex min-h-18 cursor-pointer flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'
+                <DialogTrigger
+                  handle={editAccountDialogHandle}
                   key={account.id}
-                >
-                  <div className='flex items-center gap-4'>
-                    <div className='flex size-10 items-center justify-center rounded-sm bg-blue-600 text-white shadow-blue-900/20 shadow-lg'>
-                      <HugeiconsIcon className='size-5' icon={BankIcon} />
-                    </div>
-                    <div>
-                      <div className='flex items-center gap-2'>
-                        <h3 className='font-medium text-sm text-white'>{account.name}</h3>
-                        <span
-                          className={cn(
-                            'size-1.5 rounded-full',
-                            account.isActive
-                              ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'
-                              : 'bg-neutral-600'
-                          )}
-                        />
+                  payload={{
+                    ...account,
+                    balance: account.currentBalance,
+                  }}
+                  render={
+                    <button
+                      className='group flex min-h-18 w-full cursor-pointer flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'
+                      type='button'
+                    >
+                      <div className='flex items-center gap-4'>
+                        <div className='flex size-10 items-center justify-center rounded-sm bg-blue-600 text-white shadow-blue-900/20 shadow-lg'>
+                          <HugeiconsIcon className='size-5' icon={BankIcon} />
+                        </div>
+                        <div>
+                          <div className='flex items-center gap-2'>
+                            <h3 className='font-medium text-sm text-white'>{account.name}</h3>
+                            <span
+                              className={cn(
+                                'size-1.5 rounded-full',
+                                account.isActive
+                                  ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'
+                                  : 'bg-neutral-600'
+                              )}
+                            />
+                          </div>
+                          <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
+                            <span className='text-neutral-600'>
+                              Created {new Date(account.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
-                        <span className='text-neutral-600'>
-                          Created {new Date(account.createdAt).toLocaleDateString()}
-                        </span>
+                      <div className='text-right'>
+                        <p className='font-medium text-sm text-white tabular-nums'>
+                          {parseCurrency(Number(account.currentBalance), account.currency)}
+                        </p>
+                        <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
+                          {account.previousBalance
+                            ? (() => {
+                                const current = Number(account.currentBalance)
+                                const previous = Number(account.previousBalance)
+                                const diff = current - previous
+                                const percent = (diff / previous) * 100
+                                const sign = diff >= 0 ? '+' : ''
+                                return `${sign}${parseCurrency(diff)} (${sign}${percent.toFixed(2)}%)`
+                              })()
+                            : 'No data'}
+                        </p>
                       </div>
-                    </div>
-                  </div>
-                  <div className='text-right'>
-                    <p className='font-medium text-sm text-white tabular-nums'>
-                      {parseCurrency(Number(account.currentBalance))}
-                    </p>
-                    <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
-                      {account.previousBalance
-                        ? (() => {
-                            const current = Number(account.currentBalance)
-                            const previous = Number(account.previousBalance)
-                            const diff = current - previous
-                            const percent = (diff / previous) * 100
-                            const sign = diff >= 0 ? '+' : ''
-                            return `${sign}${parseCurrency(diff)} (${sign}${percent.toFixed(2)}%)`
-                          })()
-                        : 'No data'}
-                    </p>
-                  </div>
-                </div>
+                    </button>
+                  }
+                />
               ))
             ) : (
               <div>

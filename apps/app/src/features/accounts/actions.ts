@@ -1,10 +1,10 @@
 import { db } from '@flux/db'
 import { account, accountBalance } from '@flux/db/schema'
 import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
-import { NewAccountSchema } from './schema'
+import { EditAccountSchema, NewAccountSchema } from './schema'
 
 export const newAccountAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
@@ -33,7 +33,7 @@ export const newAccountAction = createServerFn({ method: 'POST' })
         .values({
           accountId: newAccount.id,
           date: new Date().toISOString(),
-          balance: data.initialBalance.toString(),
+          balance: data.balance.toString(),
         })
         .returning({ id: accountBalance.id })
         .then((balances) => balances[0])
@@ -47,5 +47,35 @@ export const newAccountAction = createServerFn({ method: 'POST' })
     } catch (err) {
       console.error('Error creating new account:', err)
       return { ok: false, error: 'Failed to create account' } satisfies ServerFnResult<never>
+    }
+  })
+
+export const updateAccountAction = createServerFn({ method: 'POST' })
+  .middleware([functionAuthMiddleware])
+  .inputValidator(EditAccountSchema)
+  .handler(async ({ data, context }) => {
+    const activeOrgId = context.session?.session.activeOrganizationId
+    try {
+      if (!activeOrgId) throw new Error('Unauthorized')
+
+      const updatedAccount = await db
+        .update(account)
+        .set({
+          name: data.name,
+          type: data.type,
+          currency: data.currency,
+        })
+        .where(and(eq(account.id, data.id), eq(account.organizationId, activeOrgId)))
+        .returning()
+        .then((accounts) => accounts[0])
+
+      if (!updatedAccount) {
+        throw new Error('Failed to update account')
+      }
+
+      return { ok: true, data: updatedAccount } satisfies ServerFnResult<typeof updatedAccount>
+    } catch (err) {
+      console.error('Error updating account:', err)
+      return { ok: false, error: 'Failed to update account' } satisfies ServerFnResult<never>
     }
   })

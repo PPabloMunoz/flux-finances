@@ -20,6 +20,18 @@ export const accountTypeEnum = pgEnum('account_type', [
   'liability',
   'other_asset',
 ])
+export const currencyEnum = pgEnum('currency', [
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'AUD',
+  'CAD',
+  'CHF',
+  'CNY',
+  'SEK',
+  'NZD',
+])
 
 export const transactionTypeEnum = pgEnum('transaction_type', ['inflow', 'outflow'])
 
@@ -237,7 +249,7 @@ export const account = pgTable('account', {
   name: text('name').notNull(),
   type: accountTypeEnum('type').notNull(),
   subtype: text('subtype'),
-  currency: text('currency').default('EUR').notNull(),
+  currency: currencyEnum('currency').default('EUR').notNull(),
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })

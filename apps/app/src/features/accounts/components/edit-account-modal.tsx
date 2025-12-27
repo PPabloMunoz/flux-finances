@@ -9,23 +9,21 @@ import {
 } from '@flux/ui/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
+import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
 import { cn } from '@flux/ui/lib/utils'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { z } from 'zod'
-import { AccountTypes } from '@/types/types'
-import { newAccountAction } from '../actions'
-import { NewAccountSchema } from '../schema'
+import { CURRENCY_CODES } from '@/lib/constants'
+import { updateAccountAction } from '../actions'
+import { EditAccountSchema } from '../schema'
 
-export const newAccountDialogHandle = BaseUIDialog.createHandle()
+export const editAccountDialogHandle = BaseUIDialog.createHandle()
 
-const PayloadSchema = z.object({
-  type: z.enum(AccountTypes),
-})
+const PayloadSchema = EditAccountSchema
 
-export default function NewAccountModal() {
+export default function EditAccountModal() {
   const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
@@ -34,18 +32,21 @@ export default function NewAccountModal() {
       type: '',
       name: '',
       balance: '',
+      id: '',
+      isActive: true,
+      currency: '',
     },
-    validators: { onSubmit: NewAccountSchema },
+    validators: { onSubmit: EditAccountSchema },
     onSubmit: async ({ value }) => {
       if (isLoading) return
-      const parsedValue = NewAccountSchema.safeParse(value)
+      const parsedValue = EditAccountSchema.safeParse(value)
       if (!parsedValue.success) {
         toast.error('Please fix the errors in the form.')
         return
       }
 
       setIsLoading(true)
-      const res = await newAccountAction({
+      const res = await updateAccountAction({
         data: {
           ...parsedValue.data,
           balance: parsedValue.data.balance.toString(),
@@ -58,23 +59,30 @@ export default function NewAccountModal() {
       } else {
         toast.success('Account created successfully')
         queryClient.invalidateQueries({ queryKey: ['accounts', 'cash'] })
-        newAccountDialogHandle.close()
+        editAccountDialogHandle.close()
         form.reset()
       }
     },
   })
   return (
-    <Dialog handle={newAccountDialogHandle}>
+    <Dialog handle={editAccountDialogHandle}>
       {({ payload }) => {
         const parsedPayload = PayloadSchema.safeParse(payload)
         if (!parsedPayload.success) return null
         form.setFieldValue('type', parsedPayload.data.type)
+        form.setFieldValue('name', parsedPayload.data.name)
+        form.setFieldValue('balance', parsedPayload.data.balance.toString())
+        form.setFieldValue('id', parsedPayload.data.id)
+        form.setFieldValue('isActive', parsedPayload.data.isActive)
+        form.setFieldValue('currency', parsedPayload.data.currency)
 
         return (
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Account</DialogTitle>
-              <DialogDescription>Use the form below to create a new account.</DialogDescription>
+              <DialogTitle>Update Account</DialogTitle>
+              <DialogDescription>
+                Make changes to your account details below and click "Update Account" to save.
+              </DialogDescription>
             </DialogHeader>
             <form
               className='flex flex-col gap-4'
@@ -153,12 +161,39 @@ export default function NewAccountModal() {
                 }}
               </form.Field>
 
+              <form.Field name='currency'>
+                {(field) => {
+                  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
+                      <NativeSelect
+                        id={field.name}
+                        name={field.name}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        value={field.state.value}
+                      >
+                        <NativeSelectOption disabled value=''>
+                          Select a currency
+                        </NativeSelectOption>
+                        {CURRENCY_CODES.map((code) => (
+                          <NativeSelectOption key={code} value={code}>
+                            {code}
+                          </NativeSelectOption>
+                        ))}
+                      </NativeSelect>
+                      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                    </Field>
+                  )
+                }}
+              </form.Field>
+
               <Button
                 className={cn('', isLoading && 'cursor-not-allowed opacity-50')}
                 disabled={isLoading}
                 type='submit'
               >
-                Create Account
+                Update Account
               </Button>
             </form>
           </DialogContent>
