@@ -1,5 +1,6 @@
 import { Toaster } from '@flux/ui/components/ui/sonner'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
@@ -34,29 +35,33 @@ export const Route = createRootRoute({
   ),
 })
 
+const queryClient = new QueryClient()
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html className='dark' lang='en'>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
+    <QueryClientProvider client={queryClient}>
+      <html className='dark' lang='en'>
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
 
-        {children}
+          {children}
 
-        <QuickActionsModal />
-        <NewAccountModal />
+          <QuickActionsModal />
+          <NewAccountModal />
 
-        <Toaster theme='dark' />
-        <Scripts />
-        {import.meta.env.DEV && (
-          <TanStackDevtools
-            config={{ position: 'bottom-right' }}
-            plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
-          />
-        )}
-      </body>
-    </html>
+          <Toaster theme='dark' />
+          <Scripts />
+          {import.meta.env.DEV && (
+            <TanStackDevtools
+              config={{ position: 'bottom-right' }}
+              plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
+            />
+          )}
+        </body>
+      </html>
+    </QueryClientProvider>
   )
 }

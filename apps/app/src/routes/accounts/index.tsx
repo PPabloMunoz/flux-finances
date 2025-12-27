@@ -1,11 +1,15 @@
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import { AddSquareIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
+import { cn } from '@flux/ui/lib/utils'
+import { AddSquareIcon, BankIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import { newAccountDialogHandle } from '@/features/accounts/components/new-account-modal'
+import { getCashAccountsAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
+import { parseCurrency } from '@/lib/utils'
 import { AccountTypes } from '@/types/types'
 
 export const Route = createFileRoute('/accounts/')({
@@ -14,8 +18,16 @@ export const Route = createFileRoute('/accounts/')({
 })
 
 function RouteComponent() {
-  const { data } = useQuery({
+  const { data: cashAccounts = [], isPending: cashAccountsPending } = useQuery({
     queryKey: ['accounts', 'cash'],
+    queryFn: async () => {
+      const res = await getCashAccountsAction()
+      if (!res.ok) {
+        toast.error('Failed to load cash accounts')
+        return []
+      }
+      return res.data
+    },
   })
 
   return (
@@ -55,7 +67,6 @@ function RouteComponent() {
             </div>
           </div>
         </header>
-
         <section>
           <div className='mb-3 flex items-center justify-between px-1'>
             <h2 className='font-medium text-neutral-500 text-xs uppercase tracking-widest'>
@@ -64,52 +75,57 @@ function RouteComponent() {
             <span className='font-medium text-white text-xs tabular-nums'>$42,300.00</span>
           </div>
 
-          <div className='glass-panel overflow-hidden rounded-sm border border-neutral-800'>
-            {/*<!-- Account Item -->*/}
-            <div className='group flex flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'>
-              <div className='flex items-center gap-4'>
-                <div className='flex h-10 w-10 items-center justify-center rounded-sm bg-blue-600 text-white shadow-blue-900/20 shadow-lg'>
-                  <span className='iconify' data-icon='lucide:landmark' data-width='20' />
-                </div>
-                <div>
-                  <div className='flex items-center gap-2'>
-                    <h3 className='font-medium text-sm text-white'>Chase Total Checking</h3>
-                    <span className='h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' />
-                  </div>
-                  <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
-                    <span className='text-neutral-600'>Updated 2m ago</span>
-                  </div>
-                </div>
+          <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
+            {cashAccountsPending ? (
+              <div className='flex h-18 w-full items-center justify-center'>
+                <p className='p-4 text-center text-neutral-500 text-sm'>Loading cash accounts...</p>
               </div>
-              <div className='text-right'>
-                <p className='font-medium text-sm text-white tabular-nums'>$8,240.50</p>
-                <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
-                  +$1,200.00 this month
+            ) : cashAccounts.length > 0 ? (
+              cashAccounts.map((account) => (
+                <div
+                  className='group flex min-h-18 cursor-pointer flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'
+                  key={account.id}
+                >
+                  <div className='flex items-center gap-4'>
+                    <div className='flex size-10 items-center justify-center rounded-sm bg-blue-600 text-white shadow-blue-900/20 shadow-lg'>
+                      <HugeiconsIcon className='size-5' icon={BankIcon} />
+                    </div>
+                    <div>
+                      <div className='flex items-center gap-2'>
+                        <h3 className='font-medium text-sm text-white'>{account.name}</h3>
+                        <span
+                          className={cn(
+                            'size-1.5 rounded-full',
+                            account.isActive
+                              ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'
+                              : 'bg-neutral-600'
+                          )}
+                        />
+                      </div>
+                      <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
+                        <span className='text-neutral-600'>
+                          Created {new Date(account.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='text-right'>
+                    <p className='font-medium text-sm text-white tabular-nums'>
+                      {parseCurrency(Number(account.currentBalance))}
+                    </p>
+                    <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
+                      +$1,200.00 this month
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div>
+                <p className='p-4 text-center text-neutral-500 text-sm'>
+                  No cash accounts found. Click the + button below to add your first cash account.
                 </p>
               </div>
-            </div>
-
-            {/*<!-- Account Item -->*/}
-            <div className='group flex flex-col justify-between gap-3 border-neutral-800 p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'>
-              <div className='flex items-center gap-4'>
-                <div className='flex h-10 w-10 items-center justify-center rounded-sm border border-teal-500/20 bg-[#004d40] text-teal-400 shadow-lg shadow-teal-900/20'>
-                  <span className='iconify' data-icon='lucide:piggy-bank' data-width='20' />
-                </div>
-                <div>
-                  <div className='flex items-center gap-2'>
-                    <h3 className='font-medium text-sm text-white'>High Yield Savings</h3>
-                    <span className='h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' />
-                  </div>
-                  <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
-                    <span className='text-neutral-600'>Updated 12h ago</span>
-                  </div>
-                </div>
-              </div>
-              <div className='text-right'>
-                <p className='font-medium text-sm text-white tabular-nums'>$34,059.50</p>
-                <p className='mt-0.5 font-medium text-[10px] text-teal-500'>4.30% APY</p>
-              </div>
-            </div>
+            )}
           </div>
 
           <DialogTrigger
@@ -127,8 +143,6 @@ function RouteComponent() {
             }
           />
         </section>
-
-        {/*<!-- Group: Investments -->*/}
         <section>
           <div className='mb-3 flex items-center justify-between px-1'>
             <h2 className='font-medium text-neutral-500 text-xs uppercase tracking-widest'>
@@ -137,7 +151,7 @@ function RouteComponent() {
             <span className='font-medium text-white text-xs tabular-nums'>$450,120.00</span>
           </div>
 
-          <div className='glass-panel overflow-hidden rounded-sm border border-neutral-800'>
+          <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
             {/*<!-- Account Item -->*/}
             <div className='group flex flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'>
               <div className='flex items-center gap-4'>
@@ -238,7 +252,7 @@ function RouteComponent() {
               <span className='font-medium text-red-400 text-xs tabular-nums'>-$9,520.00</span>
             </div>
 
-            <div className='glass-panel overflow-hidden rounded-sm border border-neutral-800'>
+            <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
               <div className='group flex flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'>
                 <div className='flex items-center gap-4'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-sm bg-[#0070BA] text-white shadow-blue-900/20 shadow-lg'>
@@ -296,7 +310,7 @@ function RouteComponent() {
               <span className='font-medium text-white text-xs tabular-nums'>$678,500.00</span>
             </div>
 
-            <div className='glass-panel overflow-hidden rounded-sm border border-neutral-800'>
+            <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
               <div className='group flex flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'>
                 <div className='flex items-center gap-4'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-sm border border-emerald-500/20 bg-emerald-500/10 text-emerald-500'>
