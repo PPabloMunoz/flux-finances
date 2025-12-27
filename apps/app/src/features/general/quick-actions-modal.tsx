@@ -8,7 +8,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react'
 
-export const quickActionsDialog = BaseUIDialog.createHandle()
+export const quickActionsDialogHandle = BaseUIDialog.createHandle()
 
 type ACTIONS_ID = 'add-transaction' | 'create-account' | 'new-transfer' | 'create-goal'
 
@@ -48,7 +48,7 @@ const ACTIONS: ActionOption[] = [
 
 export default function QuickActionsModal() {
   return (
-    <Dialog handle={quickActionsDialog}>
+    <Dialog handle={quickActionsDialogHandle}>
       <DialogContent className='w-full max-w-xl! px-5'>
         <DialogHeader>
           <DialogTitle>Quick Actions</DialogTitle>
@@ -61,7 +61,7 @@ export default function QuickActionsModal() {
                 key={action.id}
                 onClick={() => {
                   console.log(`Clicked: ${action.label}`)
-                  quickActionsDialog.close()
+                  quickActionsDialogHandle.close()
                 }}
                 type='button'
               >

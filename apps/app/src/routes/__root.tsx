@@ -2,6 +2,7 @@ import { Toaster } from '@flux/ui/components/ui/sonner'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
 import appCss from '../styles.css?url'
 
@@ -45,6 +46,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {children}
 
         <QuickActionsModal />
+        <NewAccountModal />
+
         <Toaster theme='dark' />
         <Scripts />
         {import.meta.env.DEV && (

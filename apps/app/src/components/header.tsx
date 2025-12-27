@@ -13,7 +13,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
-import { quickActionsDialog } from '@/features/general/quick-actions-modal'
+import { quickActionsDialogHandle } from '@/features/general/quick-actions-modal'
 
 export default function AppHeader() {
   const session = authClient.useSession()
@@ -104,7 +104,7 @@ export default function AppHeader() {
           <DialogTrigger
             aria-expanded='false'
             aria-haspopup='dialog'
-            handle={quickActionsDialog}
+            handle={quickActionsDialogHandle}
             render={
               <button
                 className='group relative flex items-center gap-3 rounded-sm border border-neutral-800 bg-neutral-900 px-3 py-1.5 shadow-sm transition-all duration-300 hover:border-neutral-600 hover:bg-neutral-800'

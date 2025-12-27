@@ -15,12 +15,10 @@ import { ulid } from 'ulid'
 // --- ENUMS ---
 
 export const accountTypeEnum = pgEnum('account_type', [
-  'depository',
-  'credit',
+  'cash',
   'investment',
-  'loan',
+  'liability',
   'other_asset',
-  'other_liability',
 ])
 
 export const transactionTypeEnum = pgEnum('transaction_type', ['inflow', 'outflow'])
@@ -232,14 +230,14 @@ export const account = pgTable('account', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => ulid()),
-  userId: text('user_id')
-    .references(() => user.id)
+  organizationId: text('organization_id')
+    .references(() => organization.id)
     .notNull(),
   institutionId: text('institution_id').references(() => institution.id),
   name: text('name').notNull(),
   type: accountTypeEnum('type').notNull(),
   subtype: text('subtype'),
-  currency: text('currency').default('USD').notNull(),
+  currency: text('currency').default('EUR').notNull(),
   currentBalance: numeric('current_balance', { precision: 19, scale: 4 }).default('0').notNull(),
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -290,6 +288,7 @@ export const transaction = pgTable('transaction', {
   type: transactionTypeEnum('type').notNull(),
   description: text('description'),
   isPending: boolean('is_pending').default(false).notNull(),
+  isInvestmentContribution: boolean('is_investment_contribution').default(false).notNull(),
   providerId: text('provider_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -308,44 +307,6 @@ export const transactionTag = pgTable(
 )
 
 // --- INVESTMENT TABLES ---
-
-export const security = pgTable('security', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  ticker: text('ticker').notNull().unique(),
-  name: text('name').notNull(),
-  type: text('type'), // stock, etf, crypto
-  currency: text('currency').default('USD').notNull(),
-})
-
-export const securityPrice = pgTable(
-  'security_price',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => ulid()),
-    securityId: text('security_id')
-      .references(() => security.id)
-      .notNull(),
-    date: date('date').notNull(),
-    price: numeric('price', { precision: 19, scale: 4 }).notNull(),
-  },
-  (t) => [uniqueIndex('sec_price_date_idx').on(t.securityId, t.date)]
-)
-
-export const holding = pgTable('holding', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  accountId: text('account_id')
-    .references(() => account.id)
-    .notNull(),
-  securityId: text('security_id')
-    .references(() => security.id)
-    .notNull(),
-  quantity: numeric('quantity', { precision: 19, scale: 6 }).notNull(),
-})
 
 // For assets like real estate or cars that don't have a ticker
 export const valuation = pgTable('valuation', {
@@ -387,16 +348,15 @@ export const exchangeRate = pgTable('exchange_rate', {
 // --- RELATIONS ---
 
 export const accountRelations = relations(account, ({ one, many }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
+  organization: one(organization, {
+    fields: [account.organizationId],
+    references: [organization.id],
   }),
   institution: one(institution, {
     fields: [account.institutionId],
     references: [institution.id],
   }),
   transactions: many(transaction),
-  holdings: many(holding),
   balances: many(accountBalance),
   valuations: many(valuation),
 }))
@@ -430,9 +390,4 @@ export const transactionRelations = relations(transaction, ({ one, many }) => ({
     references: [merchant.id],
   }),
   tags: many(transactionTag),
-}))
-
-export const securityRelations = relations(security, ({ many }) => ({
-  prices: many(securityPrice),
-  holdings: many(holding),
 }))
