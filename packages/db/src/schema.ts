@@ -238,7 +238,6 @@ export const account = pgTable('account', {
   type: accountTypeEnum('type').notNull(),
   subtype: text('subtype'),
   currency: text('currency').default('EUR').notNull(),
-  currentBalance: numeric('current_balance', { precision: 19, scale: 4 }).default('0').notNull(),
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -359,6 +358,7 @@ export const accountRelations = relations(account, ({ one, many }) => ({
   transactions: many(transaction),
   balances: many(accountBalance),
   valuations: many(valuation),
+  accountBalances: many(accountBalance),
 }))
 
 export const categoryRelations = relations(category, ({ one, many }) => ({
@@ -390,4 +390,37 @@ export const transactionRelations = relations(transaction, ({ one, many }) => ({
     references: [merchant.id],
   }),
   tags: many(transactionTag),
+}))
+
+export const accountBalanceRelations = relations(accountBalance, ({ one }) => ({
+  account: one(account, {
+    fields: [accountBalance.accountId],
+    references: [account.id],
+  }),
+}))
+
+export const valuationRelations = relations(valuation, ({ one }) => ({
+  account: one(account, {
+    fields: [valuation.accountId],
+    references: [account.id],
+  }),
+}))
+
+export const transactionTagRelations = relations(transactionTag, ({ one }) => ({
+  transaction: one(transaction, {
+    fields: [transactionTag.transactionId],
+    references: [transaction.id],
+  }),
+  tag: one(tag, {
+    fields: [transactionTag.tagId],
+    references: [tag.id],
+  }),
+}))
+
+export const tagRelations = relations(tag, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tag.organizationId],
+    references: [organization.id],
+  }),
+  transactions: many(transactionTag),
 }))

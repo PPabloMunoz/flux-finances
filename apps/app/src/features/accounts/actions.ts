@@ -1,6 +1,7 @@
 import { db } from '@flux/db'
-import { account } from '@flux/db/schema'
+import { account, accountBalance } from '@flux/db/schema'
 import { createServerFn } from '@tanstack/react-start'
+import { eq } from 'drizzle-orm'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { NewAccountSchema } from './schema'
@@ -18,7 +19,6 @@ export const newAccountAction = createServerFn({ method: 'POST' })
         .values({
           name: data.name,
           type: data.type,
-          currentBalance: data.initialBalance.toString(),
           organizationId: activeOrgId,
         })
         .returning()
@@ -26,6 +26,21 @@ export const newAccountAction = createServerFn({ method: 'POST' })
 
       if (!newAccount) {
         throw new Error('Failed to create account')
+      }
+
+      const newBalance = await db
+        .insert(accountBalance)
+        .values({
+          accountId: newAccount.id,
+          date: new Date().toISOString(),
+          balance: data.initialBalance.toString(),
+        })
+        .returning({ id: accountBalance.id })
+        .then((balances) => balances[0])
+
+      if (!newBalance) {
+        await db.delete(account).where(eq(account.id, newAccount.id))
+        throw new Error('Failed to create initial balance')
       }
 
       return { ok: true, data: newAccount } satisfies ServerFnResult<typeof newAccount>

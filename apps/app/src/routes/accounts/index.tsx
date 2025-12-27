@@ -26,6 +26,7 @@ function RouteComponent() {
         toast.error('Failed to load cash accounts')
         return []
       }
+      console.log(res.data)
       return res.data
     },
   })
@@ -114,7 +115,16 @@ function RouteComponent() {
                       {parseCurrency(Number(account.currentBalance))}
                     </p>
                     <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
-                      +$1,200.00 this month
+                      {account.previousBalance
+                        ? (() => {
+                            const current = Number(account.currentBalance)
+                            const previous = Number(account.previousBalance)
+                            const diff = current - previous
+                            const percent = (diff / previous) * 100
+                            const sign = diff >= 0 ? '+' : ''
+                            return `${sign}${parseCurrency(diff)} (${sign}${percent.toFixed(2)}%)`
+                          })()
+                        : 'No data'}
                     </p>
                   </div>
                 </div>
