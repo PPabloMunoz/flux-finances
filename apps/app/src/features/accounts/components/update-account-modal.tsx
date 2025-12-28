@@ -27,7 +27,7 @@ export const editAccountDialogHandle = BaseUIDialog.createHandle()
 
 const PayloadSchema = EditAccountSchema
 
-export default function EditAccountModal() {
+export default function UpdateAccountModal() {
   const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 

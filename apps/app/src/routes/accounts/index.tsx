@@ -8,10 +8,10 @@ import { useMemo } from 'react'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import DeleteAccountModal from '@/features/accounts/components/delete-account-modal'
-import EditAccountModal, {
-  editAccountDialogHandle,
-} from '@/features/accounts/components/edit-account-modal'
 import { newAccountDialogHandle } from '@/features/accounts/components/new-account-modal'
+import UpdateAccountModal, {
+  editAccountDialogHandle,
+} from '@/features/accounts/components/update-account-modal'
 import { getCashAccountsAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
 import { parseCurrency } from '@/lib/utils'
@@ -43,7 +43,7 @@ function RouteComponent() {
 
   return (
     <>
-      <EditAccountModal />
+      <UpdateAccountModal />
       <DeleteAccountModal />
 
       <AppHeader />

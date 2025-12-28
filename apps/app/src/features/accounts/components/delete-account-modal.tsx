@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { deleteAccountAction } from '../actions'
-import { editAccountDialogHandle } from './edit-account-modal'
+import { editAccountDialogHandle } from './update-account-modal'
 
 export const deleteAccountModalHandler = BaseUIAlertDialog.createHandle()
 
