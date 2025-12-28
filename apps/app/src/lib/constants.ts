@@ -1,7 +1,11 @@
+import { accountTypeEnum } from '@flux/db/schema'
 import {
+  AnalyticsUpIcon,
   ArrowDownLeft01Icon,
-  ArrowLeftRightIcon,
   ArrowUpRight01Icon,
+  BankIcon,
+  MoneySafeIcon,
+  TradeDownIcon,
 } from '@hugeicons/core-free-icons'
 import type { IconSvgElement } from '@hugeicons/react'
 
@@ -19,13 +23,20 @@ export const CURRENCY_CODES = [
 ] as const
 export type CurrencyCode = (typeof CURRENCY_CODES)[number]
 
-export const TRANSACTIONS_TYPES = ['income', 'expense', 'transfer'] as const
+export const TRANSACTIONS_TYPES = ['income', 'expense'] as const
 
 type TransactionType = Record<(typeof TRANSACTIONS_TYPES)[number], IconSvgElement>
 export const TRANSACTIONS_ICONS: TransactionType = {
   income: ArrowDownLeft01Icon,
   expense: ArrowUpRight01Icon,
-  transfer: ArrowLeftRightIcon,
+}
+
+export const ACCOUNT_TYPES = accountTypeEnum.enumValues
+export const ACCOUNT_TYPES_ICONS: Record<(typeof ACCOUNT_TYPES)[number], IconSvgElement> = {
+  cash: BankIcon,
+  investment: AnalyticsUpIcon,
+  liability: TradeDownIcon,
+  other_asset: MoneySafeIcon,
 }
 
 // ========== Country Codes ==========

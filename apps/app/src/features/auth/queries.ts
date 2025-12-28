@@ -6,6 +6,7 @@ import { getRequestHeaders } from '@tanstack/react-start/server'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { createUserPreferencesAction } from './actions'
+import { UserPreferencesSchema } from './schema'
 
 export const authStateFn = createServerFn({ method: 'GET' }).handler(async () => {
   const headers = getRequestHeaders()
@@ -47,10 +48,13 @@ export const getUserPreferencesAction = createServerFn({ method: 'GET' })
         const query = await prepared.execute()
         if (!query) throw new Error('Preferences not found after creation')
 
-        return { ok: true, data: query } satisfies ServerFnResult<typeof query>
+        const parsed = UserPreferencesSchema.parse(query)
+
+        return { ok: true, data: parsed } satisfies ServerFnResult<typeof parsed>
       }
 
-      return { ok: true, data: preferences } satisfies ServerFnResult<typeof preferences>
+      const parsed = UserPreferencesSchema.parse(preferences)
+      return { ok: true, data: parsed } satisfies ServerFnResult<typeof parsed>
     } catch (err) {
       console.error('Error fetching user preferences:', err)
       return {

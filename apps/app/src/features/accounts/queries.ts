@@ -3,12 +3,19 @@ import { account, accountBalance } from '@flux/db/schema'
 import { monthStart } from '@formkit/tempo'
 import { createServerFn } from '@tanstack/react-start'
 import { and, eq, sql } from 'drizzle-orm'
+import { z } from 'zod'
+import { ACCOUNT_TYPES } from '@/lib/constants'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 
-export const getCashAccountsAction = createServerFn({ method: 'GET' })
+const GetInputSchema = z.object({
+  type: z.enum(ACCOUNT_TYPES),
+})
+
+export const getAccountsAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
-  .handler(async ({ context }) => {
+  .inputValidator(GetInputSchema)
+  .handler(async ({ context, data }) => {
     const activeOrgId = context.session?.session.activeOrganizationId
     try {
       if (!activeOrgId) throw new Error('Unauthorized')
@@ -19,6 +26,9 @@ export const getCashAccountsAction = createServerFn({ method: 'GET' })
       const cashAccounts = await db
         .select({
           id: account.id,
+          organizationId: account.organizationId,
+          institutionId: account.institutionId,
+          subtype: account.subtype,
           name: account.name,
           type: account.type,
           currency: account.currency,
@@ -41,7 +51,7 @@ export const getCashAccountsAction = createServerFn({ method: 'GET' })
           )`.mapWith(String),
         })
         .from(account)
-        .where(and(eq(account.organizationId, activeOrgId), eq(account.type, 'cash')))
+        .where(and(eq(account.organizationId, activeOrgId), eq(account.type, data.type)))
         .leftJoin(accountBalance, eq(account.id, accountBalance.accountId))
         .groupBy(account.id)
 

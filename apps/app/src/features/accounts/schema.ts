@@ -1,9 +1,12 @@
+import type { account } from '@flux/db/schema'
+import type { InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod'
-import { CURRENCY_CODES } from '@/lib/constants'
-import { AccountTypes } from '@/types/types'
+import { ACCOUNT_TYPES, CURRENCY_CODES } from '@/lib/constants'
+
+export type TAccount = InferSelectModel<typeof account>
 
 export const NewAccountSchema = z.object({
-  type: z.enum(AccountTypes),
+  type: z.enum(ACCOUNT_TYPES),
   name: z
     .string()
     .min(1, 'Account name is required')

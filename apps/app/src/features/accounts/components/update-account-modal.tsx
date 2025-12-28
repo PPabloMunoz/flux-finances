@@ -62,7 +62,7 @@ export default function UpdateAccountModal() {
         toast.error(res.error)
       } else {
         toast.success('Account created successfully')
-        queryClient.invalidateQueries({ queryKey: ['accounts', 'cash'] })
+        queryClient.invalidateQueries({ queryKey: ['accounts', value.type] })
         editAccountDialogHandle.close()
         form.reset()
       }

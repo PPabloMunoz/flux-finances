@@ -15,14 +15,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { AccountTypes } from '@/types/types'
+import { ACCOUNT_TYPES } from '@/lib/constants'
 import { newAccountAction } from '../actions'
 import { NewAccountSchema } from '../schema'
 
 export const newAccountDialogHandle = BaseUIDialog.createHandle()
 
 const PayloadSchema = z.object({
-  type: z.enum(AccountTypes),
+  type: z.enum(ACCOUNT_TYPES),
 })
 
 export default function NewAccountModal() {
@@ -57,7 +57,7 @@ export default function NewAccountModal() {
         toast.error(res.error)
       } else {
         toast.success('Account created successfully')
-        queryClient.invalidateQueries({ queryKey: ['accounts', 'cash'] })
+        queryClient.invalidateQueries({ queryKey: ['accounts', value.type] })
         newAccountDialogHandle.close()
         form.reset()
       }

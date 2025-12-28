@@ -35,8 +35,20 @@ export const ResetPasswordSchema = z
     message: 'Passwords do not match',
   })
 
+const RegionSchema = z.enum(COUNTRY_CODES)
+const DateFormatSchema = z.enum(DATE_FORMAT_CODES)
+const TimezoneSchema = z.enum(TIMEZONE_CODES)
+
+export const UserPreferencesSchema = z.object({
+  id: z.ulid(),
+  userId: z.string(),
+  region: RegionSchema,
+  dateFormat: DateFormatSchema,
+  timezone: TimezoneSchema,
+})
+
 export const UpdateUserPreferencesSchema = z.object({
-  region: z.enum(COUNTRY_CODES),
-  dateFormat: z.enum(DATE_FORMAT_CODES),
-  timezone: z.enum(TIMEZONE_CODES),
+  region: RegionSchema.optional(),
+  dateFormat: DateFormatSchema.optional(),
+  timezone: TimezoneSchema.optional(),
 })
