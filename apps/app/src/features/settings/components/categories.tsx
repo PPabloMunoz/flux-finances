@@ -175,6 +175,16 @@ export default function CategoriesSettings() {
                           style={{ backgroundColor: category.color ?? '#000000' }}
                         />
                         <span className='font-medium text-sm'>{category.name}</span>
+                        <Badge
+                          className={
+                            category.type === 'inflow'
+                              ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                              : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
+                          }
+                          variant='secondary'
+                        >
+                          {category.type === 'inflow' ? 'Income' : 'Expense'}
+                        </Badge>
                       </div>
                       <div className='flex items-center'>
                         <Button
