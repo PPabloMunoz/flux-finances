@@ -16,6 +16,7 @@ export const getCategoriesAction = createServerFn({ method: 'GET' })
         .select()
         .from(category)
         .where(eq(category.organizationId, activeOrgId))
+        .orderBy(category.name)
 
       return { ok: true, data: categories } satisfies ServerFnResult<typeof categories>
     } catch (err) {
