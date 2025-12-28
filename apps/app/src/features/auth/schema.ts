@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { COUNTRY_CODES, DATE_FORMAT_CODES, TIMEZONE_CODES } from '@/lib/constants'
+import { COUNTRY_CODES, CURRENCY_CODES, DATE_FORMAT_CODES, TIMEZONE_CODES } from '@/lib/constants'
 
 export const LoginSchema = z.object({
   email: z.email({ message: 'Invalid email address' }),
@@ -35,6 +35,7 @@ export const ResetPasswordSchema = z
     message: 'Passwords do not match',
   })
 
+const CurrencySchema = z.enum(CURRENCY_CODES)
 const RegionSchema = z.enum(COUNTRY_CODES)
 const DateFormatSchema = z.enum(DATE_FORMAT_CODES)
 const TimezoneSchema = z.enum(TIMEZONE_CODES)
@@ -42,13 +43,15 @@ const TimezoneSchema = z.enum(TIMEZONE_CODES)
 export const UserPreferencesSchema = z.object({
   id: z.ulid(),
   userId: z.string(),
+  currency: CurrencySchema,
   region: RegionSchema,
   dateFormat: DateFormatSchema,
   timezone: TimezoneSchema,
 })
 
 export const UpdateUserPreferencesSchema = z.object({
-  region: RegionSchema.optional(),
-  dateFormat: DateFormatSchema.optional(),
-  timezone: TimezoneSchema.optional(),
+  currency: CurrencySchema,
+  region: RegionSchema,
+  dateFormat: DateFormatSchema,
+  timezone: TimezoneSchema,
 })

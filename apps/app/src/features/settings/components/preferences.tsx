@@ -17,7 +17,15 @@ import { toast } from 'sonner'
 import { updateUserPreferencesAction } from '@/features/auth/actions'
 import { UpdateUserPreferencesSchema } from '@/features/auth/schema'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
-import { DATE_FORMAT_OPTIONS, SORTED_COUNTRIES, SORTED_TIMEZONES } from '@/lib/constants'
+import {
+  type COUNTRY_CODES,
+  CURRENCY_CODES,
+  type DATE_FORMAT_CODES,
+  DATE_FORMAT_OPTIONS,
+  SORTED_COUNTRIES,
+  SORTED_TIMEZONES,
+  type TIMEZONE_CODES,
+} from '@/lib/constants'
 
 export default function PreferencesSettings() {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,6 +34,7 @@ export default function PreferencesSettings() {
 
   const form = useForm({
     defaultValues: {
+      currency: userPreferences?.currency || '',
       region: userPreferences?.region || '',
       dateFormat: userPreferences?.dateFormat || '',
       timezone: userPreferences?.timezone || '',
@@ -34,6 +43,7 @@ export default function PreferencesSettings() {
     onSubmit: async ({ value }) => {
       // No changes made
       if (
+        value.currency === userPreferences?.currency &&
         value.region === userPreferences?.region &&
         value.dateFormat === userPreferences?.dateFormat &&
         value.timezone === userPreferences?.timezone
@@ -81,6 +91,39 @@ export default function PreferencesSettings() {
               form.handleSubmit(e)
             }}
           >
+            <form.Field name='currency'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>
+                      <HugeiconsIcon className='size-4' icon={Globe02Icon} />
+                      Currency
+                    </FieldLabel>
+                    <NativeSelect
+                      disabled={isPending || isLoading}
+                      id={field.name}
+                      name={field.name}
+                      onChange={(e) =>
+                        field.handleChange(e.target.value as (typeof CURRENCY_CODES)[number])
+                      }
+                      value={field.state.value}
+                    >
+                      <NativeSelectOption disabled value=''>
+                        Select your currency
+                      </NativeSelectOption>
+                      {CURRENCY_CODES.map((currency) => (
+                        <NativeSelectOption key={currency} value={currency}>
+                          {currency}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
+
             <form.Field name='region'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
@@ -94,7 +137,9 @@ export default function PreferencesSettings() {
                       disabled={isPending || isLoading}
                       id={field.name}
                       name={field.name}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={(e) =>
+                        field.handleChange(e.target.value as (typeof COUNTRY_CODES)[number])
+                      }
                       value={field.state.value}
                     >
                       <NativeSelectOption disabled value=''>
@@ -125,7 +170,9 @@ export default function PreferencesSettings() {
                       disabled={isPending || isLoading}
                       id={field.name}
                       name={field.name}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={(e) =>
+                        field.handleChange(e.target.value as (typeof DATE_FORMAT_CODES)[number])
+                      }
                       value={field.state.value}
                     >
                       <NativeSelectOption disabled value=''>
@@ -156,7 +203,9 @@ export default function PreferencesSettings() {
                       disabled={isPending || isLoading}
                       id={field.name}
                       name={field.name}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={(e) =>
+                        field.handleChange(e.target.value as (typeof TIMEZONE_CODES)[number])
+                      }
                       value={field.state.value}
                     >
                       <NativeSelectOption disabled value=''>

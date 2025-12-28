@@ -40,6 +40,7 @@ export const updateUserPreferencesAction = createServerFn({ method: 'POST' })
       const [updatedPreferences] = await db
         .update(userPreferences)
         .set({
+          currency: data.currency,
           region: data.region,
           dateFormat: data.dateFormat,
           timezone: data.timezone,

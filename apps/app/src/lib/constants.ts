@@ -21,7 +21,6 @@ export const CURRENCY_CODES = [
   'SEK',
   'NZD',
 ] as const
-export type CurrencyCode = (typeof CURRENCY_CODES)[number]
 
 export const TRANSACTIONS_TYPES = ['income', 'expense'] as const
 
@@ -476,9 +475,7 @@ export const TIMEZONE_CODES = [
   'Pacific/Auckland',
 ] as const
 
-export type TimezoneCode = (typeof TIMEZONE_CODES)[number]
-
-export const TIMEZONE_NAMES: Record<TimezoneCode, string> = {
+export const TIMEZONE_NAMES: Record<(typeof TIMEZONE_CODES)[number], string> = {
   UTC: 'Universal Coordinated Time',
   'Africa/Cairo': 'Cairo, Egypt',
   'Africa/Johannesburg': 'Johannesburg, South Africa',

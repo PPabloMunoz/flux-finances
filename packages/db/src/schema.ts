@@ -224,6 +224,7 @@ export const userPreferences = pgTable('user_preferences', {
   userId: text('user_id')
     .references(() => user.id)
     .notNull(),
+  currency: currencyEnum('currency').default('EUR').notNull(),
   region: text('region').default('ES').notNull(), // For currency formatting, etc.
   dateFormat: text('date_format').default('DD/MM/YYYY').notNull(),
   timezone: text('timezone').default('Europe/Madrid').notNull(),
