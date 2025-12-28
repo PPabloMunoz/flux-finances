@@ -16,3 +16,7 @@ export const EditAccountSchema = NewAccountSchema.extend({
   isActive: z.boolean(),
   currency: z.enum(CURRENCY_CODES),
 })
+
+export const DeleteAccountSchema = z.object({
+  id: z.ulid(),
+})

@@ -1,4 +1,5 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
+import { AlertDialogTrigger } from '@flux/ui/components/ui/alert-dialog'
 import { Button } from '@flux/ui/components/ui/button'
 import {
   Dialog,
@@ -11,6 +12,8 @@ import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
 import { cn } from '@flux/ui/lib/utils'
+import { Delete03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -18,6 +21,7 @@ import { toast } from 'sonner'
 import { CURRENCY_CODES } from '@/lib/constants'
 import { updateAccountAction } from '../actions'
 import { EditAccountSchema } from '../schema'
+import { deleteAccountModalHandler } from './delete-account-modal'
 
 export const editAccountDialogHandle = BaseUIDialog.createHandle()
 
@@ -188,13 +192,24 @@ export default function EditAccountModal() {
                 }}
               </form.Field>
 
-              <Button
-                className={cn('', isLoading && 'cursor-not-allowed opacity-50')}
-                disabled={isLoading}
-                type='submit'
-              >
-                Update Account
-              </Button>
+              <div className='mt-4 flex items-center gap-2'>
+                <Button
+                  className={cn('flex-1', isLoading && 'cursor-not-allowed opacity-50')}
+                  disabled={isLoading}
+                  type='submit'
+                >
+                  Update Account
+                </Button>
+                <AlertDialogTrigger
+                  handle={deleteAccountModalHandler}
+                  payload={{ id: parsedPayload.data.id, type: parsedPayload.data.type }}
+                  render={
+                    <Button variant='destructive'>
+                      <HugeiconsIcon icon={Delete03Icon} />
+                    </Button>
+                  }
+                />
+              </div>
             </form>
           </DialogContent>
         )

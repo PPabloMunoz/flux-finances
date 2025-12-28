@@ -4,8 +4,10 @@ import { AddSquareIcon, BankIcon, TradeUpIcon } from '@hugeicons/core-free-icons
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
+import DeleteAccountModal from '@/features/accounts/components/delete-account-modal'
 import EditAccountModal, {
   editAccountDialogHandle,
 } from '@/features/accounts/components/edit-account-modal'
@@ -31,11 +33,18 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
+
+  const cashTotal = useMemo(() => {
+    return cashAccounts.reduce((total, account) => total + Number(account.currentBalance), 0)
+  }, [cashAccounts])
 
   return (
     <>
       <EditAccountModal />
+      <DeleteAccountModal />
 
       <AppHeader />
 
@@ -77,7 +86,9 @@ function RouteComponent() {
             <h2 className='font-medium text-neutral-500 text-xs uppercase tracking-widest'>
               Cash & Banking
             </h2>
-            <span className='font-medium text-white text-xs tabular-nums'>$42,300.00</span>
+            <span className='font-medium text-white text-xs tabular-nums'>
+              {parseCurrency(cashTotal)}
+            </span>
           </div>
 
           <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>

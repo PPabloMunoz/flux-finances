@@ -338,7 +338,7 @@ export const accountBalance = pgTable(
       .primaryKey()
       .$defaultFn(() => ulid()),
     accountId: text('account_id')
-      .references(() => account.id)
+      .references(() => account.id, { onDelete: 'cascade' })
       .notNull(),
     date: date('date').notNull(),
     balance: numeric('balance', { precision: 19, scale: 4 }).notNull(),
