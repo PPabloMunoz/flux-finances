@@ -3,6 +3,7 @@ import { Spinner } from '@flux/ui/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { cn } from '@flux/ui/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
+import { useQueryState } from 'nuqs'
 import AppHeader from '@/components/header'
 import CategoriesSettings from '@/features/settings/components/categories'
 import PreferencesSettings from '@/features/settings/components/preferences'
@@ -20,6 +21,7 @@ const tabsTriggerClassName = cn(
 
 function RouteComponent() {
   const { data, error } = authClient.useSession()
+  const [tab, setTab] = useQueryState('tab')
 
   return (
     <>
@@ -31,7 +33,7 @@ function RouteComponent() {
           <h4 className='text-neutral-600'>Manage your account settings and preferences.</h4>
         </div>
 
-        <Tabs defaultValue='profile'>
+        <Tabs onValueChange={(value) => setTab(value)} value={tab || 'profile'}>
           <TabsList className='mb-5 space-x-1.5'>
             <TabsTrigger className={tabsTriggerClassName} value='profile'>
               Profile
