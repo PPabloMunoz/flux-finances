@@ -126,19 +126,16 @@ export default function AppHeader() {
           <div className='mx-1 h-4 w-px bg-neutral-800' />
 
           <Popover>
-            <PopoverTrigger
-              render={
-                <button
-                  className='flex items-center gap-2 rounded-full border border-transparent py-1 pr-2 pl-1 transition-colors hover:border-neutral-800 hover:bg-neutral-800/50'
-                  type='button'
-                >
-                  <div className='flex h-6 w-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
-                    {session.data?.user?.name?.charAt(0)}
-                  </div>
-                  <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
-                </button>
-              }
-            />
+            <PopoverTrigger className='flex items-center gap-2 rounded-full border border-transparent py-1 pr-2 pl-1 transition-colors hover:border-neutral-800 hover:bg-neutral-800/50'>
+              <div className='flex size-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
+                {!session.data?.user.name ? (
+                  <div className='size-6 rounded-full bg-neutral-400/20' />
+                ) : (
+                  <span>{session.data.user.name.charAt(0)}</span>
+                )}
+              </div>
+              <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
+            </PopoverTrigger>
             <PopoverContent className='max-w-45 gap-0.5 p-2'>
               <Link
                 className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-red-400'
