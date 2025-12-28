@@ -78,6 +78,10 @@ export const updateAccountAction = createServerFn({ method: 'POST' })
             date: new Date().toISOString(),
             balance: data.balance.toString(),
           })
+          .onConflictDoUpdate({
+            target: [accountBalance.accountId, accountBalance.date],
+            set: { balance: data.balance.toString() },
+          })
           .returning({ id: accountBalance.id })
 
         if (!balance) tx.rollback()
