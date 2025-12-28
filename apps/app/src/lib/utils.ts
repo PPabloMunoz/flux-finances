@@ -1,9 +1,9 @@
-import type { CurrencyCode, TCountryCode } from './constants'
+import type { CURRENCY_CODES, TCountryCode } from './constants'
 
 export function parseCurrency(
   val: number,
   region: TCountryCode = 'ES',
-  curr: CurrencyCode = 'EUR'
+  curr: (typeof CURRENCY_CODES)[number] = 'EUR'
 ) {
   return new Intl.NumberFormat(region, {
     style: 'currency',
