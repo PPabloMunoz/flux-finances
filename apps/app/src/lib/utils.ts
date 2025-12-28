@@ -9,5 +9,6 @@ export function parseCurrency(
     style: 'currency',
     currency: curr,
     useGrouping: true,
+    currencyDisplay: 'narrowSymbol',
   }).format(val)
 }
