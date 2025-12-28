@@ -141,7 +141,7 @@ function RouteComponent() {
                 liabilityAccountsPending ||
                 assetAccountsPending
                   ? 'Loading...'
-                  : parseCurrency(netWorth, userPreferences.region)}
+                  : parseCurrency(netWorth, userPreferences.region, userPreferences.currency)}
               </span>
               <div className='flex items-center gap-1 font-medium text-teal-500 text-xs'>
                 <HugeiconsIcon className='size-3' icon={TradeUpIcon} />
@@ -161,7 +161,7 @@ function RouteComponent() {
                           const diff = netWorth - prevNetWorth
                           const percent = (diff / prevNetWorth) * 100
                           const sign = diff >= 0 ? '+' : ''
-                          return `${sign}${parseCurrency(diff, userPreferences.region)} (${sign}${percent.toFixed(2)}%)`
+                          return `${sign}${parseCurrency(diff, userPreferences.region, userPreferences.currency)} (${sign}${percent.toFixed(2)}%)`
                         })()
                       : 'No data'}
                 </span>
@@ -177,7 +177,7 @@ function RouteComponent() {
               Cash & Banking
             </h2>
             <span className='font-medium text-white text-xs tabular-nums'>
-              {parseCurrency(cashTotal)}
+              {parseCurrency(cashTotal, userPreferences.region, userPreferences.currency)}
             </span>
           </div>
 
@@ -220,7 +220,7 @@ function RouteComponent() {
               Investments
             </h2>
             <span className='font-medium text-white text-xs tabular-nums'>
-              {parseCurrency(investmentTotal)}
+              {parseCurrency(investmentTotal, userPreferences.region, userPreferences.currency)}
             </span>
           </div>
 
@@ -266,7 +266,7 @@ function RouteComponent() {
                 Liabilities
               </h2>
               <span className='font-medium text-red-400 text-xs tabular-nums'>
-                {parseCurrency(liabilityTotal)}
+                {parseCurrency(liabilityTotal, userPreferences.region, userPreferences.currency)}
               </span>
             </div>
 
@@ -312,7 +312,7 @@ function RouteComponent() {
                 Other Assets
               </h2>
               <span className='font-medium text-white text-xs tabular-nums'>
-                {parseCurrency(assetTotal)}
+                {parseCurrency(assetTotal, userPreferences.region, userPreferences.currency)}
               </span>
             </div>
 
