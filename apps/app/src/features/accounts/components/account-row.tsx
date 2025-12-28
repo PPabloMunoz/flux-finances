@@ -35,7 +35,15 @@ export default function AccountRow({ account }: Props) {
           type='button'
         >
           <div className='flex items-center gap-4'>
-            <div className='flex size-10 items-center justify-center rounded-sm bg-blue-600 text-white shadow-blue-900/20 shadow-lg'>
+            <div
+              className={cn(
+                'flex size-10 items-center justify-center rounded-sm text-white shadow-lg',
+                account.type === 'cash' && 'bg-blue-700 shadow-blue-900/20',
+                account.type === 'investment' && 'bg-teal-700 shadow-teal-900/20',
+                account.type === 'liability' && 'bg-orange-700 shadow-orange-900/20',
+                account.type === 'other_asset' && 'bg-slate-700 shadow-slate-900/20'
+              )}
+            >
               <HugeiconsIcon className='size-5' icon={ACCOUNT_TYPES_ICONS[account.type]} />
             </div>
             <div>
