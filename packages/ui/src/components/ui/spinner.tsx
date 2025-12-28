@@ -2,14 +2,14 @@ import { cn } from '@flux/ui/lib/utils'
 import { Loading03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
-function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
+function Spinner({ className, strokeWidth = 2, ...props }: React.ComponentProps<'svg'>) {
   return (
     <HugeiconsIcon
       aria-label='Loading'
       className={cn('size-4 animate-spin', className)}
       icon={Loading03Icon}
       role='status'
-      strokeWidth={2}
+      strokeWidth={strokeWidth as number}
       {...props}
     />
   )
