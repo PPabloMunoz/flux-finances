@@ -80,7 +80,20 @@ export default function CategoriesSettings() {
             <Label htmlFor='newCategory'>Add New Category</Label>
             <div className='flex gap-2'>
               <Input id='newCategory' placeholder='Enter category name...' />
-              <Button className='shrink-0'>
+              <Button
+                className='shrink-0'
+                onClick={() =>
+                  setCategories((prev) => [
+                    ...prev,
+                    {
+                      id: 6,
+                      name: 'new',
+                      type: 'income',
+                      subcategories: ['Electricity', 'Water', 'Internet', 'Phone'],
+                    },
+                  ])
+                }
+              >
                 <HugeiconsIcon className='mr-2 size-4' icon={Add01Icon} />
                 Add Category
               </Button>
