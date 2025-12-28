@@ -101,7 +101,7 @@ function App() {
                       <td className='px-5 py-3.5'>
                         <div className='flex items-center gap-3'>
                           <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.expense} />
+                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
                           </div>
                           <span className='font-medium text-white'>Whole Foods Market</span>
                         </div>
@@ -120,7 +120,7 @@ function App() {
                       <td className='px-5 py-3.5'>
                         <div className='flex items-center gap-3'>
                           <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.expense} />
+                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
                           </div>
                           <span className='font-medium text-white'>Electric Company</span>
                         </div>
@@ -139,7 +139,7 @@ function App() {
                       <td className='px-5 py-3.5'>
                         <div className='flex items-center gap-3'>
                           <div className='flex h-8 w-8 items-center justify-center rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-500'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.income} />
+                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.inflow} />
                           </div>
                           <span className='font-medium text-white'>Salary Deposit</span>
                         </div>
@@ -158,7 +158,7 @@ function App() {
                       <td className='px-5 py-3.5'>
                         <div className='flex items-center gap-3'>
                           <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.expense} />
+                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
                           </div>
                           <span className='font-medium text-white'>Starbucks</span>
                         </div>

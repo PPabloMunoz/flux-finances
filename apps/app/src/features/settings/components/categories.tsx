@@ -9,57 +9,88 @@ import {
 } from '@flux/ui/components/ui/card'
 import { Input } from '@flux/ui/components/ui/input'
 import { Label } from '@flux/ui/components/ui/label'
-import { cn } from '@flux/ui/lib/utils'
+import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
 import {
   Add01Icon,
-  ArrowRight01Icon,
-  MultiplicationSignIcon,
+  Delete03Icon,
+  Loading03Icon,
+  PencilEdit01Icon,
   StructureFolderIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { toast } from 'sonner'
+import { createCategoryAction, deleteCategoryAction } from '../actions'
+import { getCategoriesAction } from '../queries'
 
-const initialCategories = [
-  {
-    id: 1,
-    name: 'Income',
-    type: 'income',
-    subcategories: ['Salary', 'Freelance', 'Investments', 'Other'],
-  },
-  {
-    id: 2,
-    name: 'Food & Dining',
-    type: 'expense',
-    subcategories: ['Restaurants', 'Groceries', 'Coffee Shops'],
-  },
-  {
-    id: 3,
-    name: 'Transportation',
-    type: 'expense',
-    subcategories: ['Gas', 'Public Transit', 'Parking', 'Ride Share'],
-  },
-  {
-    id: 4,
-    name: 'Shopping',
-    type: 'expense',
-    subcategories: ['Clothing', 'Electronics', 'Home Goods'],
-  },
-  {
-    id: 5,
-    name: 'Bills & Utilities',
-    type: 'expense',
-    subcategories: ['Electricity', 'Water', 'Internet', 'Phone'],
-  },
-]
+const getRandomColor = () =>
+  `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, '0')}`
 
 export default function CategoriesSettings() {
-  const [categories, setCategories] = useState(initialCategories)
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([])
+  const queryClient = useQueryClient()
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [newCategoryColor, setNewCategoryColor] = useState(getRandomColor())
+  const [newCategoryType, setNewCategoryType] = useState<'inflow' | 'outflow'>('outflow')
 
-  const toggleCategory = (id: number) => {
-    setExpandedCategories((prev) =>
-      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
-    )
+  const { data: categories, isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await getCategoriesAction()
+      if (!res.ok) {
+        throw new Error(res.error)
+      }
+      return res.data
+    },
+  })
+
+  const createCategoryMutation = useMutation({
+    mutationFn: async () => {
+      const res = await createCategoryAction({
+        data: {
+          name: newCategoryName,
+          color: newCategoryColor,
+          type: newCategoryType,
+        },
+      })
+      if (!res.ok) {
+        throw new Error(res.error)
+      }
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Category created')
+      setNewCategoryName('')
+      setNewCategoryColor(getRandomColor())
+      setNewCategoryType('outflow')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: () => {
+      toast.error('Failed to create category')
+    },
+  })
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await deleteCategoryAction({ data: { id } })
+      if (!res.ok) {
+        throw new Error(res.error)
+      }
+    },
+    onSuccess: () => {
+      toast.success('Category deleted')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete category')
+    },
+  })
+
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return
+    createCategoryMutation.mutate()
   }
 
   return (
@@ -70,31 +101,51 @@ export default function CategoriesSettings() {
             <HugeiconsIcon className='size-5' icon={StructureFolderIcon} />
             Transaction Categories
           </CardTitle>
-          <CardDescription>
-            Organize your transactions with categories and subcategories
-          </CardDescription>
+          <CardDescription>Manage your transaction categories and their colors</CardDescription>
         </CardHeader>
         <CardContent className='space-y-6'>
           {/* Add New Category */}
           <div className='space-y-3'>
             <Label htmlFor='newCategory'>Add New Category</Label>
-            <div className='flex gap-2'>
-              <Input id='newCategory' placeholder='Enter category name...' />
+            <div className='flex flex-col gap-2 sm:flex-row'>
+              <div className='flex gap-2'>
+                <div className='flex items-center gap-2 rounded-md border border-input bg-background px-3'>
+                  <input
+                    className='h-6 w-6 cursor-pointer border-none bg-transparent p-0'
+                    onChange={(e) => setNewCategoryColor(e.target.value)}
+                    title='Choose category color'
+                    type='color'
+                    value={newCategoryColor}
+                  />
+                </div>
+                <NativeSelect
+                  className='w-full sm:w-[140px]'
+                  onChange={(e) => setNewCategoryType(e.target.value as 'inflow' | 'outflow')}
+                  value={newCategoryType}
+                >
+                  <NativeSelectOption value='outflow'>Expense</NativeSelectOption>
+                  <NativeSelectOption value='inflow'>Income</NativeSelectOption>
+                </NativeSelect>
+              </div>
+              <Input
+                id='newCategory'
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddCategory()
+                }}
+                placeholder='Enter category name...'
+                value={newCategoryName}
+              />
               <Button
-                className='shrink-0'
-                onClick={() =>
-                  setCategories((prev) => [
-                    ...prev,
-                    {
-                      id: 6,
-                      name: 'new',
-                      type: 'income',
-                      subcategories: ['Electricity', 'Water', 'Internet', 'Phone'],
-                    },
-                  ])
-                }
+                className='w-full shrink-0 sm:w-auto'
+                disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+                onClick={handleAddCategory}
               >
-                <HugeiconsIcon className='mr-2 size-4' icon={Add01Icon} />
+                {createCategoryMutation.isPending ? (
+                  <HugeiconsIcon className='mr-2 size-4 animate-spin' icon={Loading03Icon} />
+                ) : (
+                  <HugeiconsIcon className='mr-2 size-4' icon={Add01Icon} />
+                )}
                 Add Category
               </Button>
             </div>
@@ -104,83 +155,58 @@ export default function CategoriesSettings() {
           <div className='space-y-3'>
             <Label>Your Categories</Label>
             <div className='rounded-lg border border-border bg-muted/50 p-4'>
-              <div className='space-y-2'>
-                {categories.map((category) => (
-                  <div className='space-y-1' key={category.id}>
-                    {/* Main Category */}
-                    <div className='flex items-center justify-between rounded-md bg-card px-3 py-2.5 transition-colors hover:bg-accent'>
+              {isLoading ? (
+                <div className='flex justify-center py-4'>
+                  <HugeiconsIcon
+                    className='size-6 animate-spin text-muted-foreground'
+                    icon={Loading03Icon}
+                  />
+                </div>
+              ) : (
+                <div className='space-y-2'>
+                  {categories?.map((category) => (
+                    <div
+                      className='flex items-center justify-between rounded-md bg-card px-3 py-2.5 transition-colors hover:bg-accent'
+                      key={category.id}
+                    >
                       <div className='flex items-center gap-3'>
-                        <Button
-                          className='h-6 w-6 p-0'
-                          onClick={() => toggleCategory(category.id)}
-                          size='sm'
-                          variant='ghost'
-                        >
-                          <HugeiconsIcon
-                            className={cn(
-                              'size-4 transition-transform',
-                              expandedCategories.includes(category.id) && 'rotate-90'
-                            )}
-                            icon={ArrowRight01Icon}
-                          />
-                        </Button>
+                        <div
+                          className='size-4 rounded-full border border-border shadow-sm'
+                          style={{ backgroundColor: category.color ?? '#000000' }}
+                        />
                         <span className='font-medium text-sm'>{category.name}</span>
-                        <Badge
-                          className={
-                            category.type === 'income'
-                              ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                              : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
-                          }
-                          variant='secondary'
-                        >
-                          {category.type}
-                        </Badge>
                       </div>
-                      <Button
-                        className='h-8 w-8 p-0 text-muted-foreground hover:text-destructive'
-                        size='sm'
-                        variant='ghost'
-                      >
-                        <HugeiconsIcon className='size-4' icon={Add01Icon} />
-                      </Button>
-                    </div>
-
-                    {/* Subcategories */}
-                    {expandedCategories.includes(category.id) && (
-                      <div className='ml-9 space-y-1 border-border border-l-2 pl-4'>
-                        {category.subcategories.map((sub) => (
-                          <div
-                            className='flex items-center justify-between rounded-md bg-card px-3 py-2 text-sm transition-colors hover:bg-accent'
-                            key={sub}
-                          >
-                            <span className='text-muted-foreground'>{sub}</span>
-                            <Button
-                              className='h-6 w-6 p-0 text-muted-foreground hover:text-destructive'
-                              size='sm'
-                              variant='ghost'
-                            >
-                              <HugeiconsIcon className='size-3' icon={MultiplicationSignIcon} />
-                            </Button>
-                          </div>
-                        ))}
+                      <div className='flex items-center'>
                         <Button
-                          className='h-8 w-full text-muted-foreground text-xs'
+                          className='mr-2 h-8 w-8 bg-transparent p-0 text-muted-foreground hover:bg-neutral-700/50 hover:text-primary'
                           size='sm'
-                          variant='ghost'
                         >
-                          <HugeiconsIcon className='mr-1 size-3' icon={Add01Icon} />
-                          Add Subcategory
+                          <HugeiconsIcon className='size-4' icon={PencilEdit01Icon} />
+                        </Button>
+
+                        <Button
+                          className='h-8 w-8 bg-transparent p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
+                          disabled={deleteCategoryMutation.isPending}
+                          onClick={() => deleteCategoryMutation.mutate(category.id)}
+                          size='sm'
+                        >
+                          {deleteCategoryMutation.isPending ? (
+                            <HugeiconsIcon className='size-4 animate-spin' icon={Loading03Icon} />
+                          ) : (
+                            <HugeiconsIcon className='size-4' icon={Delete03Icon} />
+                          )}
                         </Button>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                  {categories?.length === 0 && (
+                    <div className='py-4 text-center text-muted-foreground text-sm'>
+                      No categories found. Add one above.
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <p className='text-muted-foreground text-xs'>
-              Categories help you track spending patterns. Click on a category to view and manage
-              subcategories.
-            </p>
           </div>
         </CardContent>
       </Card>
@@ -193,10 +219,13 @@ export default function CategoriesSettings() {
         </CardHeader>
         <CardContent>
           <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
-              <span className='font-medium text-sm'>Food & Dining</span>
-              <div className='flex items-center gap-3'>
-                <div className='h-2 w-32 overflow-hidden rounded-full bg-muted'>
+            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='flex items-center gap-2'>
+                <div className='size-3 rounded-full bg-[#f97316]' />
+                <span className='font-medium text-sm'>Restaurants</span>
+              </div>
+              <div className='flex w-full items-center gap-3 sm:w-auto'>
+                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
                   <div className='h-full w-3/4 bg-primary' />
                 </div>
                 <Badge className='min-w-20 justify-center font-mono' variant='secondary'>
@@ -204,10 +233,13 @@ export default function CategoriesSettings() {
                 </Badge>
               </div>
             </div>
-            <div className='flex items-center justify-between'>
-              <span className='font-medium text-sm'>Transportation</span>
-              <div className='flex items-center gap-3'>
-                <div className='h-2 w-32 overflow-hidden rounded-full bg-muted'>
+            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='flex items-center gap-2'>
+                <div className='size-3 rounded-full bg-[#3b82f6]' />
+                <span className='font-medium text-sm'>Transportation</span>
+              </div>
+              <div className='flex w-full items-center gap-3 sm:w-auto'>
+                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
                   <div className='h-full w-1/2 bg-primary' />
                 </div>
                 <Badge className='min-w-20 justify-center font-mono' variant='secondary'>
@@ -215,10 +247,13 @@ export default function CategoriesSettings() {
                 </Badge>
               </div>
             </div>
-            <div className='flex items-center justify-between'>
-              <span className='font-medium text-sm'>Shopping</span>
-              <div className='flex items-center gap-3'>
-                <div className='h-2 w-32 overflow-hidden rounded-full bg-muted'>
+            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='flex items-center gap-2'>
+                <div className='size-3 rounded-full bg-[#8b5cf6]' />
+                <span className='font-medium text-sm'>Shopping</span>
+              </div>
+              <div className='flex w-full items-center gap-3 sm:w-auto'>
+                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
                   <div className='h-full w-1/3 bg-primary' />
                 </div>
                 <Badge className='min-w-20 justify-center font-mono' variant='secondary'>

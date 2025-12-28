@@ -34,6 +34,7 @@ export const currencyEnum = pgEnum('currency', [
 ])
 
 export const transactionTypeEnum = pgEnum('transaction_type', ['inflow', 'outflow'])
+export const categoryTypeEnum = pgEnum('category_type', ['inflow', 'outflow'])
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -263,7 +264,7 @@ export const category = pgTable('category', {
     .references(() => organization.id)
     .notNull(),
   name: text('name').notNull(),
-  icon: text('icon'),
+  type: categoryTypeEnum('type').notNull(),
   color: text('color'),
   parentId: text('parent_id'),
 })

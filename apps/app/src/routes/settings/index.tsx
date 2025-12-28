@@ -33,24 +33,33 @@ function RouteComponent() {
           <h4 className='text-neutral-600'>Manage your account settings and preferences.</h4>
         </div>
 
-        <Tabs onValueChange={(value) => setTab(value)} value={tab || 'profile'}>
+        <Tabs onValueChange={(value) => setTab(value)} value={tab || 'preferences'}>
           <TabsList className='mb-5 space-x-1.5'>
-            <TabsTrigger className={tabsTriggerClassName} value='profile'>
-              Profile
-            </TabsTrigger>
             <TabsTrigger className={tabsTriggerClassName} value='preferences'>
               Preferences
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='security'>
-              Security
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='tags'>
-              Tags
             </TabsTrigger>
             <TabsTrigger className={tabsTriggerClassName} value='category'>
               Category
             </TabsTrigger>
+            <TabsTrigger className={tabsTriggerClassName} value='tags'>
+              Tags
+            </TabsTrigger>
+            <TabsTrigger className={tabsTriggerClassName} value='profile'>
+              Profile
+            </TabsTrigger>
+            <TabsTrigger className={tabsTriggerClassName} value='security'>
+              Security
+            </TabsTrigger>
           </TabsList>
+          <TabsContent value='preferences'>
+            <PreferencesSettings />
+          </TabsContent>
+          <TabsContent value='category'>
+            <CategoriesSettings />
+          </TabsContent>
+          <TabsContent value='tags'>
+            <TagsSettings />
+          </TabsContent>
           <TabsContent value='profile'>
             {!error && data && (
               <ProfileSettings
@@ -69,17 +78,8 @@ function RouteComponent() {
               </div>
             )}
           </TabsContent>
-          <TabsContent value='preferences'>
-            <PreferencesSettings />
-          </TabsContent>
           <TabsContent value='security'>
             <SecuritySettings />
-          </TabsContent>
-          <TabsContent value='tags'>
-            <TagsSettings />
-          </TabsContent>
-          <TabsContent value='category'>
-            <CategoriesSettings />
           </TabsContent>
         </Tabs>
       </main>

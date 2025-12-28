@@ -1,4 +1,4 @@
-import { accountTypeEnum } from '@flux/db/schema'
+import { accountTypeEnum, categoryTypeEnum, transactionTypeEnum } from '@flux/db/schema'
 import {
   AnalyticsUpIcon,
   ArrowDownLeft01Icon,
@@ -22,20 +22,25 @@ export const CURRENCY_CODES = [
   'NZD',
 ] as const
 
-export const TRANSACTIONS_TYPES = ['income', 'expense'] as const
-
-type TransactionType = Record<(typeof TRANSACTIONS_TYPES)[number], IconSvgElement>
-export const TRANSACTIONS_ICONS: TransactionType = {
-  income: ArrowDownLeft01Icon,
-  expense: ArrowUpRight01Icon,
-}
-
 export const ACCOUNT_TYPES = accountTypeEnum.enumValues
 export const ACCOUNT_TYPES_ICONS: Record<(typeof ACCOUNT_TYPES)[number], IconSvgElement> = {
   cash: BankIcon,
   investment: AnalyticsUpIcon,
   liability: TradeDownIcon,
   other_asset: MoneySafeIcon,
+}
+
+export const CATEGORY_TYPES = categoryTypeEnum.enumValues
+export const CATEGORY_TYPES_ICONS: Record<(typeof CATEGORY_TYPES)[number], IconSvgElement> = {
+  inflow: ArrowDownLeft01Icon,
+  outflow: ArrowUpRight01Icon,
+}
+
+export const TRANSACTIONS_TYPES = transactionTypeEnum.enumValues
+
+export const TRANSACTIONS_ICONS: Record<(typeof TRANSACTIONS_TYPES)[number], IconSvgElement> = {
+  inflow: ArrowDownLeft01Icon,
+  outflow: ArrowUpRight01Icon,
 }
 
 // ========== Country Codes ==========
