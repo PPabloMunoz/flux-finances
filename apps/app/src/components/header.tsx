@@ -13,10 +13,16 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { quickActionsDialogHandle } from '@/features/general/quick-actions-modal'
 
 export default function AppHeader() {
+  const [isMounted, setIsMounted] = useState(false)
   const session = authClient.useSession()
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   return (
     <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
@@ -127,13 +133,13 @@ export default function AppHeader() {
 
           <Popover>
             <PopoverTrigger className='flex items-center gap-2 rounded-full border border-transparent py-1 pr-2 pl-1 transition-colors hover:border-neutral-800 hover:bg-neutral-800/50'>
-              <div className='flex size-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
-                {!session.data?.user.name ? (
-                  <div className='size-6 rounded-full bg-neutral-400/20' />
-                ) : (
+              {!isMounted || !session.data?.user.name ? (
+                <span className='size-6 rounded-full bg-neutral-400/20' />
+              ) : (
+                <span className='flex size-6 items-center justify-center rounded-full border border-neutral-700 bg-gradient-to-br from-neutral-700 to-neutral-800 font-medium text-[10px] text-white'>
                   <span>{session.data.user.name.charAt(0)}</span>
-                )}
-              </div>
+                </span>
+              )}
               <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
             </PopoverTrigger>
             <PopoverContent className='max-w-45 gap-0.5 p-2'>
