@@ -224,9 +224,9 @@ export const userPreferences = pgTable('user_preferences', {
   userId: text('user_id')
     .references(() => user.id)
     .notNull(),
-  region: text('region').default('US').notNull(), // For currency formatting, etc.
+  region: text('region').default('es').notNull(), // For currency formatting, etc.
   dateFormat: text('date_format').default('DD/MM/YYYY').notNull(),
-  timezone: text('timezone').default('UTC').notNull(),
+  timezone: text('timezone').default('CET').notNull(),
 })
 
 export const institution = pgTable('institution', {
