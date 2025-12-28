@@ -19,6 +19,10 @@
       "dependsOn": ["format", "lint"],
       "inputs": ["src/**", "*.config.*", "package.json"]
     },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "inputs": ["src/**", "*.config.*", "package.json"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

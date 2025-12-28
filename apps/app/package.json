@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "check": "biome check . && biome format --write ."
+    "check": "biome check . && biome format --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",

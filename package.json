@@ -11,6 +11,7 @@
     "lint": "biome lint --write",
     "format": "biome format --write",
     "check": "biome check --write",
+    "typecheck": "turbo typecheck",
     "dev": "turbo dev",
     "dev:app": "turbo dev --filter=app",
     "dev:marketing": "turbo dev --filter=marketing",

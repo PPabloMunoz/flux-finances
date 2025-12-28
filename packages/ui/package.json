@@ -8,7 +8,8 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "check": "biome check . && biome format --write .",
-    "build": "tsc"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "3.0.0",
