@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { COUNTRY_CODES, DATE_FORMAT_CODES, TIMEZONE_CODES } from '@/lib/constants'
 
 export const LoginSchema = z.object({
   email: z.email({ message: 'Invalid email address' }),
@@ -33,3 +34,9 @@ export const ResetPasswordSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
   })
+
+export const UpdateUserPreferencesSchema = z.object({
+  region: z.enum(COUNTRY_CODES),
+  dateFormat: z.enum(DATE_FORMAT_CODES),
+  timezone: z.enum(TIMEZONE_CODES),
+})

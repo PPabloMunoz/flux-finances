@@ -135,7 +135,7 @@ function RouteComponent() {
                       </div>
                       <div className='text-right'>
                         <p className='font-medium text-sm text-white tabular-nums'>
-                          {parseCurrency(Number(account.currentBalance), account.currency)}
+                          {parseCurrency(Number(account.currentBalance), 'es', account.currency)}
                         </p>
                         <p className='mt-0.5 font-medium text-[10px] text-teal-500'>
                           {account.previousBalance

@@ -6,120 +6,179 @@ import {
   CardHeader,
   CardTitle,
 } from '@flux/ui/components/ui/card'
-import { Label } from '@flux/ui/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@flux/ui/components/ui/select'
-import { Calendar01Icon, Dollar01Icon, Globe02Icon, Sun01Icon } from '@hugeicons/core-free-icons'
+import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
+import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
+import { Calendar01Icon, Globe02Icon, Settings05Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useForm } from '@tanstack/react-form'
+import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { updateUserPreferencesAction } from '@/features/auth/actions'
+import { UpdateUserPreferencesSchema } from '@/features/auth/schema'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { DATE_FORMAT_OPTIONS, SORTED_COUNTRIES, SORTED_TIMEZONES } from '@/lib/constants'
 
 export default function PreferencesSettings() {
+  const [isLoading, setIsLoading] = useState(false)
+  const { data: userPreferences, isPending } = useUserPreferences()
+  const queryClient = useQueryClient()
+
+  const form = useForm({
+    defaultValues: {
+      region: userPreferences?.region || '',
+      dateFormat: userPreferences?.dateFormat || '',
+      timezone: userPreferences?.timezone || '',
+    },
+    validators: { onSubmit: UpdateUserPreferencesSchema },
+    onSubmit: async ({ value }) => {
+      // No changes made
+      if (
+        value.region === userPreferences?.region &&
+        value.dateFormat === userPreferences?.dateFormat &&
+        value.timezone === userPreferences?.timezone
+      ) {
+        toast.info('No changes made to user preferences.')
+        return
+      }
+
+      const parsed = UpdateUserPreferencesSchema.safeParse(value)
+      if (!parsed.success) {
+        toast.error('Please fix the errors in the form.')
+        return
+      }
+
+      setIsLoading(true)
+      const res = await updateUserPreferencesAction({ data: parsed.data })
+      setIsLoading(false)
+
+      if (!res.ok) {
+        toast.error(res.error)
+      } else {
+        toast.success('User preferences updated successfully.')
+        queryClient.invalidateQueries({ queryKey: ['user-preferences'] })
+      }
+    },
+  })
+
   return (
     <div className='space-y-6'>
-      {/* Display Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <HugeiconsIcon className='size-5' icon={Sun01Icon} />
-            Display
-          </CardTitle>
-          <CardDescription>Customize how your interface looks</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex-1'>
-              <Label className='text-base' htmlFor='theme'>
-                Theme
-              </Label>
-              <p className='text-muted-foreground text-sm'>Select your preferred color scheme</p>
-            </div>
-            <Select defaultValue='dark'>
-              <SelectTrigger className='w-32'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='light'>Light</SelectItem>
-                <SelectItem value='dark'>Dark</SelectItem>
-                <SelectItem value='system'>System</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Regional Settings */}
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
-            <HugeiconsIcon className='size-5' icon={Globe02Icon} />
-            Regional Settings
+            <HugeiconsIcon className='size-5' icon={Settings05Icon} />
+            User Preferences
           </CardTitle>
-          <CardDescription>Configure currency, timezone, and date formats</CardDescription>
+          <CardDescription>Set your preferred timezone and date format.</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label className='flex items-center gap-2' htmlFor='currency'>
-              <HugeiconsIcon className='size-4' icon={Dollar01Icon} />
-              Currency
-            </Label>
-            <Select defaultValue='usd'>
-              <SelectTrigger id='currency'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='usd'>USD - US Dollar ($)</SelectItem>
-                <SelectItem value='eur'>EUR - Euro (€)</SelectItem>
-                <SelectItem value='gbp'>GBP - British Pound (£)</SelectItem>
-                <SelectItem value='jpy'>JPY - Japanese Yen (¥)</SelectItem>
-                <SelectItem value='cad'>CAD - Canadian Dollar (C$)</SelectItem>
-                <SelectItem value='aud'>AUD - Australian Dollar (A$)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <CardContent>
+          <form
+            className='space-y-4'
+            onSubmit={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              form.handleSubmit(e)
+            }}
+          >
+            <form.Field name='region'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>
+                      <HugeiconsIcon className='size-4' icon={Globe02Icon} />
+                      Region
+                    </FieldLabel>
+                    <NativeSelect
+                      disabled={isPending || isLoading}
+                      id={field.name}
+                      name={field.name}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      value={field.state.value}
+                    >
+                      <NativeSelectOption disabled value=''>
+                        Select your region
+                      </NativeSelectOption>
+                      {SORTED_COUNTRIES.map((country) => (
+                        <NativeSelectOption key={country.code} value={country.code}>
+                          {country.name}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
 
-          <div className='space-y-2'>
-            <Label htmlFor='timezone'>Timezone</Label>
-            <Select defaultValue='america/los_angeles'>
-              <SelectTrigger id='timezone'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='america/new_york'>Eastern Time (ET)</SelectItem>
-                <SelectItem value='america/chicago'>Central Time (CT)</SelectItem>
-                <SelectItem value='america/denver'>Mountain Time (MT)</SelectItem>
-                <SelectItem value='america/los_angeles'>Pacific Time (PT)</SelectItem>
-                <SelectItem value='europe/london'>London (GMT)</SelectItem>
-                <SelectItem value='europe/paris'>Paris (CET)</SelectItem>
-                <SelectItem value='asia/tokyo'>Tokyo (JST)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <form.Field name='dateFormat'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>
+                      <HugeiconsIcon className='size-4' icon={Calendar01Icon} />
+                      Date Format
+                    </FieldLabel>
+                    <NativeSelect
+                      disabled={isPending || isLoading}
+                      id={field.name}
+                      name={field.name}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      value={field.state.value}
+                    >
+                      <NativeSelectOption disabled value=''>
+                        Select your date format
+                      </NativeSelectOption>
+                      {DATE_FORMAT_OPTIONS.map((format) => (
+                        <NativeSelectOption key={format.code} value={format.code}>
+                          {format.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
 
-          <div className='space-y-2'>
-            <Label className='flex items-center gap-2' htmlFor='dateFormat'>
-              <HugeiconsIcon className='size-4' icon={Calendar01Icon} />
-              Date Format
-            </Label>
-            <Select defaultValue='mdy'>
-              <SelectTrigger id='dateFormat'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='mdy'>MM/DD/YYYY (12/31/2024)</SelectItem>
-                <SelectItem value='dmy'>DD/MM/YYYY (31/12/2024)</SelectItem>
-                <SelectItem value='ymd'>YYYY-MM-DD (2024-12-31)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <form.Field name='timezone'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field className='space-y-2'>
+                    <FieldLabel htmlFor={field.name}>
+                      <HugeiconsIcon className='size-4' icon={Globe02Icon} />
+                      Timezone
+                    </FieldLabel>
+                    <NativeSelect
+                      disabled={isPending || isLoading}
+                      id={field.name}
+                      name={field.name}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      value={field.state.value}
+                    >
+                      <NativeSelectOption disabled value=''>
+                        Select your timezone
+                      </NativeSelectOption>
+                      {SORTED_TIMEZONES.map((timezone) => (
+                        <NativeSelectOption key={timezone.code} value={timezone.code}>
+                          {timezone.name}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  </Field>
+                )
+              }}
+            </form.Field>
 
-          <div className='flex justify-end gap-2 pt-4'>
-            <Button variant='outline'>Cancel</Button>
-            <Button>Save Changes</Button>
-          </div>
+            <div className='flex justify-end gap-2 pt-4'>
+              <Button variant='outline'>Cancel</Button>
+              <Button type='submit'>Save Changes</Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
     </div>
