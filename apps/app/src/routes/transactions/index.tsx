@@ -1,4 +1,5 @@
 import { Button } from '@flux/ui/components/ui/button'
+import { DialogTrigger } from '@flux/ui/components/ui/dialog'
 import {
   Add01Icon,
   Calendar01Icon,
@@ -9,6 +10,9 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react'
 import { createFileRoute } from '@tanstack/react-router'
 import AppHeader from '@/components/header'
+import NewTransactionModal, {
+  newTransactionModalHandle,
+} from '@/features/transactions/components/new-transaction-modal'
 import TransactionRow from '@/features/transactions/components/transaction-row'
 
 export const Route = createFileRoute('/transactions/')({
@@ -18,6 +22,8 @@ export const Route = createFileRoute('/transactions/')({
 function RouteComponent() {
   return (
     <>
+      <NewTransactionModal />
+
       <AppHeader />
 
       <main className='container mx-auto space-y-8 px-5 py-10'>
@@ -27,10 +33,15 @@ function RouteComponent() {
             <p className='text-gray-400 text-sm'>Manage your income and expenses</p>
           </div>
           <div className='flex w-full items-baseline gap-3 sm:w-auto'>
-            <Button className='w-full'>
-              <HugeiconsIcon icon={Add01Icon} size={20} />
-              Add Transaction
-            </Button>
+            <DialogTrigger
+              handle={newTransactionModalHandle}
+              render={
+                <Button className='w-full'>
+                  <HugeiconsIcon icon={Add01Icon} size={20} />
+                  Add Transaction
+                </Button>
+              }
+            />
           </div>
         </header>
 
