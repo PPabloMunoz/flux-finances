@@ -1,8 +1,10 @@
 import { Card } from '@flux/ui/components/ui/card'
+import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import {
   Add01Icon,
   CreditCardPosIcon,
   NewsIcon,
+  TradeDownIcon,
   TradeUpIcon,
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
@@ -10,15 +12,77 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import DashboardCard from '@/components/dashboard-card'
 import AppHeader from '@/components/header'
+import { getAccountsByTypeAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
+import { getTransactionsAction } from '@/features/transactions/queries'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { TRANSACTIONS_ICONS } from '@/lib/constants'
+import { parseCurrency } from '@/lib/utils'
 
 export const Route = createFileRoute('/')({
   component: App,
   beforeLoad: async () => await authStateFn(),
+  loader: async () => {
+    const [cashRes, investmentsRes, liabilitiesRes, transactionsRes] = await Promise.all([
+      getAccountsByTypeAction({ data: { type: 'cash' } }),
+      getAccountsByTypeAction({ data: { type: 'investment' } }),
+      getAccountsByTypeAction({ data: { type: 'liability' } }),
+      getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
+    ])
+
+    return {
+      cash: cashRes.ok ? cashRes.data : [],
+      investments: investmentsRes.ok ? investmentsRes.data : [],
+      liabilities: liabilitiesRes.ok ? liabilitiesRes.data : [],
+      transactions: transactionsRes.ok ? transactionsRes.data?.transactions : [],
+    }
+  },
 })
 
 function App() {
+  const { cash, investments, liabilities, transactions } = Route.useLoaderData()
+  const { data: userPreferences } = useUserPreferences()
+
+  const cashTotal = cash.reduce((acc, curr) => acc + Number(curr.currentBalance || 0), 0)
+  const investmentsTotal = investments.reduce(
+    (acc, curr) => acc + Number(curr.currentBalance || 0),
+    0
+  )
+  const liabilitiesTotal = liabilities.reduce(
+    (acc, curr) => acc + Number(curr.currentBalance || 0),
+    0
+  )
+
+  const netWorth = cashTotal + investmentsTotal - liabilitiesTotal
+
+  const previousCashTotal = cash.reduce((acc, curr) => acc + Number(curr.previousBalance || 0), 0)
+  const previousInvestmentsTotal = investments.reduce(
+    (acc, curr) => acc + Number(curr.previousBalance || 0),
+    0
+  )
+  const previousLiabilitiesTotal = liabilities.reduce(
+    (acc, curr) => acc + Number(curr.previousBalance || 0),
+    0
+  )
+
+  const previousNetWorth = previousCashTotal + previousInvestmentsTotal - previousLiabilitiesTotal
+  const netWorthChange = netWorth - previousNetWorth
+  const netWorthChangePercentage =
+    previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
+
+  // Calculate percentages for progress bars
+  const totalAssets = cashTotal + investmentsTotal
+  const cashProgress = totalAssets > 0 ? (cashTotal / totalAssets) * 100 : 0
+  const investmentsProgress = totalAssets > 0 ? (investmentsTotal / totalAssets) * 100 : 0
+  const liabilitiesProgress = netWorth > 0 ? Math.min((liabilitiesTotal / netWorth) * 100, 100) : 0
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
   return (
     <>
       <AppHeader />
@@ -26,12 +90,30 @@ function App() {
       <main className='container mx-auto px-5 py-10'>
         <header className='mb-10 flex items-center justify-between'>
           <div>
-            <p className='font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</p>
-            <p className='font-jetbrains text-4xl'>$482,900.00</p>
+            <p className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</p>
+            {!userPreferences ? (
+              <Skeleton className='mt-2 h-10 w-40 rounded-sm' />
+            ) : (
+              <p className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
+                {parseCurrency(netWorth, userPreferences.region, userPreferences.currency)}
+              </p>
+            )}
           </div>
-          <div className='flex w-auto items-center gap-2 rounded-sm border border-teal-500/20 bg-teal-500/10 px-2 py-1 text-teal-500'>
-            <HugeiconsIcon className='size-4.5' icon={TradeUpIcon} />
-            <span className='font-medium text-xs'>+2.4% this month</span>
+          <div
+            className={`flex w-auto items-center gap-2 rounded-sm border px-2 py-1 ${
+              netWorthChangePercentage >= 0
+                ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
+                : 'border-red-500/20 bg-red-500/10 text-red-500'
+            }`}
+          >
+            <HugeiconsIcon
+              className='size-4.5'
+              icon={netWorthChangePercentage >= 0 ? TradeUpIcon : TradeDownIcon}
+            />
+            <span className='font-medium text-xs'>
+              {netWorthChangePercentage >= 0 ? '+' : ''}
+              {netWorthChangePercentage.toFixed(1)}% this month
+            </span>
           </div>
         </header>
 
@@ -42,35 +124,53 @@ function App() {
 
         {/* Cards */}
         <section className='mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-          <Link to='/'>
-            <DashboardCard
-              color='teal'
-              icon={Wallet01Icon}
-              progress={33}
-              subtitle='Cash & Equivalents'
-              value='$42,300.00'
-            />
-          </Link>
+          {!userPreferences ? (
+            <>
+              <Skeleton className='h-43 w-full rounded-sm' />
+              <Skeleton className='h-43 w-full rounded-sm' />
+              <Skeleton className='h-43 w-full rounded-sm' />
+            </>
+          ) : (
+            <>
+              <Link to='/accounts'>
+                <DashboardCard
+                  color='teal'
+                  icon={Wallet01Icon}
+                  progress={cashProgress}
+                  subtitle='Cash & Equivalents'
+                  value={parseCurrency(cashTotal, userPreferences.region, userPreferences.currency)}
+                />
+              </Link>
 
-          <Link to='/'>
-            <DashboardCard
-              color='blue'
-              icon={NewsIcon}
-              progress={33}
-              subtitle='Investments'
-              value='$450,120.00'
-            />
-          </Link>
+              <Link to='/accounts'>
+                <DashboardCard
+                  color='blue'
+                  icon={NewsIcon}
+                  progress={investmentsProgress}
+                  subtitle='Investments'
+                  value={parseCurrency(
+                    investmentsTotal,
+                    userPreferences.region,
+                    userPreferences.currency
+                  )}
+                />
+              </Link>
 
-          <Link to='/'>
-            <DashboardCard
-              color='red'
-              icon={CreditCardPosIcon}
-              progress={33}
-              subtitle='Liabilities'
-              value='$9,520.00'
-            />
-          </Link>
+              <Link to='/accounts'>
+                <DashboardCard
+                  color='red'
+                  icon={CreditCardPosIcon}
+                  progress={liabilitiesProgress}
+                  subtitle='Liabilities'
+                  value={parseCurrency(
+                    liabilitiesTotal,
+                    userPreferences.region,
+                    userPreferences.currency
+                  )}
+                />
+              </Link>
+            </>
+          )}
         </section>
 
         <section className='mt-10 grid grid-cols-1 gap-6 md:grid-cols-3'>
@@ -97,82 +197,63 @@ function App() {
                     </tr>
                   </thead>
                   <tbody className='divide-y divide-neutral-800/50'>
-                    <tr className='group transition-colors hover:bg-neutral-800/30'>
-                      <td className='px-5 py-3.5'>
-                        <div className='flex items-center gap-3'>
-                          <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
+                    {transactions?.map((transaction) => (
+                      <tr
+                        className='group transition-colors hover:bg-neutral-800/30'
+                        key={transaction.id}
+                      >
+                        <td className='px-5 py-3.5'>
+                          <div className='flex items-center gap-3'>
+                            <div
+                              className={`flex h-8 w-8 items-center justify-center rounded-full border ${
+                                transaction.type === 'inflow'
+                                  ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
+                                  : 'border-white/5 bg-white/5 text-white'
+                              }`}
+                            >
+                              <HugeiconsIcon
+                                className='size-3.5'
+                                icon={
+                                  transaction.type === 'inflow'
+                                    ? TRANSACTIONS_ICONS.inflow
+                                    : TRANSACTIONS_ICONS.outflow
+                                }
+                              />
+                            </div>
+                            <span className='font-medium text-white'>{transaction.title}</span>
                           </div>
-                          <span className='font-medium text-white'>Whole Foods Market</span>
-                        </div>
-                      </td>
-                      <td className='hidden px-5 py-3.5 sm:table-cell'>
-                        <span className='inline-flex items-center rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-                          Groceries
-                        </span>
-                      </td>
-                      <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>Sep 24</td>
-                      <td className='px-5 py-3.5 text-right font-jetbrains font-medium text-white'>
-                        -$142.50
-                      </td>
-                    </tr>
-                    <tr className='group transition-colors hover:bg-neutral-800/30'>
-                      <td className='px-5 py-3.5'>
-                        <div className='flex items-center gap-3'>
-                          <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
-                          </div>
-                          <span className='font-medium text-white'>Electric Company</span>
-                        </div>
-                      </td>
-                      <td className='hidden px-5 py-3.5 sm:table-cell'>
-                        <span className='inline-flex items-center rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-                          Utilities
-                        </span>
-                      </td>
-                      <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>Sep 23</td>
-                      <td className='px-5 py-3.5 text-right font-jetbrains font-medium text-white'>
-                        -$85.00
-                      </td>
-                    </tr>
-                    <tr className='group transition-colors hover:bg-neutral-800/30'>
-                      <td className='px-5 py-3.5'>
-                        <div className='flex items-center gap-3'>
-                          <div className='flex h-8 w-8 items-center justify-center rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-500'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.inflow} />
-                          </div>
-                          <span className='font-medium text-white'>Salary Deposit</span>
-                        </div>
-                      </td>
-                      <td className='hidden px-5 py-3.5 sm:table-cell'>
-                        <span className='inline-flex items-center rounded border border-teal-900/50 bg-teal-900/30 px-2 py-0.5 font-medium text-[10px] text-teal-500'>
-                          Income
-                        </span>
-                      </td>
-                      <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>Sep 15</td>
-                      <td className='px-5 py-3.5 text-right font-jetbrains font-medium text-teal-500'>
-                        +$4,250.00
-                      </td>
-                    </tr>
-                    <tr className='group transition-colors hover:bg-neutral-800/30'>
-                      <td className='px-5 py-3.5'>
-                        <div className='flex items-center gap-3'>
-                          <div className='flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-white/5 text-white'>
-                            <HugeiconsIcon className='size-3.5' icon={TRANSACTIONS_ICONS.outflow} />
-                          </div>
-                          <span className='font-medium text-white'>Starbucks</span>
-                        </div>
-                      </td>
-                      <td className='hidden px-5 py-3.5 sm:table-cell'>
-                        <span className='inline-flex items-center rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-                          Dining
-                        </span>
-                      </td>
-                      <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>Sep 14</td>
-                      <td className='px-5 py-3.5 text-right font-jetbrains font-medium text-white'>
-                        -$6.45
-                      </td>
-                    </tr>
+                        </td>
+                        <td className='hidden px-5 py-3.5 sm:table-cell'>
+                          {transaction.categoryName && (
+                            <span className='inline-flex items-center rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
+                              {transaction.categoryName}
+                            </span>
+                          )}
+                        </td>
+                        <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
+                          {formatDate(transaction.date)}
+                        </td>
+                        <td
+                          className={`px-5 py-3.5 text-right font-jetbrains font-medium ${
+                            transaction.type === 'inflow' ? 'text-teal-500' : 'text-white'
+                          }`}
+                        >
+                          {transaction.type === 'inflow' ? '+' : '-'}
+                          {parseCurrency(
+                            Number(transaction.amount),
+                            userPreferences?.region,
+                            userPreferences?.currency
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {(!transactions || transactions.length === 0) && (
+                      <tr>
+                        <td className='px-5 py-8 text-center text-neutral-500' colSpan={4}>
+                          No recent transactions found
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

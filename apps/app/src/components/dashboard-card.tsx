@@ -21,7 +21,7 @@ interface Props {
 
 export default function DashboardCard({ icon, subtitle, value, progress, color }: Props) {
   return (
-    <Card className='rounded-sm border border-transparent transition-all hover:border-neutral-300/50 hover:shadow-lg'>
+    <Card className='group h-43 w-full rounded-sm border border-transparent transition-all hover:border-neutral-300/50 hover:shadow-lg'>
       <CardHeader>
         <CardTitle>
           <div
@@ -36,7 +36,10 @@ export default function DashboardCard({ icon, subtitle, value, progress, color }
           </div>
         </CardTitle>
         <CardAction>
-          <HugeiconsIcon className='size-5' icon={ArrowUpRight01Icon} />
+          <HugeiconsIcon
+            className='size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5'
+            icon={ArrowUpRight01Icon}
+          />
         </CardAction>
       </CardHeader>
       <CardContent>
