@@ -19,35 +19,52 @@ function RouteComponent() {
     <>
       <AppHeader />
 
-      <main className='container mx-auto px-5 py-10'>
-        <div className='mb-8'>
-          <h1 className='mb-1 font-bold text-3xl'>Settings</h1>
-          <h4 className='text-neutral-600'>Manage your account settings and preferences.</h4>
+      <main className='container mx-auto max-w-5xl space-y-8 px-5 py-10'>
+        <div className='mb-10'>
+          <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Settings</h1>
+          <p className='text-gray-400 text-sm'>Manage your account settings and preferences.</p>
         </div>
 
-        <Tabs onValueChange={(value) => setTab(value)} value={tab || 'preferences'}>
-          <TabsList className='mb-5' variant='line'>
-            <TabsTrigger value='preferences'>Preferences</TabsTrigger>
-            <TabsTrigger value='category'>Category</TabsTrigger>
-            <TabsTrigger value='tags'>Tags</TabsTrigger>
-            <TabsTrigger value='profile'>Profile</TabsTrigger>
-            <TabsTrigger value='security'>Security</TabsTrigger>
+        <Tabs
+          className='flex flex-col gap-8 lg:flex-row lg:items-start'
+          onValueChange={(value) => setTab(value)}
+          orientation='vertical'
+          value={tab || 'preferences'}
+        >
+          <TabsList className='w-full justify-start lg:w-64 lg:flex-col' variant='line'>
+            <TabsTrigger className='justify-start' value='preferences'>
+              Preferences
+            </TabsTrigger>
+            <TabsTrigger className='justify-start' value='category'>
+              Category
+            </TabsTrigger>
+            <TabsTrigger className='justify-start' value='tags'>
+              Tags
+            </TabsTrigger>
+            <TabsTrigger className='justify-start' value='profile'>
+              Profile
+            </TabsTrigger>
+            <TabsTrigger className='justify-start' value='security'>
+              Security
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value='preferences'>
-            <PreferencesSettings />
-          </TabsContent>
-          <TabsContent value='category'>
-            <CategoriesSettings />
-          </TabsContent>
-          <TabsContent value='tags'>
-            <TagsSettings />
-          </TabsContent>
-          <TabsContent value='profile'>
-            <ProfileSettings />
-          </TabsContent>
-          <TabsContent value='security'>
-            <SecuritySettings />
-          </TabsContent>
+          <div className='flex-1'>
+            <TabsContent className='mt-0' value='preferences'>
+              <PreferencesSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='category'>
+              <CategoriesSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='tags'>
+              <TagsSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='profile'>
+              <ProfileSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='security'>
+              <SecuritySettings />
+            </TabsContent>
+          </div>
         </Tabs>
       </main>
     </>

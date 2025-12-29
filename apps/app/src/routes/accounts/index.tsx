@@ -1,4 +1,5 @@
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
+import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import { cn } from '@flux/ui/lib/utils'
 import { AddSquareIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -139,9 +140,11 @@ function RouteComponent() {
                 {cashAccountsPending ||
                 investmentAccountsPending ||
                 liabilityAccountsPending ||
-                assetAccountsPending
-                  ? 'Loading...'
-                  : parseCurrency(netWorth, userPreferences.region, userPreferences.currency)}
+                assetAccountsPending ? (
+                  <Skeleton className='h-10 w-48 rounded-md' />
+                ) : (
+                  parseCurrency(netWorth, userPreferences.region, userPreferences.currency)
+                )}
               </span>
               <div className='flex items-center gap-1 font-medium text-teal-500 text-xs'>
                 <HugeiconsIcon className='size-3' icon={TradeUpIcon} />
@@ -154,16 +157,18 @@ function RouteComponent() {
                   {cashAccountsPending ||
                   investmentAccountsPending ||
                   liabilityAccountsPending ||
-                  assetAccountsPending
-                    ? 'Loading...'
-                    : prevNetWorth
-                      ? (() => {
-                          const diff = netWorth - prevNetWorth
-                          const percent = (diff / prevNetWorth) * 100
-                          const sign = diff >= 0 ? '+' : ''
-                          return `${sign}${parseCurrency(diff, userPreferences.region, userPreferences.currency)} (${sign}${percent.toFixed(2)}%)`
-                        })()
-                      : 'No data'}
+                  assetAccountsPending ? (
+                    <Skeleton className='h-4 w-24 rounded-md' />
+                  ) : prevNetWorth ? (
+                    (() => {
+                      const diff = netWorth - prevNetWorth
+                      const percent = (diff / prevNetWorth) * 100
+                      const sign = diff >= 0 ? '+' : ''
+                      return `${sign}${parseCurrency(diff, userPreferences.region, userPreferences.currency)} (${sign}${percent.toFixed(2)}%)`
+                    })()
+                  ) : (
+                    'No data'
+                  )}
                 </span>
               </div>
             </div>
@@ -183,16 +188,17 @@ function RouteComponent() {
 
           <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
             {cashAccountsPending ? (
-              <div className='flex h-18 w-full items-center justify-center'>
-                <p className='p-4 text-center text-neutral-500 text-sm'>Loading cash accounts...</p>
+              <div className='space-y-1 p-2'>
+                <Skeleton className='h-16 w-full rounded-sm' />
+                <Skeleton className='h-16 w-full rounded-sm' />
               </div>
             ) : cashAccounts.length > 0 ? (
               cashAccounts.map((account) => <AccountRow account={account} key={account.id} />)
             ) : (
-              <div>
-                <p className='p-4 text-center text-neutral-500 text-sm'>
-                  No cash accounts found. Click the + button below to add your first cash account.
-                </p>
+              <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
+                <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
+                <p className='text-sm'>No cash accounts found</p>
+                <p className='text-xs opacity-60'>Add your first cash account below</p>
               </div>
             )}
           </div>
@@ -226,18 +232,17 @@ function RouteComponent() {
 
           <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
             {investmentAccountsPending ? (
-              <div className='flex h-18 w-full items-center justify-center'>
-                <p className='p-4 text-center text-neutral-500 text-sm'>
-                  Loading investment accounts...
-                </p>
+              <div className='space-y-1 p-2'>
+                <Skeleton className='h-16 w-full rounded-sm' />
+                <Skeleton className='h-16 w-full rounded-sm' />
               </div>
             ) : investmentAccounts.length > 0 ? (
               investmentAccounts.map((account) => <AccountRow account={account} key={account.id} />)
             ) : (
-              <div>
-                <p className='p-4 text-center text-neutral-500 text-sm'>
-                  No investment accounts found. Click the + button below to add your first account.
-                </p>
+              <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
+                <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
+                <p className='text-sm'>No investment accounts found</p>
+                <p className='text-xs opacity-60'>Add your first investment account below</p>
               </div>
             )}
           </div>
@@ -272,20 +277,19 @@ function RouteComponent() {
 
             <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
               {liabilityAccountsPending ? (
-                <div className='flex h-18 w-full items-center justify-center'>
-                  <p className='p-4 text-center text-neutral-500 text-sm'>
-                    Loading liability accounts...
-                  </p>
+                <div className='space-y-1 p-2'>
+                  <Skeleton className='h-16 w-full rounded-sm' />
+                  <Skeleton className='h-16 w-full rounded-sm' />
                 </div>
               ) : liabilityAccounts.length > 0 ? (
                 liabilityAccounts.map((account) => (
                   <AccountRow account={account} key={account.id} />
                 ))
               ) : (
-                <div>
-                  <p className='p-4 text-center text-neutral-500 text-sm'>
-                    No liability accounts found. Click the + button below to add your first account.
-                  </p>
+                <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
+                  <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
+                  <p className='text-sm'>No liability accounts found</p>
+                  <p className='text-xs opacity-60'>Add your first liability account below</p>
                 </div>
               )}
             </div>
@@ -318,18 +322,17 @@ function RouteComponent() {
 
             <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
               {assetAccountsPending ? (
-                <div className='flex h-18 w-full items-center justify-center'>
-                  <p className='p-4 text-center text-neutral-500 text-sm'>
-                    Loading asset accounts...
-                  </p>
+                <div className='space-y-1 p-2'>
+                  <Skeleton className='h-16 w-full rounded-sm' />
+                  <Skeleton className='h-16 w-full rounded-sm' />
                 </div>
               ) : assetAccounts.length > 0 ? (
                 assetAccounts.map((account) => <AccountRow account={account} key={account.id} />)
               ) : (
-                <div>
-                  <p className='p-4 text-center text-neutral-500 text-sm'>
-                    No asset accounts found. Click the + button below to add your first account.
-                  </p>
+                <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
+                  <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
+                  <p className='text-sm'>No asset accounts found</p>
+                  <p className='text-xs opacity-60'>Add your first asset account below</p>
                 </div>
               )}
             </div>

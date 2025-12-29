@@ -31,42 +31,41 @@ export default function AccountRow({ account }: Props) {
       }}
       render={
         <button
-          className='group flex min-h-18 w-full cursor-pointer flex-col justify-between gap-3 border-neutral-800 border-b p-4 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:gap-0'
+          className='group flex min-h-18 w-full cursor-pointer flex-col justify-between gap-3 border-neutral-800 border-b bg-transparent px-4 py-3 transition-all hover:bg-neutral-900/40 sm:flex-row sm:items-center sm:gap-0'
           type='button'
         >
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-3'>
             <div
               className={cn(
-                'flex size-10 items-center justify-center rounded-sm text-white shadow-lg',
-                account.type === 'cash' && 'bg-blue-700 shadow-blue-900/20',
-                account.type === 'investment' && 'bg-teal-700 shadow-teal-900/20',
-                account.type === 'liability' && 'bg-orange-700 shadow-orange-900/20',
-                account.type === 'other_asset' && 'bg-slate-700 shadow-slate-900/20'
+                'flex size-9 items-center justify-center rounded-md border border-white/5 text-white shadow-sm transition-transform group-hover:scale-105',
+                account.type === 'cash' && 'bg-blue-500/10 text-blue-400',
+                account.type === 'investment' && 'bg-teal-500/10 text-teal-400',
+                account.type === 'liability' && 'bg-orange-500/10 text-orange-400',
+                account.type === 'other_asset' && 'bg-purple-500/10 text-purple-400'
               )}
             >
-              <HugeiconsIcon className='size-5' icon={ACCOUNT_TYPES_ICONS[account.type]} />
+              <HugeiconsIcon className='size-4.5' icon={ACCOUNT_TYPES_ICONS[account.type]} />
             </div>
-            <div>
+            <div className='flex flex-col items-start'>
               <div className='flex items-center gap-2'>
-                <h3 className='font-medium text-sm text-white'>{account.name}</h3>
-                <span
-                  className={cn(
-                    'size-1.5 rounded-full',
-                    account.isActive
-                      ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'
-                      : 'bg-neutral-600'
-                  )}
-                />
+                <h3 className='font-medium text-neutral-200 text-sm group-hover:text-white'>
+                  {account.name}
+                </h3>
+                {!account.isActive && (
+                  <span className='rounded-full bg-neutral-800 px-1.5 py-0.5 font-medium text-[10px] text-neutral-400 uppercase tracking-wider'>
+                    Inactive
+                  </span>
+                )}
               </div>
-              <div className='mt-0.5 flex items-center gap-2 text-neutral-500 text-xs'>
-                <span className='text-neutral-600'>
-                  Created {new Date(account.createdAt).toLocaleDateString()}
+              <div className='flex items-center gap-2 text-neutral-500 text-xs'>
+                <span className='text-[11px] text-neutral-600 capitalize'>
+                  {account.subtype?.replace(/_/g, ' ') || account.type.replace(/_/g, ' ')}
                 </span>
               </div>
             </div>
           </div>
-          <div className='text-right'>
-            <p className='font-medium text-sm text-white tabular-nums'>
+          <div className='flex flex-row items-center justify-between sm:flex-col sm:items-end sm:justify-center'>
+            <p className='font-medium text-sm text-white tabular-nums tracking-tight'>
               {parseCurrency(
                 Number(account.currentBalance),
                 userPreferences.region,
@@ -75,12 +74,12 @@ export default function AccountRow({ account }: Props) {
             </p>
             <p
               className={cn(
-                'mt-0.5 font-medium text-[10px]',
+                'font-medium text-[11px]',
                 diff > 0
-                  ? 'text-teal-400'
+                  ? 'text-emerald-500'
                   : diff < 0
-                    ? 'text-red-400'
-                    : 'text-neutral-500/50 italic'
+                    ? 'text-red-500'
+                    : 'text-neutral-600 italic'
               )}
             >
               {account.previousBalance ? (
@@ -90,7 +89,7 @@ export default function AccountRow({ account }: Props) {
                   {percent.toFixed(2)}%)
                 </span>
               ) : (
-                'No previous data'
+                <span className='text-neutral-600'>No history</span>
               )}
             </p>
           </div>

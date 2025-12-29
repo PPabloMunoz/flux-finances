@@ -1,5 +1,6 @@
 import { Button } from '@flux/ui/components/ui/button'
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
+import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import {
   Add01Icon,
   ArrowLeft01Icon,
@@ -19,7 +20,7 @@ import NewTransactionModal, {
 } from '@/features/transactions/components/new-transaction-modal'
 import TransactionRow from '@/features/transactions/components/transaction-row'
 import UpdateTransactionModal from '@/features/transactions/components/update-transaction-modal'
-import { getTransactionsAction } from '@/features/transactions/queries'
+import { getTransactionSummaryAction, getTransactionsAction } from '@/features/transactions/queries'
 
 export const Route = createFileRoute('/transactions/')({
   component: RouteComponent,
@@ -38,6 +39,18 @@ function RouteComponent() {
     },
   })
 
+  const { data: summary, isPending: isSummaryPending } = useQuery({
+    queryKey: ['transactions-summary'],
+    queryFn: async () => {
+      const res = await getTransactionSummaryAction()
+      if (!res.ok) {
+        toast.error(res.error)
+        return null
+      }
+      return res.data
+    },
+  })
+
   return (
     <>
       <NewTransactionModal />
@@ -47,7 +60,7 @@ function RouteComponent() {
       <AppHeader />
 
       <main className='container mx-auto space-y-8 px-5 py-10'>
-        <header className='mb-10 flex w-full flex-col-reverse items-start justify-between gap-6 sm:flex-row sm:items-center'>
+        <header className='mb-8 flex w-full flex-col-reverse items-start justify-between gap-6 sm:mb-10 sm:flex-row sm:items-center'>
           <div>
             <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Transactions</h1>
             <p className='text-gray-400 text-sm'>Manage your income and expenses</p>
@@ -75,7 +88,15 @@ function RouteComponent() {
                 data-width='14'
               />
             </div>
-            <div className='font-medium text-white text-xl tracking-tight'>$4,230.50</div>
+            <div className='font-medium text-white text-xl tracking-tight'>
+              {isSummaryPending ? (
+                <Skeleton className='h-7 w-24 rounded-md' />
+              ) : (
+                new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+                  summary?.expenses || 0
+                )
+              )}
+            </div>
           </div>
           <div className='rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
             <div className='mb-2 flex items-center justify-between'>
@@ -87,7 +108,15 @@ function RouteComponent() {
                 data-width='14'
               />
             </div>
-            <div className='font-medium text-white text-xl tracking-tight'>$8,500.00</div>
+            <div className='font-medium text-white text-xl tracking-tight'>
+              {isSummaryPending ? (
+                <Skeleton className='h-7 w-24 rounded-md' />
+              ) : (
+                new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+                  summary?.income || 0
+                )
+              )}
+            </div>
           </div>
           <div className='rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
             <div className='mb-2 flex items-center justify-between'>
@@ -99,7 +128,22 @@ function RouteComponent() {
                 data-width='14'
               />
             </div>
-            <div className='font-medium text-emerald-400 text-xl tracking-tight'>+$4,269.50</div>
+            <div
+              className={`font-medium text-xl tracking-tight ${
+                (summary?.net || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
+              }`}
+            >
+              {isSummaryPending ? (
+                <Skeleton className='h-7 w-24 rounded-md' />
+              ) : (
+                <>
+                  {(summary?.net || 0) > 0 ? '+' : ''}
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+                    summary?.net || 0
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </section>
         <div className='sticky top-14 z-40 mb-6 flex flex-col items-start justify-between gap-4 border-neutral-800 border-b bg-neutral-950 py-3 sm:flex-row sm:items-center'>
@@ -191,9 +235,43 @@ function RouteComponent() {
             </thead>
 
             <tbody className='divide-y divide-neutral-800/50'>
-              {transactions.map((transaction) => (
-                <TransactionRow key={transaction.id} transaction={transaction} />
-              ))}
+              {isPending ? (
+                [0, 1, 2, 3, 4].map((i) => (
+                  <tr key={i}>
+                    <td className='px-4 py-3'>
+                      <Skeleton className='h-4 w-24 rounded-md' />
+                    </td>
+                    <td className='px-4 py-3'>
+                      <Skeleton className='h-4 w-48 rounded-md' />
+                    </td>
+                    <td className='px-4 py-3'>
+                      <Skeleton className='h-4 w-32 rounded-md' />
+                    </td>
+                    <td className='px-4 py-3'>
+                      <Skeleton className='h-4 w-32 rounded-md' />
+                    </td>
+                    <td className='px-4 py-3 text-right'>
+                      <Skeleton className='ml-auto h-4 w-20 rounded-md' />
+                    </td>
+                    <td className='px-4 py-3'>
+                      <Skeleton className='h-8 w-8 rounded-md' />
+                    </td>
+                  </tr>
+                ))
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td className='px-4 py-12 text-center text-neutral-500' colSpan={6}>
+                    <div className='flex flex-col items-center justify-center gap-2'>
+                      <HugeiconsIcon className='size-8 text-neutral-600' icon={Tag02Icon} />
+                      <p>No transactions found</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((transaction) => (
+                  <TransactionRow key={transaction.id} transaction={transaction} />
+                ))
+              )}
             </tbody>
           </table>
         </div>
