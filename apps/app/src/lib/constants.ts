@@ -32,15 +32,18 @@ export const ACCOUNT_TYPES_ICONS: Record<(typeof ACCOUNT_TYPES)[number], IconSvg
 
 export const CATEGORY_TYPES = categoryTypeEnum.enumValues
 export const CATEGORY_TYPES_ICONS: Record<(typeof CATEGORY_TYPES)[number], IconSvgElement> = {
-  inflow: ArrowDownLeft01Icon,
-  outflow: ArrowUpRight01Icon,
+  inflow: ArrowUpRight01Icon,
+  outflow: ArrowDownLeft01Icon,
 }
 
 export const TRANSACTIONS_TYPES = transactionTypeEnum.enumValues
-
 export const TRANSACTIONS_ICONS: Record<(typeof TRANSACTIONS_TYPES)[number], IconSvgElement> = {
-  inflow: ArrowDownLeft01Icon,
-  outflow: ArrowUpRight01Icon,
+  inflow: ArrowUpRight01Icon,
+  outflow: ArrowDownLeft01Icon,
+}
+export const TRANSACTIONS_TYPE_LABELS: Record<(typeof TRANSACTIONS_TYPES)[number], string> = {
+  inflow: 'Income',
+  outflow: 'Expense',
 }
 
 // ========== Country Codes ==========
