@@ -14,7 +14,6 @@ import {
   Add01Icon,
   Delete03Icon,
   Loading03Icon,
-  PencilEdit01Icon,
   StructureFolderIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -186,27 +185,18 @@ export default function CategoriesSettings() {
                           {category.type === 'inflow' ? 'Income' : 'Expense'}
                         </Badge>
                       </div>
-                      <div className='flex items-center'>
-                        <Button
-                          className='mr-2 h-8 w-8 bg-transparent p-0 text-muted-foreground hover:bg-neutral-700/50 hover:text-primary'
-                          size='sm'
-                        >
-                          <HugeiconsIcon className='size-4' icon={PencilEdit01Icon} />
-                        </Button>
-
-                        <Button
-                          className='h-8 w-8 bg-transparent p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
-                          disabled={deleteCategoryMutation.isPending}
-                          onClick={() => deleteCategoryMutation.mutate(category.id)}
-                          size='sm'
-                        >
-                          {deleteCategoryMutation.isPending ? (
-                            <HugeiconsIcon className='size-4 animate-spin' icon={Loading03Icon} />
-                          ) : (
-                            <HugeiconsIcon className='size-4' icon={Delete03Icon} />
-                          )}
-                        </Button>
-                      </div>
+                      <Button
+                        className='h-8 w-8 bg-transparent p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
+                        disabled={deleteCategoryMutation.isPending}
+                        onClick={() => deleteCategoryMutation.mutate(category.id)}
+                        size='sm'
+                      >
+                        {deleteCategoryMutation.isPending ? (
+                          <HugeiconsIcon className='size-4 animate-spin' icon={Loading03Icon} />
+                        ) : (
+                          <HugeiconsIcon className='size-4' icon={Delete03Icon} />
+                        )}
+                      </Button>
                     </div>
                   ))}
                   {categories?.length === 0 && (
