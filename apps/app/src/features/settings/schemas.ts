@@ -1,5 +1,9 @@
+import type { category } from '@flux/db/schema'
+import type { InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod'
 import { CATEGORY_TYPES } from '@/lib/constants'
+
+export type TCategory = InferSelectModel<typeof category>
 
 export const UpdateHouseholdInputValidator = z.object({
   id: z.ulid(),
