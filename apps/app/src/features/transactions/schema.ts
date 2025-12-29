@@ -21,5 +21,5 @@ export const UpdateTransactionSchema = NewTransactionSchema.extend({
 })
 
 export const DeleteTransactionSchema = z.object({
-  transactionId: z.ulid({ error: 'Invalid transaction ID' }),
+  id: z.ulid({ error: 'Invalid transaction ID' }),
 })

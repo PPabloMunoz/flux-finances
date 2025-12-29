@@ -214,7 +214,7 @@ export const deleteTransactionAction = createServerFn({ method: 'POST' })
       await db.transaction(async (tx) => {
         const [deletedTransaction] = await tx
           .delete(transaction)
-          .where(eq(transaction.id, data.transactionId))
+          .where(eq(transaction.id, data.id))
           .returning()
 
         if (!deletedTransaction) tx.rollback()
