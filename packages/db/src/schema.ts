@@ -299,6 +299,7 @@ export const transaction = pgTable('transaction', {
   date: date('date').notNull(),
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
   type: transactionTypeEnum('type').notNull(),
+  title: text('title').notNull(),
   description: text('description'),
   isPending: boolean('is_pending').default(false).notNull(),
   isInvestmentContribution: boolean('is_investment_contribution').default(false).notNull(),
