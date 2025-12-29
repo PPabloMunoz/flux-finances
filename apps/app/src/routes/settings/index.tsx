@@ -1,4 +1,3 @@
-import { authClient } from '@flux/auth/client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryState } from 'nuqs'
@@ -14,7 +13,6 @@ export const Route = createFileRoute('/settings/')({
 })
 
 function RouteComponent() {
-  const { data, error } = authClient.useSession()
   const [tab, setTab] = useQueryState('tab')
 
   return (
