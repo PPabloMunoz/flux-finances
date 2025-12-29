@@ -1,0 +1,25 @@
+import { z } from 'zod'
+import { TRANSACTIONS_TYPES } from '@/lib/constants'
+
+export const NewTransactionSchema = z.object({
+  title: z.string().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
+  accountId: z.ulid({ error: 'Select an account' }),
+  categoryId: z.ulid().or(z.literal('')),
+  date: z
+    .string()
+    .refine((date) => !Number.isNaN(Date.parse(date)), { message: 'Invalid date format' }),
+  amount: z.coerce
+    .number<string>()
+    .positive('Amount must be a positive number')
+    .min(0.01, 'Amount must be at least 0.01'),
+  type: z.enum(TRANSACTIONS_TYPES),
+  description: z.string().max(255, 'Description must be at most 255 characters').or(z.literal('')),
+})
+
+export const UpdateTransactionSchema = NewTransactionSchema.extend({
+  transactionId: z.ulid({ error: 'Invalid transaction ID' }),
+})
+
+export const DeleteTransactionSchema = z.object({
+  transactionId: z.ulid({ error: 'Invalid transaction ID' }),
+})
