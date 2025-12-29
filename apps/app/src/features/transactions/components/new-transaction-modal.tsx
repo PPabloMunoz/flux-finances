@@ -33,6 +33,8 @@ import {
   TRANSACTIONS_TYPE_LABELS,
   TRANSACTIONS_TYPES,
 } from '@/lib/constants'
+import { newTransactionAction } from '../actions'
+import { NewTransactionSchema } from '../schema'
 
 export const newTransactionModalHandle = BaseUIDialog.createHandle()
 
@@ -67,7 +69,7 @@ export default function NewTransactionModal() {
 
   const form = useForm({
     defaultValues: {
-      name: '',
+      title: '',
       accountId: '',
       categoryId: '',
       date: new Date().toISOString().split('T')[0],
@@ -75,12 +77,25 @@ export default function NewTransactionModal() {
       type: TRANSACTIONS_TYPES[1] as string, // Default to 'expense'
       description: '',
     },
-    validators: {},
+    validators: { onSubmit: NewTransactionSchema },
     onSubmit: async ({ value }) => {
-      if (isLoading) return
+      if (isDisabled) return
+      const parsedValue = NewTransactionSchema.safeParse(value)
+      if (!parsedValue.success) {
+        toast.error('Please fix the errors in the form.')
+        return
+      }
+
       setIsLoading(true)
-      console.log(value)
+      const res = await newTransactionAction({
+        data: {
+          ...parsedValue.data,
+          amount: parsedValue.data.amount.toString(),
+        },
+      })
       setIsLoading(false)
+
+      console.log(res)
     },
   })
   const transactionType = useStore(form.store, (state) => state.values.type)
@@ -113,7 +128,7 @@ export default function NewTransactionModal() {
             form.handleSubmit(e)
           }}
         >
-          <form.Field name='name'>
+          <form.Field name='title'>
             {(field) => {
               const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
               return (
