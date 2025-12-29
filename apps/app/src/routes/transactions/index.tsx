@@ -1,6 +1,13 @@
 import { Button } from '@flux/ui/components/ui/button'
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@flux/ui/components/ui/dropdown-menu'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
+import { cn } from '@flux/ui/lib/utils'
 import {
   Add01Icon,
   ArrowLeft01Icon,
@@ -11,9 +18,12 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { z } from 'zod'
 import AppHeader from '@/components/header'
+import { getAllAccountsAction } from '@/features/accounts/queries'
+import { getCategoriesAction } from '@/features/settings/queries'
 import DeleteTransactionModal from '@/features/transactions/components/delete-transaction-modal'
 import NewTransactionModal, {
   newTransactionModalHandle,
@@ -22,15 +32,63 @@ import TransactionRow from '@/features/transactions/components/transaction-row'
 import UpdateTransactionModal from '@/features/transactions/components/update-transaction-modal'
 import { getTransactionSummaryAction, getTransactionsAction } from '@/features/transactions/queries'
 
+const transactionsSearchSchema = z.object({
+  search: z.string().optional(),
+  categoryId: z.string().optional(),
+  accountId: z.string().optional(),
+  dateRange: z.enum(['all', 'today', 'week', 'month', 'year']).optional().catch('all'),
+  page: z.number().min(1).optional().catch(1),
+})
+
 export const Route = createFileRoute('/transactions/')({
   component: RouteComponent,
+  validateSearch: transactionsSearchSchema,
 })
 
 function RouteComponent() {
-  const { data: transactions = [], isPending } = useQuery({
-    queryKey: ['transactions'],
+  const navigate = useNavigate()
+  const search = Route.useSearch()
+
+  const { data, isPending } = useQuery({
+    queryKey: ['transactions', search],
     queryFn: async () => {
-      const res = await getTransactionsAction()
+      const res = await getTransactionsAction({
+        data: {
+          search: search.search,
+          categoryId: search.categoryId,
+          accountId: search.accountId,
+          dateRange: search.dateRange || 'all',
+          page: search.page || 1,
+          pageSize: 10,
+        },
+      })
+      if (!res.ok) {
+        toast.error(res.error)
+        return { transactions: [], pagination: { page: 1, pageSize: 10, total: 0, totalPages: 0 } }
+      }
+      return res.data
+    },
+  })
+
+  const transactions = data?.transactions || []
+  const pagination = data?.pagination || { page: 1, pageSize: 10, total: 0, totalPages: 0 }
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await getCategoriesAction()
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data
+    },
+  })
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: async () => {
+      const res = await getAllAccountsAction()
       if (!res.ok) {
         toast.error(res.error)
         return []
@@ -50,6 +108,21 @@ function RouteComponent() {
       return res.data
     },
   })
+
+  const updateSearch = (updates: Partial<typeof search>) => {
+    navigate({
+      to: '/transactions',
+      search: { ...search, ...updates, page: updates.page ?? 1 },
+    })
+  }
+
+  const dateRangeLabels = {
+    all: 'All Time',
+    today: 'Today',
+    week: 'Last 7 Days',
+    month: 'This Month',
+    year: 'This Year',
+  }
 
   return (
     <>
@@ -154,58 +227,123 @@ function RouteComponent() {
               </span>
               <input
                 className='h-8 w-full rounded-md border border-neutral-800 bg-neutral-900 pr-3 pl-9 text-white text-xs placeholder-neutral-500 transition-all focus:border-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-600 sm:w-64'
+                onChange={(e) => updateSearch({ search: e.target.value || undefined })}
                 placeholder='Filter transactions...'
                 type='text'
+                value={search.search || ''}
               />
             </div>
             <div className='mx-1 h-4 w-[1px] bg-neutral-800' />
             {/*<!-- Dropdown Filters -->*/}
-            <button
-              className='flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white'
-              type='button'
-            >
-              <HugeiconsIcon className='size-3' icon={Calendar01Icon} />
-              This Month
-            </button>
-            <button
-              className='flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white'
-              type='button'
-            >
-              <HugeiconsIcon className='size-3' icon={Tag02Icon} />
-              Category
-            </button>
-            <button
-              className='flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white'
-              type='button'
-            >
-              <HugeiconsIcon className='size-3' icon={PiggyBankIcon} />
-              Account
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white',
+                  search.dateRange &&
+                    search.dateRange !== 'all' &&
+                    'border-neutral-600 border-solid bg-neutral-800 text-white'
+                )}
+              >
+                <HugeiconsIcon className='size-3' icon={Calendar01Icon} />
+                {dateRangeLabels[search.dateRange || 'all']}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start'>
+                <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'all' })}>
+                  All Time
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'today' })}>
+                  Today
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'week' })}>
+                  Last 7 Days
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'month' })}>
+                  This Month
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'year' })}>
+                  This Year
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white',
+                  search.categoryId && 'border-neutral-600 border-solid bg-neutral-800 text-white'
+                )}
+              >
+                <HugeiconsIcon className='size-3' icon={Tag02Icon} />
+                {search.categoryId
+                  ? categories.find((c) => c.id === search.categoryId)?.name || 'Category'
+                  : 'Category'}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start'>
+                <DropdownMenuItem onClick={() => updateSearch({ categoryId: undefined })}>
+                  All Categories
+                </DropdownMenuItem>
+                {categories.map((category) => (
+                  <DropdownMenuItem
+                    key={category.id}
+                    onClick={() => updateSearch({ categoryId: category.id })}
+                  >
+                    <span
+                      className='mr-2 inline-block size-2 rounded-full'
+                      style={{ backgroundColor: category.color || undefined }}
+                    />
+                    {category.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white',
+                  search.accountId && 'border-neutral-600 border-solid bg-neutral-800 text-white'
+                )}
+              >
+                <HugeiconsIcon className='size-3' icon={PiggyBankIcon} />
+                {search.accountId
+                  ? accounts.find((a) => a.id === search.accountId)?.name || 'Account'
+                  : 'Account'}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start'>
+                <DropdownMenuItem onClick={() => updateSearch({ accountId: undefined })}>
+                  All Accounts
+                </DropdownMenuItem>
+                {accounts.map((account) => (
+                  <DropdownMenuItem
+                    key={account.id}
+                    onClick={() => updateSearch({ accountId: account.id })}
+                  >
+                    {account.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className='flex items-center gap-2 text-neutral-500 text-xs'>
-            <span>Showing 1-10 of 248</span>
+            <span>
+              Showing {pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.pageSize + 1}
+              -{Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
+              {pagination.total}
+            </span>
             <div className='flex gap-1'>
               <button
                 className='rounded p-1 hover:bg-neutral-800 hover:text-white disabled:opacity-50'
-                disabled
+                disabled={pagination.page <= 1}
+                onClick={() => updateSearch({ page: pagination.page - 1 })}
                 type='button'
               >
-                <span
-                  className='iconify'
-                  data-icon='lucide:chevron-left'
-                  data-stroke-width='1.5'
-                  data-width='14'
-                />
                 <HugeiconsIcon className='size-3.5' icon={ArrowLeft01Icon} />
               </button>
-              <button className='rounded p-1 hover:bg-neutral-800 hover:text-white' type='button'>
-                <span
-                  className='iconify'
-                  data-icon='lucide:chevron-right'
-                  data-stroke-width='1.5'
-                  data-width='14'
-                />
+              <button
+                className='rounded p-1 hover:bg-neutral-800 hover:text-white disabled:opacity-50'
+                disabled={pagination.page >= pagination.totalPages}
+                onClick={() => updateSearch({ page: pagination.page + 1 })}
+                type='button'
+              >
                 <HugeiconsIcon className='size-3.5 rotate-180' icon={ArrowLeft01Icon} />
               </button>
             </div>
