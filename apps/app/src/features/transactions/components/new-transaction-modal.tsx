@@ -102,6 +102,7 @@ export default function NewTransactionModal() {
         toast.success('Transaction created successfully!')
         queryClient.invalidateQueries({ queryKey: ['transactions'] })
         queryClient.invalidateQueries({ queryKey: ['accounts'] })
+        queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
         newTransactionModalHandle.close()
         form.reset()
       }

@@ -106,6 +106,7 @@ export default function UpdateTransactionModal() {
         toast.success('Transaction updated successfully.')
         queryClient.invalidateQueries({ queryKey: ['transactions'] })
         queryClient.invalidateQueries({ queryKey: ['accounts'] })
+        queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
         updateTransactionModalHandle.close()
         form.reset()
       }

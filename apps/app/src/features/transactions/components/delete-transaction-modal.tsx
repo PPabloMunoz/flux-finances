@@ -39,6 +39,8 @@ export default function DeleteTransactionModal() {
     onSuccess: () => {
       toast.success('Transaction deleted successfully')
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
       deleteTransactionModalHandler.close()
       updateTransactionModalHandle.close()
     },
