@@ -62,6 +62,7 @@ export default function UpdateTransactionModal() {
       if (!res.ok) {
         throw new Error(res.error)
       }
+      setCategoriesToShow(res.data)
       return res.data
     },
   })
@@ -73,10 +74,10 @@ export default function UpdateTransactionModal() {
       id: '',
       title: '',
       accountId: '',
-      categoryId: '',
+      categoryId: '' as string | null,
       date: new Date().toISOString().split('T')[0],
       amount: '',
-      type: TRANSACTIONS_TYPES[1] as string, // Default to 'expense'
+      type: '',
       description: '',
     },
     validators: { onSubmit: UpdateTransactionSchema },
@@ -137,8 +138,8 @@ export default function UpdateTransactionModal() {
             : new Date().toISOString().split('T')[0]
         )
         form.setFieldValue('amount', parsedPayload.data.amount.toString())
-        form.setFieldValue('type', parsedPayload.data.type)
-        form.setFieldValue('description', parsedPayload.data.description || '')
+        // form.setFieldValue('type', parsedPayload.data.type)
+        form.setFieldValue('description', parsedPayload.data.description)
 
         return (
           <DialogContent>
@@ -165,7 +166,7 @@ export default function UpdateTransactionModal() {
                         aria-invalid={isInvalid}
                         disabled={isDisabled}
                         id={field.name}
-                        onChange={(e) => field.setValue(e.target.value)}
+                        onChange={(e) => field.handleChange(e.target.value)}
                         placeholder='e.g. Grocery Shopping'
                         spellCheck={false}
                         value={field.state.value || ''}
@@ -188,7 +189,7 @@ export default function UpdateTransactionModal() {
                           disabled={isDisabled}
                           id={field.name}
                           min='0'
-                          onChange={(e) => field.setValue(e.target.value)}
+                          onChange={(e) => field.handleChange(e.target.value)}
                           placeholder='e.g. 50.00'
                           spellCheck={false}
                           step='0.01'
@@ -211,7 +212,7 @@ export default function UpdateTransactionModal() {
                           aria-invalid={isInvalid}
                           disabled={isDisabled}
                           id={field.name}
-                          onChange={(e) => field.setValue(e.target.value)}
+                          onChange={(e) => field.handleChange(e.target.value)}
                           type='date'
                           value={field.state.value || ''}
                         />
@@ -234,7 +235,7 @@ export default function UpdateTransactionModal() {
                           aria-invalid={isInvalid}
                           disabled={isDisabled}
                           id={field.name}
-                          onValueChange={(value) => field.setValue(value ?? '')}
+                          onValueChange={(value) => field.handleChange(value ?? '')}
                           value={field.state.value}
                         >
                           <SelectTrigger>
@@ -314,10 +315,11 @@ export default function UpdateTransactionModal() {
                         <FieldLabel htmlFor={field.name}>Transaction Type</FieldLabel>
                         <Select
                           aria-invalid={isInvalid}
+                          defaultValue={parsedPayload.data.type}
                           disabled={isDisabled}
                           id={field.name}
                           onValueChange={(value) => field.setValue(value ?? TRANSACTIONS_TYPES[1])}
-                          value={field.state.value}
+                          value={field.state.value || parsedPayload.data.type}
                         >
                           <SelectTrigger>
                             <SelectValue>
@@ -376,7 +378,7 @@ export default function UpdateTransactionModal() {
                         aria-invalid={isInvalid}
                         disabled={isDisabled}
                         id={field.name}
-                        onValueChange={(value) => field.setValue(value ?? '')}
+                        onValueChange={(value) => field.handleChange(value ?? '')}
                         value={field.state.value}
                       >
                         <SelectTrigger>
@@ -428,7 +430,7 @@ export default function UpdateTransactionModal() {
                         aria-invalid={isInvalid}
                         disabled={isDisabled}
                         id={field.name}
-                        onChange={(e) => field.setValue(e.target.value)}
+                        onChange={(e) => field.handleChange(e.target.value)}
                         placeholder='Add any additional details about the transaction'
                         spellCheck={false}
                         value={field.state.value || ''}

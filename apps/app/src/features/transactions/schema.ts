@@ -13,7 +13,7 @@ export const NewTransactionSchema = z.object({
     .positive('Amount must be a positive number')
     .min(0.01, 'Amount must be at least 0.01'),
   type: z.enum(TRANSACTIONS_TYPES),
-  description: z.string().max(255, 'Description must be at most 255 characters').or(z.literal('')),
+  description: z.string().max(255, 'Description must be at most 255 characters'),
 })
 
 export const UpdateTransactionSchema = NewTransactionSchema.extend({
