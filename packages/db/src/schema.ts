@@ -300,7 +300,7 @@ export const transaction = pgTable('transaction', {
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
   type: transactionTypeEnum('type').notNull(),
   title: text('title').notNull(),
-  description: text('description'),
+  description: text('description').notNull().default(''),
   isPending: boolean('is_pending').default(false).notNull(),
   isInvestmentContribution: boolean('is_investment_contribution').default(false).notNull(),
   providerId: text('provider_id'),
