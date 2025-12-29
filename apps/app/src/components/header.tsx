@@ -64,9 +64,9 @@ export default function AppHeader() {
               activeProps={{ className: 'bg-white/5 text-white' }}
               className='px-3 py-1.5 font-medium text-xs transition-colors'
               inactiveProps={{ className: 'text-neutral-400 hover:bg-white/5 hover:text-white' }}
-              to='/investments'
+              to='/budgets'
             >
-              Investments
+              Budgets
             </Link>
 
             <Popover>

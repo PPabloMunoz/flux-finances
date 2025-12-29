@@ -13,7 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
-import { Route as InvestmentsIndexRouteImport } from './routes/investments/index'
+import { Route as BudgetsIndexRouteImport } from './routes/budgets/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
@@ -42,9 +42,9 @@ const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
   path: '/onboarding/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvestmentsIndexRoute = InvestmentsIndexRouteImport.update({
-  id: '/investments/',
-  path: '/investments/',
+const BudgetsIndexRoute = BudgetsIndexRouteImport.update({
+  id: '/budgets/',
+  path: '/budgets/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountsIndexRoute = AccountsIndexRouteImport.update({
@@ -91,7 +91,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/accounts': typeof AccountsIndexRoute
-  '/investments': typeof InvestmentsIndexRoute
+  '/budgets': typeof BudgetsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -105,7 +105,7 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/accounts': typeof AccountsIndexRoute
-  '/investments': typeof InvestmentsIndexRoute
+  '/budgets': typeof BudgetsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -120,7 +120,7 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
   '/accounts/': typeof AccountsIndexRoute
-  '/investments/': typeof InvestmentsIndexRoute
+  '/budgets/': typeof BudgetsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -136,7 +136,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/accounts'
-    | '/investments'
+    | '/budgets'
     | '/onboarding'
     | '/settings'
     | '/transactions'
@@ -150,7 +150,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/accounts'
-    | '/investments'
+    | '/budgets'
     | '/onboarding'
     | '/settings'
     | '/transactions'
@@ -164,7 +164,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/signup'
     | '/accounts/'
-    | '/investments/'
+    | '/budgets/'
     | '/onboarding/'
     | '/settings/'
     | '/transactions/'
@@ -179,7 +179,7 @@ export interface RootRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AccountsIndexRoute: typeof AccountsIndexRoute
-  InvestmentsIndexRoute: typeof InvestmentsIndexRoute
+  BudgetsIndexRoute: typeof BudgetsIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
@@ -216,11 +216,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/investments/': {
-      id: '/investments/'
-      path: '/investments'
-      fullPath: '/investments'
-      preLoaderRoute: typeof InvestmentsIndexRouteImport
+    '/budgets/': {
+      id: '/budgets/'
+      path: '/budgets'
+      fullPath: '/budgets'
+      preLoaderRoute: typeof BudgetsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accounts/': {
@@ -283,7 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
   AccountsIndexRoute: AccountsIndexRoute,
-  InvestmentsIndexRoute: InvestmentsIndexRoute,
+  BudgetsIndexRoute: BudgetsIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
