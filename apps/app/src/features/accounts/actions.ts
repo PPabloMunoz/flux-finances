@@ -59,7 +59,7 @@ export const updateAccountAction = createServerFn({ method: 'POST' })
       if (!activeOrgId) throw new Error('Unauthorized')
 
       await db.transaction(async (tx) => {
-        const [updatedAccount] = await db
+        const [updatedAccount] = await tx
           .update(account)
           .set({
             name: data.name,
