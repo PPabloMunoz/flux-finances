@@ -133,7 +133,7 @@ function RouteComponent() {
       <main className='container mx-auto space-y-8 px-5 py-10'>
         <header className='mb-10 grid grid-cols-1 gap-6 md:grid-cols-5'>
           <div className='md:col-span-3'>
-            <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Net Worth</h1>
+            <h1 className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</h1>
             <div className='flex items-baseline gap-3'>
               <span className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
                 {cashAccountsPending ||
