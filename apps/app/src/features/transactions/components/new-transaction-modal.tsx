@@ -72,7 +72,7 @@ export default function NewTransactionModal() {
     defaultValues: {
       title: '',
       accountId: '',
-      categoryId: '',
+      categoryId: '' as string | null,
       date: new Date().toISOString().split('T')[0],
       amount: '',
       type: TRANSACTIONS_TYPES[1] as string, // Default to 'expense'
@@ -147,7 +147,7 @@ export default function NewTransactionModal() {
                     aria-invalid={isInvalid}
                     disabled={isDisabled}
                     id={field.name}
-                    onChange={(e) => field.setValue(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     placeholder='e.g. Grocery Shopping'
                     spellCheck={false}
                     value={field.state.value || ''}
@@ -170,7 +170,7 @@ export default function NewTransactionModal() {
                       disabled={isDisabled}
                       id={field.name}
                       min='0'
-                      onChange={(e) => field.setValue(e.target.value)}
+                      onChange={(e) => field.handleChange(e.target.value)}
                       placeholder='e.g. 50.00'
                       spellCheck={false}
                       step='0.01'
@@ -193,7 +193,7 @@ export default function NewTransactionModal() {
                       aria-invalid={isInvalid}
                       disabled={isDisabled}
                       id={field.name}
-                      onChange={(e) => field.setValue(e.target.value)}
+                      onChange={(e) => field.handleChange(e.target.value)}
                       type='date'
                       value={field.state.value || ''}
                     />
@@ -216,7 +216,7 @@ export default function NewTransactionModal() {
                       aria-invalid={isInvalid}
                       disabled={isDisabled}
                       id={field.name}
-                      onValueChange={(value) => field.setValue(value ?? '')}
+                      onValueChange={(value) => field.handleChange(value ?? '')}
                       value={field.state.value}
                     >
                       <SelectTrigger>
@@ -296,7 +296,7 @@ export default function NewTransactionModal() {
                       aria-invalid={isInvalid}
                       disabled={isDisabled}
                       id={field.name}
-                      onValueChange={(value) => field.setValue(value ?? '')}
+                      onValueChange={(value) => field.handleChange(value ?? '')}
                       value={field.state.value}
                     >
                       <SelectTrigger>
@@ -353,7 +353,7 @@ export default function NewTransactionModal() {
                     aria-invalid={isInvalid}
                     disabled={isDisabled}
                     id={field.name}
-                    onValueChange={(value) => field.setValue(value ?? '')}
+                    onValueChange={(value) => field.handleChange(value ?? '')}
                     value={field.state.value}
                   >
                     <SelectTrigger>
@@ -405,7 +405,7 @@ export default function NewTransactionModal() {
                     aria-invalid={isInvalid}
                     disabled={isDisabled}
                     id={field.name}
-                    onChange={(e) => field.setValue(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     placeholder='Add any additional details about the transaction'
                     spellCheck={false}
                     value={field.state.value || ''}
