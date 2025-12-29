@@ -145,7 +145,7 @@ export default function UpdateAccountModal() {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                   return (
                     <Field>
-                      <FieldLabel htmlFor={field.name}>Initial Balance</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Balance</FieldLabel>
                       <Input
                         className={cn('', isLoading && 'cursor-not-allowed opacity-50')}
                         disabled={isLoading}
