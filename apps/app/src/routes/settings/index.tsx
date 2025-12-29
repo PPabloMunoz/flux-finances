@@ -1,7 +1,6 @@
 import { authClient } from '@flux/auth/client'
 import { Spinner } from '@flux/ui/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
-import { cn } from '@flux/ui/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryState } from 'nuqs'
 import AppHeader from '@/components/header'
@@ -14,10 +13,6 @@ import TagsSettings from '@/features/settings/components/tags'
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
 })
-
-const tabsTriggerClassName = cn(
-  'flex h-8 items-center justify-center border-0 px-2 text-sm font-medium break-keep whitespace-nowrap text-gray-600 outline-none select-none hover:text-gray-900'
-)
 
 function RouteComponent() {
   const { data, error } = authClient.useSession()
@@ -34,22 +29,12 @@ function RouteComponent() {
         </div>
 
         <Tabs onValueChange={(value) => setTab(value)} value={tab || 'preferences'}>
-          <TabsList className='mb-5 space-x-1.5'>
-            <TabsTrigger className={tabsTriggerClassName} value='preferences'>
-              Preferences
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='category'>
-              Category
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='tags'>
-              Tags
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='profile'>
-              Profile
-            </TabsTrigger>
-            <TabsTrigger className={tabsTriggerClassName} value='security'>
-              Security
-            </TabsTrigger>
+          <TabsList className='mb-5' variant='line'>
+            <TabsTrigger value='preferences'>Preferences</TabsTrigger>
+            <TabsTrigger value='category'>Category</TabsTrigger>
+            <TabsTrigger value='tags'>Tags</TabsTrigger>
+            <TabsTrigger value='profile'>Profile</TabsTrigger>
+            <TabsTrigger value='security'>Security</TabsTrigger>
           </TabsList>
           <TabsContent value='preferences'>
             <PreferencesSettings />
