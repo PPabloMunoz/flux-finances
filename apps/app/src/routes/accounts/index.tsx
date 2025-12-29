@@ -11,7 +11,7 @@ import AccountRow from '@/features/accounts/components/account-row'
 import DeleteAccountModal from '@/features/accounts/components/delete-account-modal'
 import { newAccountDialogHandle } from '@/features/accounts/components/new-account-modal'
 import UpdateAccountModal from '@/features/accounts/components/update-account-modal'
-import { getAccountsAction } from '@/features/accounts/queries'
+import { getAccountsByTypeAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { ACCOUNT_TYPES } from '@/lib/constants'
@@ -28,7 +28,7 @@ function RouteComponent() {
   const { data: cashAccounts = [], isPending: cashAccountsPending } = useQuery({
     queryKey: ['accounts', ACCOUNT_TYPES[0]],
     queryFn: async () => {
-      const res = await getAccountsAction({ data: { type: ACCOUNT_TYPES[0] } })
+      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[0] } })
       if (!res.ok) {
         toast.error('Failed to load cash accounts')
         return []
@@ -42,7 +42,7 @@ function RouteComponent() {
   const { data: investmentAccounts = [], isPending: investmentAccountsPending } = useQuery({
     queryKey: ['accounts', ACCOUNT_TYPES[1]],
     queryFn: async () => {
-      const res = await getAccountsAction({ data: { type: ACCOUNT_TYPES[1] } })
+      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[1] } })
       if (!res.ok) {
         toast.error('Failed to load investment accounts')
         return []
@@ -56,7 +56,7 @@ function RouteComponent() {
   const { data: liabilityAccounts = [], isPending: liabilityAccountsPending } = useQuery({
     queryKey: ['accounts', ACCOUNT_TYPES[2]],
     queryFn: async () => {
-      const res = await getAccountsAction({ data: { type: ACCOUNT_TYPES[2] } })
+      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[2] } })
       if (!res.ok) {
         toast.error('Failed to load liability accounts')
         return []
@@ -70,7 +70,7 @@ function RouteComponent() {
   const { data: assetAccounts = [], isPending: assetAccountsPending } = useQuery({
     queryKey: ['accounts', ACCOUNT_TYPES[3]],
     queryFn: async () => {
-      const res = await getAccountsAction({ data: { type: ACCOUNT_TYPES[3] } })
+      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[3] } })
       if (!res.ok) {
         toast.error('Failed to load asset accounts')
         return []

@@ -2,7 +2,7 @@ import { db } from '@flux/db'
 import { account, accountBalance } from '@flux/db/schema'
 import { monthStart } from '@formkit/tempo'
 import { createServerFn } from '@tanstack/react-start'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { ACCOUNT_TYPES } from '@/lib/constants'
 import { functionAuthMiddleware } from '@/middleware/auth'
@@ -12,7 +12,7 @@ const GetInputSchema = z.object({
   type: z.enum(ACCOUNT_TYPES),
 })
 
-export const getAccountsAction = createServerFn({ method: 'GET' })
+export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .inputValidator(GetInputSchema)
   .handler(async ({ context, data }) => {
@@ -59,5 +59,25 @@ export const getAccountsAction = createServerFn({ method: 'GET' })
     } catch (err) {
       console.error('Error fetching cash accounts:', err)
       return { ok: false, error: 'Failed to create account' } satisfies ServerFnResult<never>
+    }
+  })
+
+export const getAllAccountsAction = createServerFn({ method: 'GET' })
+  .middleware([functionAuthMiddleware])
+  .handler(async ({ context }) => {
+    const activeOrgId = context.session?.session.activeOrganizationId
+    try {
+      if (!activeOrgId) throw new Error('Unauthorized')
+
+      const accounts = await db
+        .select()
+        .from(account)
+        .where(eq(account.organizationId, activeOrgId))
+        .orderBy(asc(account.type), asc(account.name), desc(account.createdAt))
+
+      return { ok: true, data: accounts } satisfies ServerFnResult<typeof accounts>
+    } catch (err) {
+      console.error('Error fetching all accounts:', err)
+      return { ok: false, error: 'Failed to fetch accounts' } satisfies ServerFnResult<never>
     }
   })
