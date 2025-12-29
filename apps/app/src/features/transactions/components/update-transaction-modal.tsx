@@ -6,6 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@flux/ui/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
@@ -18,7 +19,7 @@ import {
 } from '@flux/ui/components/ui/select'
 import { Textarea } from '@flux/ui/components/ui/textarea'
 import { cn } from '@flux/ui/lib/utils'
-import { AddIcon } from '@hugeicons/core-free-icons'
+import { AddIcon, Delete03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -35,6 +36,7 @@ import {
 } from '@/lib/constants'
 import { updateTransactionAction } from '../actions'
 import { UpdateTransactionSchema } from '../schema'
+import { deleteTransactionModalHandler } from './delete-transaction-modal'
 
 export const updateTransactionModalHandle = BaseUIDialog.createHandle()
 
@@ -441,10 +443,21 @@ export default function UpdateTransactionModal() {
                 }}
               </form.Field>
 
-              <Button className='w-full' disabled={isLoading} type='submit'>
-                <HugeiconsIcon icon={AddIcon} />
-                {isLoading ? 'Updating...' : 'Update Transaction'}
-              </Button>
+              <div className='mt-4 flex items-center justify-between gap-2'>
+                <Button className='w-full flex-1' disabled={isDisabled} type='submit'>
+                  <HugeiconsIcon icon={AddIcon} />
+                  {isLoading ? 'Updating...' : 'Update Transaction'}
+                </Button>
+                <DialogTrigger
+                  handle={deleteTransactionModalHandler}
+                  payload={{ id: parsedPayload.data.id }}
+                  render={
+                    <Button disabled={isDisabled} type='button' variant='destructive'>
+                      <HugeiconsIcon icon={Delete03Icon} />
+                    </Button>
+                  }
+                />
+              </div>
             </form>
           </DialogContent>
         )

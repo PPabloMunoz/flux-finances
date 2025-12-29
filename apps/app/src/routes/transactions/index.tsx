@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
+import DeleteTransactionModal from '@/features/transactions/components/delete-transaction-modal'
 import NewTransactionModal, {
   newTransactionModalHandle,
 } from '@/features/transactions/components/new-transaction-modal'
@@ -41,6 +42,7 @@ function RouteComponent() {
     <>
       <NewTransactionModal />
       <UpdateTransactionModal />
+      <DeleteTransactionModal />
 
       <AppHeader />
 
