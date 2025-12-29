@@ -9,16 +9,12 @@ import {
 } from '@flux/ui/components/ui/card'
 import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
+import { cn } from '@flux/ui/lib/utils'
 import { Alert02Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-
-interface Props {
-  personalInfo: { email: string; fullName: string }
-  household: { id: string; householdName: string }
-}
 
 const PersonalInfoValidator = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters long'),
@@ -27,14 +23,16 @@ const HouseholdValidator = z.object({
   householdName: z.string().min(2, 'Household name must be at least 2 characters long'),
 })
 
-export default function ProfileSettings({ personalInfo, household }: Props) {
+export default function ProfileSettings() {
+  const { data, error } = authClient.useSession()
   const { data: org } = authClient.useActiveOrganization()
+  const household = { id: org?.id || 'home', householdName: org?.name || 'My Household' }
 
   const personalInfoForm = useForm({
-    defaultValues: { fullName: personalInfo.fullName },
+    defaultValues: { fullName: error ? 'Error loading name' : data?.user.name || 'Loading...' },
     validators: { onChange: PersonalInfoValidator },
     onSubmit: async ({ value }) => {
-      if (value.fullName === personalInfo.fullName) return toast.info('No changes detected')
+      if (value.fullName === data?.user.name) return toast.info('No changes detected')
       const { error } = await authClient.updateUser({ name: value.fullName })
       if (error) toast.error(`Error updating profile: ${error.message}`)
       else toast.success('Profile updated successfully')
@@ -79,7 +77,7 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
               <FieldLabel htmlFor='email'>Email Address</FieldLabel>
               <Input
                 className='bg-muted'
-                defaultValue={personalInfo.email}
+                defaultValue={error ? 'ERROR LOADING EMAIL' : data?.user.email || 'Loading...'}
                 disabled
                 name='email'
                 required
@@ -95,11 +93,13 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
                   <Field className='space-y-2'>
                     <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
                     <Input
+                      className={cn('', error || (!data && 'cursor-not-allowed opacity-50'))}
+                      disabled={!!error || !data}
                       id={field.name}
                       name={field.name}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder={personalInfo.fullName}
+                      placeholder={data?.user.name}
                       required
                       type='text'
                       value={field.state.value}
@@ -150,6 +150,7 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
                   <Field className='space-y-2'>
                     <FieldLabel htmlFor={field.name}>Household Name</FieldLabel>
                     <Input
+                      className={cn('', !org && 'cursor-not-allowed opacity-50')}
                       defaultValue={field.state.value}
                       id={field.name}
                       name={field.name}
@@ -174,10 +175,9 @@ export default function ProfileSettings({ personalInfo, household }: Props) {
                 <div className='flex items-center justify-between rounded-md bg-card px-3 py-2'>
                   <div>
                     <p className='font-medium text-sm'>
-                      {personalInfo.fullName}{' '}
-                      <span className='text-muted-foreground text-xs'>(You)</span>
+                      {data?.user.name} <span className='text-muted-foreground text-xs'>(You)</span>
                     </p>
-                    <p className='text-muted-foreground text-xs'>{personalInfo.email} • Admin</p>
+                    <p className='text-muted-foreground text-xs'>{data?.user.email} • Admin</p>
                   </div>
                 </div>
                 <div className='flex items-center justify-between rounded-md bg-card px-3 py-2 opacity-50'>

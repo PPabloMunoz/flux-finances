@@ -1,5 +1,4 @@
 import { authClient } from '@flux/auth/client'
-import { Spinner } from '@flux/ui/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryState } from 'nuqs'
@@ -46,22 +45,7 @@ function RouteComponent() {
             <TagsSettings />
           </TabsContent>
           <TabsContent value='profile'>
-            {!error && data && (
-              <ProfileSettings
-                household={{ id: 'home', householdName: 'Mi casa' }}
-                personalInfo={{ email: data.user.email, fullName: data.user.name }}
-              />
-            )}
-            {error && (
-              <div className='h-full w-full text-lg text-red-500'>
-                Error loading profile information.
-              </div>
-            )}
-            {!data && !error && (
-              <div className='flex h-full min-h-40 w-full items-center justify-center'>
-                <Spinner />
-              </div>
-            )}
+            <ProfileSettings />
           </TabsContent>
           <TabsContent value='security'>
             <SecuritySettings />
