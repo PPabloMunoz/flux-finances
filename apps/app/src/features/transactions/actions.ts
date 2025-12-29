@@ -24,7 +24,7 @@ export const newTransactionAction = createServerFn({ method: 'POST' })
             amount: data.amount.toString(),
             type: data.type,
             date: new Date(data.date).toISOString(),
-            description: data.description || null,
+            description: data.description,
           })
           .returning()
 
@@ -40,7 +40,8 @@ export const newTransactionAction = createServerFn({ method: 'POST' })
         if (!lastEntry) tx.rollback()
 
         const previousBalance = Number.parseFloat(lastEntry.balance)
-        const newTotalBalance = previousBalance + data.amount
+        const newTotalBalance =
+          previousBalance + (data.type === 'inflow' ? data.amount : -data.amount)
 
         const [balance] = await tx
           .insert(accountBalance)
@@ -75,15 +76,17 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
       if (!activeOrgId) throw new Error('Unauthorized')
 
       await db.transaction(async (tx) => {
-        const [oldTransaction] = await tx
+        // 1. Get the OLD state before updating
+        const [oldTx] = await tx
           .select()
           .from(transaction)
-          .where(eq(transaction.id, data.transactionId))
+          .where(eq(transaction.id, data.id))
           .limit(1)
 
-        if (!oldTransaction) tx.rollback()
+        if (!oldTx) tx.rollback()
 
-        const [updatedTransaction] = await tx
+        // 2. Update the transaction record
+        const [newTx] = await tx
           .update(transaction)
           .set({
             title: data.title,
@@ -92,43 +95,105 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
             amount: data.amount.toString(),
             type: data.type,
             date: new Date(data.date).toISOString(),
-            description: data.description || null,
+            description: data.description,
           })
-          .where(eq(transaction.id, data.transactionId))
+          .where(eq(transaction.id, data.id))
           .returning()
 
-        if (!updatedTransaction) tx.rollback()
+        if (!newTx) tx.rollback()
 
-        const [lastEntry] = await tx
-          .select()
-          .from(accountBalance)
-          .where(eq(accountBalance.accountId, updatedTransaction.accountId))
-          .orderBy(desc(accountBalance.date))
-          .limit(1)
+        const oldAccountId = oldTx.accountId
+        const newAccountId = newTx.accountId
 
-        if (!lastEntry) tx.rollback()
+        if (oldAccountId !== newAccountId) {
+          // --- CASE A: ACCOUNT CHANGED ---
 
-        const previousBalance = Number.parseFloat(lastEntry.balance)
-        const amountDifference =
-          (updatedTransaction.type === 'inflow' ? 1 : -1) *
-            Number.parseFloat(updatedTransaction.amount) -
-          (oldTransaction.type === 'inflow' ? 1 : -1) * Number.parseFloat(oldTransaction.amount)
-        const newTotalBalance = previousBalance + amountDifference
+          // 1. REVERSE impact on the OLD account
+          const [oldAccEntry] = await tx
+            .select()
+            .from(accountBalance)
+            .where(eq(accountBalance.accountId, oldAccountId))
+            .orderBy(desc(accountBalance.date))
+            .limit(1)
 
-        const [balance] = await tx
-          .insert(accountBalance)
-          .values({
-            accountId: updatedTransaction.accountId,
-            date: new Date().toISOString(),
-            balance: newTotalBalance.toString(),
-          })
-          .onConflictDoUpdate({
-            target: [accountBalance.accountId, accountBalance.date],
-            set: { balance: newTotalBalance.toString() },
-          })
-          .returning({ id: accountBalance.id })
+          if (oldAccEntry) {
+            const oldAmount = Number.parseFloat(oldTx.amount)
+            // If it was an inflow, we subtract to reverse. If outflow, we add.
+            const reversalAdjustment = oldTx.type === 'inflow' ? -oldAmount : oldAmount
+            const updatedOldAccBalance = Number.parseFloat(oldAccEntry.balance) + reversalAdjustment
 
-        if (!balance) tx.rollback()
+            await tx
+              .insert(accountBalance)
+              .values({
+                accountId: oldAccountId,
+                date: new Date().toISOString(),
+                balance: updatedOldAccBalance.toString(),
+              })
+              .onConflictDoUpdate({
+                target: [accountBalance.accountId, accountBalance.date],
+                set: { balance: updatedOldAccBalance.toString() },
+              })
+          }
+
+          // 2. APPLY impact on the NEW account
+          const [newAccEntry] = await tx
+            .select()
+            .from(accountBalance)
+            .where(eq(accountBalance.accountId, newAccountId))
+            .orderBy(desc(accountBalance.date))
+            .limit(1)
+
+          if (!newAccEntry) tx.rollback()
+
+          const newAmount = Number.parseFloat(newTx.amount)
+          const applyAdjustment = newTx.type === 'inflow' ? newAmount : -newAmount
+          const updatedNewAccBalance = Number.parseFloat(newAccEntry.balance) + applyAdjustment
+
+          await tx
+            .insert(accountBalance)
+            .values({
+              accountId: newAccountId,
+              date: new Date().toISOString(),
+              balance: updatedNewAccBalance.toString(),
+            })
+            .onConflictDoUpdate({
+              target: [accountBalance.accountId, accountBalance.date],
+              set: { balance: updatedNewAccBalance.toString() },
+            })
+        } else {
+          // --- CASE B: SAME ACCOUNT ---
+
+          const [lastEntry] = await tx
+            .select()
+            .from(accountBalance)
+            .where(eq(accountBalance.accountId, newAccountId))
+            .orderBy(desc(accountBalance.date))
+            .limit(1)
+
+          if (!lastEntry) tx.rollback()
+
+          const oldAmountParsed = Number.parseFloat(oldTx.amount)
+          const newAmountParsed = Number.parseFloat(newTx.amount)
+
+          // Math: (New Impact) - (Old Impact)
+          const oldImpact = oldTx.type === 'inflow' ? oldAmountParsed : -oldAmountParsed
+          const newImpact = newTx.type === 'inflow' ? newAmountParsed : -newAmountParsed
+          const diff = newImpact - oldImpact
+
+          const finalBalance = Number.parseFloat(lastEntry.balance) + diff
+
+          await tx
+            .insert(accountBalance)
+            .values({
+              accountId: newAccountId,
+              date: new Date().toISOString(),
+              balance: finalBalance.toString(),
+            })
+            .onConflictDoUpdate({
+              target: [accountBalance.accountId, accountBalance.date],
+              set: { balance: finalBalance.toString() },
+            })
+        }
       })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>

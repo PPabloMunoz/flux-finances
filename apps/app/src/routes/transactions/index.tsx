@@ -2,27 +2,45 @@ import { Button } from '@flux/ui/components/ui/button'
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
 import {
   Add01Icon,
+  ArrowLeft01Icon,
   Calendar01Icon,
   FilterIcon,
   PiggyBankIcon,
   Tag02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import NewTransactionModal, {
   newTransactionModalHandle,
 } from '@/features/transactions/components/new-transaction-modal'
 import TransactionRow from '@/features/transactions/components/transaction-row'
+import UpdateTransactionModal from '@/features/transactions/components/update-transaction-modal'
+import { getTransactionsAction } from '@/features/transactions/queries'
 
 export const Route = createFileRoute('/transactions/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { data: transactions = [], isPending } = useQuery({
+    queryKey: ['transactions'],
+    queryFn: async () => {
+      const res = await getTransactionsAction()
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data
+    },
+  })
+
   return (
     <>
       <NewTransactionModal />
+      <UpdateTransactionModal />
 
       <AppHeader />
 
@@ -44,7 +62,6 @@ function RouteComponent() {
             />
           </div>
         </header>
-
         <section className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
           <div className='rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
             <div className='mb-2 flex items-center justify-between'>
@@ -83,10 +100,8 @@ function RouteComponent() {
             <div className='font-medium text-emerald-400 text-xl tracking-tight'>+$4,269.50</div>
           </div>
         </section>
-
         <div className='sticky top-14 z-40 mb-6 flex flex-col items-start justify-between gap-4 border-neutral-800 border-b bg-neutral-950 py-3 sm:flex-row sm:items-center'>
           <div className='flex flex-wrap items-center gap-2'>
-            {/*<!-- Search Input -->*/}
             <div className='group relative'>
               <span className='absolute top-1/2 left-2.5 -translate-y-1/2 text-neutral-500 transition-colors group-focus-within:text-white'>
                 <HugeiconsIcon className='size-3.5' icon={FilterIcon} />
@@ -97,9 +112,7 @@ function RouteComponent() {
                 type='text'
               />
             </div>
-
             <div className='mx-1 h-4 w-[1px] bg-neutral-800' />
-
             {/*<!-- Dropdown Filters -->*/}
             <button
               className='flex items-center gap-1.5 rounded-md border border-neutral-700 border-dashed px-2.5 py-1.5 text-neutral-400 text-xs transition-colors hover:border-neutral-500 hover:text-white'
@@ -138,6 +151,7 @@ function RouteComponent() {
                   data-stroke-width='1.5'
                   data-width='14'
                 />
+                <HugeiconsIcon className='size-3.5' icon={ArrowLeft01Icon} />
               </button>
               <button className='rounded p-1 hover:bg-neutral-800 hover:text-white' type='button'>
                 <span
@@ -146,11 +160,11 @@ function RouteComponent() {
                   data-stroke-width='1.5'
                   data-width='14'
                 />
+                <HugeiconsIcon className='size-3.5 rotate-180' icon={ArrowLeft01Icon} />
               </button>
             </div>
           </div>
         </div>
-
         <div className='relative overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900/20'>
           <table className='w-full text-left text-xs'>
             <thead className='bg-neutral-900/50 text-neutral-500 uppercase'>
@@ -159,7 +173,7 @@ function RouteComponent() {
                   Date
                 </th>
                 <th className='w-1/3 px-4 py-3 font-medium tracking-wide' scope='col'>
-                  Description
+                  Title
                 </th>
                 <th className='px-4 py-3 font-medium tracking-wide' scope='col'>
                   Category
@@ -175,19 +189,11 @@ function RouteComponent() {
             </thead>
 
             <tbody className='divide-y divide-neutral-800/50'>
-              <TransactionRow />
+              {transactions.map((transaction) => (
+                <TransactionRow key={transaction.id} transaction={transaction} />
+              ))}
             </tbody>
           </table>
-        </div>
-
-        {/*<!-- TODO: Pagination  -->*/}
-        <div className='mt-4 flex justify-center'>
-          <button
-            className='font-medium text-[10px] text-neutral-500 uppercase tracking-wider transition-colors hover:text-neutral-300'
-            type='button'
-          >
-            Load More Transactions
-          </button>
         </div>
       </main>
     </>

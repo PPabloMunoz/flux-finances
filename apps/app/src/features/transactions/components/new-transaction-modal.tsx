@@ -21,7 +21,7 @@ import { cn } from '@flux/ui/lib/utils'
 import { AddIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { getAllAccountsAction } from '@/features/accounts/queries'
@@ -41,6 +41,7 @@ export const newTransactionModalHandle = BaseUIDialog.createHandle()
 export default function NewTransactionModal() {
   const [isLoading, setIsLoading] = useState(false)
   const [categoriesToShow, setCategoriesToShow] = useState<TCategory[]>([])
+  const queryClient = useQueryClient()
 
   const { data: accounts = [], isPending: accountsPending } = useQuery({
     queryKey: ['accounts'],
@@ -95,7 +96,15 @@ export default function NewTransactionModal() {
       })
       setIsLoading(false)
 
-      console.log(res)
+      if (!res.ok) {
+        toast.error(res.error)
+      } else {
+        toast.success('Transaction created successfully!')
+        queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        queryClient.invalidateQueries({ queryKey: ['accounts'] })
+        newTransactionModalHandle.close()
+        form.reset()
+      }
     },
   })
   const transactionType = useStore(form.store, (state) => state.values.type)
@@ -350,7 +359,7 @@ export default function NewTransactionModal() {
                     <SelectTrigger>
                       <SelectValue>
                         {(categoryId: string) => {
-                          if (!categoryId) return 'Select a category'
+                          if (!categoryId) return 'No Category'
                           return (
                             <span className='flex items-center gap-2'>
                               <div
@@ -359,16 +368,14 @@ export default function NewTransactionModal() {
                                   backgroundColor: currentCategory?.color ?? '#000000',
                                 }}
                               />
-                              {currentCategory ? currentCategory.name : 'Select a category'}
+                              {currentCategory ? currentCategory.name : 'No Category'}
                             </span>
                           )
                         }}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className='overflow-y-auto'>
-                      <SelectItem disabled value=''>
-                        Select a category
-                      </SelectItem>
+                      <SelectItem value=''>No Category</SelectItem>
                       {categoriesToShow.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           <div className='flex items-center gap-2'>

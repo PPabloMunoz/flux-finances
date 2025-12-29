@@ -4,7 +4,7 @@ import { TRANSACTIONS_TYPES } from '@/lib/constants'
 export const NewTransactionSchema = z.object({
   title: z.string().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
   accountId: z.ulid({ error: 'Select an account' }),
-  categoryId: z.ulid().or(z.literal('')),
+  categoryId: z.ulid().or(z.literal('')).nullable(),
   date: z
     .string()
     .refine((date) => !Number.isNaN(Date.parse(date)), { message: 'Invalid date format' }),
@@ -17,7 +17,7 @@ export const NewTransactionSchema = z.object({
 })
 
 export const UpdateTransactionSchema = NewTransactionSchema.extend({
-  transactionId: z.ulid({ error: 'Invalid transaction ID' }),
+  id: z.ulid({ error: 'Invalid transaction ID' }),
 })
 
 export const DeleteTransactionSchema = z.object({
