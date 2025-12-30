@@ -1,22 +1,24 @@
 import { db } from '@flux/db'
 import { category } from '@flux/db/schema'
 import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
+import { GetCategoriesSchema } from './schemas'
 
 export const getCategoriesAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
-  .handler(async ({ context }) => {
+  .inputValidator(GetCategoriesSchema)
+  .handler(async ({ context, data }) => {
     const activeOrgId = context.session?.session.activeOrganizationId
     try {
       if (!activeOrgId) throw new Error('Unauthorized')
 
-      const categories = await db
-        .select()
-        .from(category)
-        .where(eq(category.organizationId, activeOrgId))
-        .orderBy(category.name)
+      const typeFilter = data.type
+        ? and(eq(category.organizationId, activeOrgId), eq(category.type, data.type))
+        : eq(category.organizationId, activeOrgId)
+
+      const categories = await db.select().from(category).where(typeFilter).orderBy(category.name)
 
       return { ok: true, data: categories } satisfies ServerFnResult<typeof categories>
     } catch (err) {

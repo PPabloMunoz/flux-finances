@@ -37,7 +37,7 @@ export default function CategoriesSettings() {
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res = await getCategoriesAction()
+      const res = await getCategoriesAction({ data: {} })
       if (!res.ok) {
         throw new Error(res.error)
       }

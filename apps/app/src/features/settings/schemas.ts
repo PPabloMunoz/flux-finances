@@ -12,6 +12,10 @@ export const UpdateHouseholdInputValidator = z.object({
 
 const CategoryType = z.enum(CATEGORY_TYPES)
 
+export const GetCategoriesSchema = z.object({
+  type: CategoryType.optional(),
+})
+
 export const CreateCategorySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   color: z.string().optional(),
