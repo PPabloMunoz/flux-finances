@@ -58,7 +58,7 @@ export default function NewTransactionModal() {
   const { data: categories, isPending: categoriesPending } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res = await getCategoriesAction()
+      const res = await getCategoriesAction({ data: {} })
       if (!res.ok) {
         throw new Error(res.error)
       }

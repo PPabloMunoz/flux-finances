@@ -76,7 +76,7 @@ function RouteComponent() {
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res = await getCategoriesAction()
+      const res = await getCategoriesAction({ data: {} })
       if (!res.ok) {
         toast.error(res.error)
         return []

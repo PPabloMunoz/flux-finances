@@ -19,7 +19,7 @@ import {
 } from '@flux/ui/components/ui/select'
 import { Textarea } from '@flux/ui/components/ui/textarea'
 import { cn } from '@flux/ui/lib/utils'
-import { AddIcon, Delete03Icon } from '@hugeicons/core-free-icons'
+import { AddIcon, Delete03Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -60,7 +60,7 @@ export default function UpdateTransactionModal() {
   const { data: categories, isPending: categoriesPending } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const res = await getCategoriesAction()
+      const res = await getCategoriesAction({ data: {} })
       if (!res.ok) {
         throw new Error(res.error)
       }
@@ -446,7 +446,7 @@ export default function UpdateTransactionModal() {
 
               <div className='mt-4 flex items-center justify-between gap-2'>
                 <Button className='w-full flex-1' disabled={isDisabled} type='submit'>
-                  <HugeiconsIcon icon={AddIcon} />
+                  <HugeiconsIcon icon={FloppyDiskIcon} />
                   {isLoading ? 'Updating...' : 'Update Transaction'}
                 </Button>
                 <DialogTrigger
