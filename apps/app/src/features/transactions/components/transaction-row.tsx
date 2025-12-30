@@ -63,7 +63,7 @@ export default function TransactionRow({ transaction }: Props) {
         </div>
       </td>
       <td className='px-4 py-3'>
-        <div className='inline-flex items-center rounded-full border border-neutral-800 bg-neutral-900 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
+        <div className='inline-flex items-center border border-neutral-800 bg-neutral-900 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
           <div
             className='mr-1.5 size-1.5 rounded-full'
             style={{ backgroundColor: transaction.categoryColor ?? '#525252' }}
@@ -87,7 +87,13 @@ export default function TransactionRow({ transaction }: Props) {
           {transaction.accountName}
         </div>
       </td>
-      <td className='px-4 py-3 text-right font-medium text-white'>
+      <td
+        className={cn(
+          'px-4 py-3 text-right font-medium text-white',
+          transaction.type === 'inflow' ? 'text-teal-400' : 'text-red-400'
+        )}
+      >
+        {transaction.type === 'inflow' ? '+' : '-'}
         {parseCurrency(
           Number(transaction.amount),
           userPreferences.region,
