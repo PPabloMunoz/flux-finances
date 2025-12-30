@@ -42,7 +42,10 @@ export default function BudgetRow({ budget }: Props) {
       key={budget.id}
       payload={budget}
       render={
-        <button className='group relative flex flex-col gap-4 rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/60 sm:flex-row sm:items-center sm:gap-6'>
+        <button
+          className='group relative flex flex-col gap-4 rounded-xl border border-neutral-800 bg-neutral-900/40 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/60 sm:flex-row sm:items-center sm:gap-6'
+          type='button'
+        >
           {/* Header / Icon Section */}
           <div className='flex flex-1 items-center gap-4'>
             <div
