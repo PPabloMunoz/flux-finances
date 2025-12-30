@@ -1,7 +1,6 @@
 import { Card } from '@flux/ui/components/ui/card'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import {
-  Add01Icon,
   CreditCardPosIcon,
   NewsIcon,
   TradeDownIcon,
@@ -14,6 +13,7 @@ import DashboardCard from '@/components/dashboard-card'
 import AppHeader from '@/components/header'
 import { getAccountsByTypeAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
+import { getBudgets } from '@/features/budgets/queries'
 import { getTransactionsAction } from '@/features/transactions/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { TRANSACTIONS_ICONS } from '@/lib/constants'
@@ -23,24 +23,27 @@ export const Route = createFileRoute('/')({
   component: App,
   beforeLoad: async () => await authStateFn(),
   loader: async () => {
-    const [cashRes, investmentsRes, liabilitiesRes, transactionsRes] = await Promise.all([
-      getAccountsByTypeAction({ data: { type: 'cash' } }),
-      getAccountsByTypeAction({ data: { type: 'investment' } }),
-      getAccountsByTypeAction({ data: { type: 'liability' } }),
-      getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
-    ])
+    const [cashRes, investmentsRes, liabilitiesRes, transactionsRes, budgetsRes] =
+      await Promise.all([
+        getAccountsByTypeAction({ data: { type: 'cash' } }),
+        getAccountsByTypeAction({ data: { type: 'investment' } }),
+        getAccountsByTypeAction({ data: { type: 'liability' } }),
+        getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
+        getBudgets(),
+      ])
 
     return {
       cash: cashRes.ok ? cashRes.data : [],
       investments: investmentsRes.ok ? investmentsRes.data : [],
       liabilities: liabilitiesRes.ok ? liabilitiesRes.data : [],
       transactions: transactionsRes.ok ? transactionsRes.data?.transactions : [],
+      budgets: budgetsRes.ok ? budgetsRes.data : [],
     }
   },
 })
 
 function App() {
-  const { cash, investments, liabilities, transactions } = Route.useLoaderData()
+  const { cash, investments, liabilities, transactions, budgets } = Route.useLoaderData()
   const { data: userPreferences } = useUserPreferences()
 
   const cashTotal = cash.reduce((acc, curr) => acc + Number(curr.currentBalance || 0), 0)
@@ -173,7 +176,7 @@ function App() {
           )}
         </section>
 
-        <section className='mt-10 grid grid-cols-1 gap-6 md:grid-cols-3'>
+        <section className='mt-10 grid grid-cols-1 gap-y-6 md:grid-cols-3 md:gap-x-6'>
           <div className='col-span-2'>
             <div className='space-y-4 lg:col-span-2'>
               <div className='flex items-center justify-between'>
@@ -259,59 +262,79 @@ function App() {
               </div>
             </div>
           </div>
-          <div className='col-span-1'>
+          <div className='col-span-1 w-full'>
             <div className='flex items-center justify-between'>
               <h3 className='font-medium text-sm text-white'>Monthly Budgets</h3>
-              <button
-                className='flex h-6 w-6 items-center justify-center rounded bg-neutral-800 transition-colors hover:text-white'
-                type='button'
+              <Link
+                className='text-neutral-500 text-xs transition-colors hover:text-white'
+                to='/budgets'
               >
-                <HugeiconsIcon className='size-4' icon={Add01Icon} />
-              </button>
+                View All
+              </Link>
             </div>
 
             <Card className='mt-4 space-y-4 rounded-sm p-5'>
-              <div>
-                <div className='mb-2 flex items-center justify-between'>
-                  <div className='flex items-center gap-2'>
-                    <div className='h-2 w-2 rounded-full bg-teal-500' />
-                    <span className='font-medium text-white text-xs'>Dining &amp; Food</span>
-                  </div>
-                  <span className='font-jetbrains text-neutral-400 text-xs'>$450 / $600</span>
-                </div>
-                <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
-                  <div className='absolute top-0 left-0 h-full w-[75%] rounded-full bg-teal-500' />
-                </div>
-              </div>
+              {!budgets || budgets.length === 0 ? (
+                <p className='py-4 text-center text-neutral-500 text-xs'>
+                  No budgets set for this month
+                </p>
+              ) : (
+                budgets.slice(0, 3).map((budget) => {
+                  const isOverBudget = budget.percentageUsed > 100
+                  const exceededAmount = isOverBudget
+                    ? Number(budget.spent) - Number(budget.amount)
+                    : 0
+                  const progressColor = budget.categoryColor || 'teal'
 
-              <div>
-                <div className='mb-2 flex items-center justify-between'>
-                  <div className='flex items-center gap-2'>
-                    <div className='h-2 w-2 rounded-full bg-purple-500' />
-                    <span className='font-medium text-white text-xs'>Entertainment</span>
-                  </div>
-                  <span className='font-jetbrains text-neutral-400 text-xs'>$120 / $200</span>
-                </div>
-                <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
-                  <div className='absolute top-0 left-0 h-full w-[60%] rounded-full bg-purple-500' />
-                </div>
-              </div>
-
-              <div>
-                <div className='mb-2 flex items-center justify-between'>
-                  <div className='flex items-center gap-2'>
-                    <div className='h-2 w-2 rounded-full bg-orange-500' />
-                    <span className='font-medium text-white text-xs'>Shopping</span>
-                  </div>
-                  <span className='font-jetbrains font-medium text-orange-500 text-xs'>
-                    $340 / $300
-                  </span>
-                </div>
-                <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
-                  <div className='absolute top-0 left-0 h-full w-full rounded-full bg-orange-500' />
-                </div>
-                <p className='mt-1 text-[10px] text-orange-500/80'>Exceeded by $40</p>
-              </div>
+                  return (
+                    <div key={budget.id}>
+                      <div className='mb-2 flex items-center justify-between'>
+                        <div className='flex items-center gap-2'>
+                          <div
+                            className='h-2 w-2 rounded-full'
+                            style={{ backgroundColor: `var(--${progressColor}-500, #14b8a6)` }}
+                          />
+                          <span className='font-medium text-white text-xs'>
+                            {budget.categoryName}
+                          </span>
+                        </div>
+                        <span
+                          className={`font-jetbrains text-xs ${
+                            isOverBudget ? 'font-medium text-orange-500' : 'text-neutral-400'
+                          }`}
+                        >
+                          {userPreferences
+                            ? `${parseCurrency(Number(budget.spent), userPreferences.region, userPreferences.currency)} / ${parseCurrency(Number(budget.amount), userPreferences.region, userPreferences.currency)}`
+                            : `${budget.spent} / ${budget.amount}`}
+                        </span>
+                      </div>
+                      <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
+                        <div
+                          className='absolute top-0 left-0 h-full rounded-full'
+                          style={{
+                            width: `${Math.min(budget.percentageUsed, 100)}%`,
+                            backgroundColor: isOverBudget
+                              ? '#f97316'
+                              : `var(--${progressColor}-500, #14b8a6)`,
+                          }}
+                        />
+                      </div>
+                      {isOverBudget && (
+                        <p className='mt-1 text-[10px] text-orange-500/80'>
+                          Exceeded by{' '}
+                          {userPreferences
+                            ? parseCurrency(
+                                exceededAmount,
+                                userPreferences.region,
+                                userPreferences.currency
+                              )
+                            : exceededAmount}
+                        </p>
+                      )}
+                    </div>
+                  )
+                })
+              )}
             </Card>
           </div>
         </section>
