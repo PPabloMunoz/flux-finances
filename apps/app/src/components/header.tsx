@@ -9,6 +9,7 @@ import {
   Dollar02FreeIcons,
   Invoice03Icon,
   Logout05Icon,
+  Menu01Icon,
   Settings01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -26,8 +27,64 @@ export default function AppHeader() {
 
   return (
     <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
-      <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-6'>
-        <div className='flex items-center gap-8'>
+      <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-4 md:px-6'>
+        <div className='flex items-center gap-4 md:gap-8'>
+          <div className='flex md:hidden'>
+            <Popover>
+              <PopoverTrigger className='flex items-center justify-center rounded-md p-2 text-neutral-400 transition-colors hover:bg-white/5 hover:text-white'>
+                <HugeiconsIcon className='size-5' icon={Menu01Icon} />
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2' sideOffset={8}>
+                <div className='flex flex-col gap-1'>
+                  <Link
+                    activeProps={{ className: 'bg-white/5 text-white' }}
+                    className='flex items-center rounded-md px-3 py-2 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    to='/'
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    activeProps={{ className: 'bg-white/5 text-white' }}
+                    className='flex items-center rounded-md px-3 py-2 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    to='/transactions'
+                  >
+                    Transactions
+                  </Link>
+                  <Link
+                    activeProps={{ className: 'bg-white/5 text-white' }}
+                    className='flex items-center rounded-md px-3 py-2 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    to='/accounts'
+                  >
+                    Accounts
+                  </Link>
+                  <Link
+                    activeProps={{ className: 'bg-white/5 text-white' }}
+                    className='flex items-center rounded-md px-3 py-2 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    to='/budgets'
+                  >
+                    Budgets
+                  </Link>
+                  <div className='my-1 h-px bg-neutral-800' />
+                  <Link
+                    activeProps={{ className: 'bg-white/5 text-white' }}
+                    className='flex items-center gap-2 rounded-md px-3 py-2 font-medium text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    to='/settings'
+                  >
+                    <HugeiconsIcon className='size-3.5' icon={Settings01Icon} />
+                    Settings
+                  </Link>
+                  <span className='flex items-center gap-2 rounded-md px-3 py-2 font-medium text-neutral-400/30 text-xs transition-colors'>
+                    <HugeiconsIcon className='size-3.5' icon={Invoice03Icon} />
+                    Import (Coming Soon)
+                  </span>
+                  <span className='flex items-center gap-2 rounded-md px-3 py-2 font-medium text-neutral-400/30 text-xs transition-colors'>
+                    <HugeiconsIcon className='size-3.5' icon={Calculator01Icon} />
+                    Tools (Coming Soon)
+                  </span>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className='flex cursor-pointer items-center gap-2 text-white'>
             <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
               <HugeiconsIcon className='size-4.5' icon={Dollar02FreeIcons} />
