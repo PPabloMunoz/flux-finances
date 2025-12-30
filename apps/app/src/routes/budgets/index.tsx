@@ -1,279 +1,221 @@
 import { Button } from '@flux/ui/components/ui/button'
+import { DialogTrigger } from '@flux/ui/components/ui/dialog'
 import { Add01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import AppHeader from '@/components/header'
+import BudgetRow from '@/features/budgets/components/budget-row'
+import DeleteBudgetModal from '@/features/budgets/components/delete-budget-modal'
+import NewBudgetModal, {
+  newBudgetDialogHandle,
+} from '@/features/budgets/components/new-budget-modal'
+import UpdateBudgetModal from '@/features/budgets/components/update-budget-modal'
+import { getBudgets } from '@/features/budgets/queries'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { parseCurrency } from '@/lib/utils'
 
 export const Route = createFileRoute('/budgets/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { data: userPreferences } = useUserPreferences()
+
+  const { data: budgets = [], isLoading } = useQuery({
+    queryKey: ['budgets'],
+    queryFn: async () => {
+      const res = await getBudgets()
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data
+    },
+  })
+
+  // Calculate summary statistics
+  const totalBudget = budgets.reduce((sum, b) => sum + Number(b.amount), 0)
+  const totalSpent = budgets.reduce((sum, b) => sum + Number(b.spent), 0)
+  const totalRemaining = totalBudget - totalSpent
+  const overallPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
+
+  // Determine overall status
+  const isOnTrack = overallPercentage <= 85
+  const remainingColor = totalRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'
+  const statusText = totalRemaining >= 0 ? 'On Track' : 'Over Budget'
+
   return (
     <>
       <AppHeader />
 
-      <main className='container mx-auto space-y-8 px-5 py-10'>
-        <header className='mb-8 flex w-full flex-col-reverse items-start justify-between gap-6 sm:mb-10 sm:flex-row sm:items-center'>
+      <main className='container mx-auto space-y-8 px-5 py-10 sm:px-6 lg:px-8'>
+        <header className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div>
-            <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Budgets</h1>
-            <p className='text-gray-400 text-sm'>Manage your budgets and track your spending</p>
+            <h1 className='font-semibold text-2xl text-white tracking-tight'>Budgets</h1>
+            <p className='text-neutral-400 text-sm'>Manage your spending limits and goals</p>
           </div>
-          <div className='flex w-full items-baseline gap-3 sm:w-auto'>
-            <Button className='w-full'>
-              <HugeiconsIcon icon={Add01Icon} size={20} />
-              New Budget
-            </Button>
+          <div className='flex w-full sm:w-auto'>
+            <DialogTrigger
+              handle={newBudgetDialogHandle}
+              render={
+                <Button className='w-full sm:w-auto'>
+                  <HugeiconsIcon icon={Add01Icon} size={20} />
+                  New Budget
+                </Button>
+              }
+            />
           </div>
         </header>
 
         <section className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-          <div className='group relative overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
-            <div className='mb-2 flex items-center justify-between'>
-              <span className='font-medium text-neutral-500 text-xs'>Total Budget</span>
-              <span
-                className='iconify text-neutral-600'
-                data-icon='lucide:wallet'
-                data-stroke-width='1.5'
-                data-width='14'
-              />
+          {/* Total Budget Card */}
+          <div className='group relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-5 transition-all hover:border-neutral-700 hover:bg-neutral-900/60'>
+            <div className='mb-4 flex items-center justify-between'>
+              <span className='font-medium text-neutral-500 text-xs uppercase tracking-wider'>
+                Total Budget
+              </span>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
+                <span
+                  className='iconify'
+                  data-icon='lucide:wallet'
+                  data-stroke-width='1.5'
+                  data-width='16'
+                />
+              </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className='font-medium text-white text-xl tracking-tight'>$4,800.00</div>
+              <div className='font-semibold text-2xl text-white tracking-tight'>
+                {userPreferences
+                  ? parseCurrency(totalBudget, userPreferences.region, 'USD')
+                  : '$0.00'}
+              </div>
             </div>
-            <div className='mt-3 h-1 w-full rounded-full bg-neutral-800'>
+            <div className='mt-4 h-1.5 w-full rounded-full bg-neutral-800'>
               <div className='h-full w-full rounded-full bg-neutral-600' />
             </div>
           </div>
 
-          <div className='group relative overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
-            <div className='mb-2 flex items-center justify-between'>
-              <span className='font-medium text-neutral-500 text-xs'>Total Spent</span>
-              <span
-                className='iconify text-neutral-600'
-                data-icon='lucide:credit-card'
-                data-stroke-width='1.5'
-                data-width='14'
-              />
+          {/* Total Spent Card */}
+          <div className='group relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-5 transition-all hover:border-neutral-700 hover:bg-neutral-900/60'>
+            <div className='mb-4 flex items-center justify-between'>
+              <span className='font-medium text-neutral-500 text-xs uppercase tracking-wider'>
+                Total Spent
+              </span>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
+                <span
+                  className='iconify'
+                  data-icon='lucide:credit-card'
+                  data-stroke-width='1.5'
+                  data-width='16'
+                />
+              </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className='font-medium text-white text-xl tracking-tight'>$3,120.50</div>
-              <span className='font-medium text-[10px] text-neutral-500'>65% used</span>
+              <div className='font-semibold text-2xl text-white tracking-tight'>
+                {userPreferences
+                  ? parseCurrency(totalSpent, userPreferences.region, 'USD')
+                  : '$0.00'}
+              </div>
+              <span className='font-medium text-neutral-500 text-xs'>
+                {overallPercentage.toFixed(0)}%
+              </span>
             </div>
-            <div className='mt-3 h-1 w-full rounded-full bg-neutral-800'>
-              <div className='h-full w-[65%] rounded-full bg-blue-500' />
+            <div className='mt-4 h-1.5 w-full rounded-full bg-neutral-800'>
+              <div
+                className='h-full rounded-full bg-blue-500 transition-all duration-500'
+                style={{ width: `${Math.min(overallPercentage, 100)}%` }}
+              />
             </div>
           </div>
 
-          <div className='group relative overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/30 p-4 transition-colors hover:bg-neutral-900/50'>
-            <div className='mb-2 flex items-center justify-between'>
-              <span className='font-medium text-neutral-500 text-xs'>Remaining</span>
-              <span
-                className='iconify text-neutral-600'
-                data-icon='lucide:pie-chart'
-                data-stroke-width='1.5'
-                data-width='14'
-              />
+          {/* Remaining Card */}
+          <div className='group relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 p-5 transition-all hover:border-neutral-700 hover:bg-neutral-900/60'>
+            <div className='mb-4 flex items-center justify-between'>
+              <span className='font-medium text-neutral-500 text-xs uppercase tracking-wider'>
+                Remaining
+              </span>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
+                <span
+                  className='iconify'
+                  data-icon='lucide:pie-chart'
+                  data-stroke-width='1.5'
+                  data-width='16'
+                />
+              </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className='font-medium text-emerald-400 text-xl tracking-tight'>$1,679.50</div>
-              <span className='font-medium text-[10px] text-neutral-500'>On Track</span>
+              <div className={`font-semibold text-2xl tracking-tight ${remainingColor}`}>
+                {userPreferences
+                  ? parseCurrency(Math.abs(totalRemaining), userPreferences.region, 'USD')
+                  : '$0.00'}
+              </div>
+              <span className='font-medium text-neutral-500 text-xs'>{statusText}</span>
             </div>
-            <div className='mt-3 flex gap-0.5'>
-              <div className='h-1 w-1 rounded-full bg-emerald-500/80' />
-              <div className='h-1 w-1 rounded-full bg-emerald-500/60' />
-              <div className='h-1 w-1 rounded-full bg-emerald-500/40' />
-              <div className='h-1 w-1 rounded-full bg-emerald-500/20' />
+            <div className='mt-4 flex gap-1'>
+              <div
+                className={`h-1.5 flex-1 rounded-full ${isOnTrack ? 'bg-emerald-500/80' : 'bg-red-500/80'}`}
+              />
+              <div
+                className={`h-1.5 flex-1 rounded-full ${isOnTrack ? 'bg-emerald-500/60' : 'bg-red-500/60'}`}
+              />
+              <div
+                className={`h-1.5 flex-1 rounded-full ${isOnTrack ? 'bg-emerald-500/40' : 'bg-red-500/40'}`}
+              />
+              <div
+                className={`h-1.5 flex-1 rounded-full ${isOnTrack ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}
+              />
             </div>
           </div>
         </section>
 
         <section className='space-y-4'>
           <div className='flex items-center justify-between px-1'>
-            <h3 className='font-semibold text-neutral-500 text-xs uppercase tracking-wider'>
-              Categories Breakdown
-            </h3>
+            <h3 className='font-medium text-neutral-400 text-sm'>Categories Breakdown</h3>
           </div>
 
-          <div className='grid grid-cols-1 gap-3'>
-            <div className='group relative flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900/20 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/40'>
-              <div className='flex items-start justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-300 shadow-inner'>
-                    <span
-                      className='iconify'
-                      data-icon='lucide:home'
-                      data-stroke-width='1.5'
-                      data-width='18'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-medium text-sm text-white'>Housing & Utilities</h4>
-                    <div className='mt-0.5 flex items-center gap-1.5'>
-                      <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-                      <span className='text-[10px] text-neutral-500'>Paid in full</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='font-medium text-sm text-white'>$2,100 / $2,100</div>
-                  <div className='text-[10px] text-neutral-500'>$0.00 left</div>
-                </div>
-              </div>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-neutral-800'>
-                <div className='absolute top-0 left-0 h-full w-full bg-neutral-500' />
-              </div>
-
-              <button
-                className='absolute top-4 right-4 p-1 text-neutral-500 opacity-0 transition-opacity hover:text-white group-hover:opacity-100'
-                onclick="openModal('edit-budget-modal')"
-              >
-                <span className='iconify' data-icon='lucide:more-horizontal' data-width='16' />
-              </button>
+          {isLoading ? (
+            <div className='flex items-center justify-center py-12'>
+              <div className='text-neutral-500'>Loading budgets...</div>
             </div>
-
-            <div className='group relative flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900/20 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/40'>
-              <div className='flex items-start justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg border border-orange-500/20 bg-orange-500/10 text-orange-400 shadow-inner'>
-                    <span
-                      className='iconify'
-                      data-icon='lucide:shopping-basket'
-                      data-stroke-width='1.5'
-                      data-width='18'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-medium text-sm text-white'>Food & Groceries</h4>
-                    <div className='mt-0.5 flex items-center gap-1.5'>
-                      <span className='h-1.5 w-1.5 rounded-full bg-orange-500' />
-                      <span className='text-[10px] text-neutral-500'>Approaching limit</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='font-medium text-sm text-white'>$520 / $600</div>
-                  <div className='text-[10px] text-neutral-500'>$80.00 left</div>
-                </div>
+          ) : budgets.length === 0 ? (
+            <div className='flex flex-col items-center justify-center rounded-xl border border-neutral-800 border-dashed bg-neutral-900/20 py-16 text-center'>
+              <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-800/50'>
+                <span
+                  className='iconify text-neutral-500'
+                  data-icon='lucide:wallet'
+                  data-stroke-width='1.5'
+                  data-width='24'
+                />
               </div>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-neutral-800'>
-                <div className='absolute top-0 left-0 h-full w-[86%] bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]' />
-              </div>
-              <button
-                className='absolute top-4 right-4 p-1 text-neutral-500 opacity-0 transition-opacity hover:text-white group-hover:opacity-100'
-                onclick="openModal('edit-budget-modal')"
-              >
-                <span className='iconify' data-icon='lucide:more-horizontal' data-width='16' />
-              </button>
+              <h3 className='mb-1 font-medium text-white'>No budgets yet</h3>
+              <p className='mb-6 max-w-xs text-neutral-500 text-sm'>
+                Create your first budget to start tracking your spending by category.
+              </p>
+              <DialogTrigger
+                handle={newBudgetDialogHandle}
+                render={
+                  <Button>
+                    <HugeiconsIcon icon={Add01Icon} size={18} />
+                    Create Budget
+                  </Button>
+                }
+              />
             </div>
-
-            <div className='group relative flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900/20 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/40'>
-              <div className='flex items-start justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400 shadow-inner'>
-                    <span
-                      className='iconify'
-                      data-icon='lucide:film'
-                      data-stroke-width='1.5'
-                      data-width='18'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-medium text-sm text-white'>Entertainment</h4>
-                    <div className='mt-0.5 flex items-center gap-1.5'>
-                      <span className='h-1.5 w-1.5 rounded-full bg-blue-500' />
-                      <span className='text-[10px] text-neutral-500'>Healthy</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='font-medium text-sm text-white'>$120 / $300</div>
-                  <div className='text-[10px] text-neutral-500'>$180.00 left</div>
-                </div>
-              </div>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-neutral-800'>
-                <div className='absolute top-0 left-0 h-full w-[40%] bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]' />
-              </div>
-              <button
-                className='absolute top-4 right-4 p-1 text-neutral-500 opacity-0 transition-opacity hover:text-white group-hover:opacity-100'
-                onclick="openModal('edit-budget-modal')"
-              >
-                <span className='iconify' data-icon='lucide:more-horizontal' data-width='16' />
-              </button>
+          ) : (
+            <div className='grid grid-cols-1 gap-3'>
+              {budgets.map((budget) => (
+                <BudgetRow budget={budget} key={budget.id} />
+              ))}
             </div>
-
-            <div className='group relative flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900/20 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/40'>
-              <div className='flex items-start justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-500/10 text-purple-400 shadow-inner'>
-                    <span
-                      className='iconify'
-                      data-icon='lucide:car'
-                      data-stroke-width='1.5'
-                      data-width='18'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-medium text-sm text-white'>Transportation</h4>
-                    <div className='mt-0.5 flex items-center gap-1.5'>
-                      <span className='h-1.5 w-1.5 rounded-full bg-blue-500' />
-                      <span className='text-[10px] text-neutral-500'>Healthy</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='font-medium text-sm text-white'>$145 / $250</div>
-                  <div className='text-[10px] text-neutral-500'>$105.00 left</div>
-                </div>
-              </div>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-neutral-800'>
-                <div className='absolute top-0 left-0 h-full w-[58%] bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' />
-              </div>
-              <button
-                className='absolute top-4 right-4 p-1 text-neutral-500 opacity-0 transition-opacity hover:text-white group-hover:opacity-100'
-                onclick="openModal('edit-budget-modal')"
-              >
-                <span className='iconify' data-icon='lucide:more-horizontal' data-width='16' />
-              </button>
-            </div>
-
-            <div className='group relative flex flex-col gap-4 rounded-lg border border-neutral-800 bg-neutral-900/20 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/40'>
-              <div className='flex items-start justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 shadow-inner'>
-                    <span
-                      className='iconify'
-                      data-icon='lucide:cpu'
-                      data-stroke-width='1.5'
-                      data-width='18'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-medium text-sm text-white'>Software & Subs</h4>
-                    <div className='mt-0.5 flex items-center gap-1.5'>
-                      <span className='h-1.5 w-1.5 rounded-full bg-red-500' />
-                      <span className='text-[10px] text-neutral-500'>Over budget</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='font-medium text-red-400 text-sm'>$235 / $200</div>
-                  <div className='text-[10px] text-red-500/70'>-$35.00 over</div>
-                </div>
-              </div>
-              <div className='relative h-2 w-full overflow-hidden rounded-full bg-neutral-800'>
-                <div className='absolute top-0 left-0 h-full w-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]' />
-              </div>
-              <button
-                className='absolute top-4 right-4 p-1 text-neutral-500 opacity-0 transition-opacity hover:text-white group-hover:opacity-100'
-                onclick="openModal('edit-budget-modal')"
-              >
-                <span className='iconify' data-icon='lucide:more-horizontal' data-width='16' />
-              </button>
-            </div>
-          </div>
+          )}
         </section>
       </main>
+
+      <NewBudgetModal />
+      <UpdateBudgetModal />
+      <DeleteBudgetModal />
     </>
   )
 }
