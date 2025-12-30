@@ -279,14 +279,13 @@ export const budget = pgTable(
       .references(() => category.id, { onDelete: 'cascade' })
       .notNull(),
     amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
-    month: date('month').notNull(), // First day of the month
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (t) => [uniqueIndex('budget_category_month_idx').on(t.categoryId, t.month)]
+  (t) => [uniqueIndex('budget_category_idx').on(t.categoryId)]
 )
 
 export const merchant = pgTable('merchant', {
