@@ -1,17 +1,9 @@
 import { Card } from '@flux/ui/components/ui/card'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
-import {
-  CreditCardPosIcon,
-  NewsIcon,
-  TradeDownIcon,
-  TradeUpIcon,
-  Wallet01Icon,
-} from '@hugeicons/core-free-icons'
+import { TradeDownIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import DashboardCard from '@/components/dashboard-card'
 import AppHeader from '@/components/header'
-import { getAccountsByTypeAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
 import { getBudgets } from '@/features/budgets/queries'
 import { getTransactionsAction } from '@/features/transactions/queries'
@@ -23,19 +15,12 @@ export const Route = createFileRoute('/')({
   component: App,
   beforeLoad: async () => await authStateFn(),
   loader: async () => {
-    const [cashRes, investmentsRes, liabilitiesRes, transactionsRes, budgetsRes] =
-      await Promise.all([
-        getAccountsByTypeAction({ data: { type: 'cash' } }),
-        getAccountsByTypeAction({ data: { type: 'investment' } }),
-        getAccountsByTypeAction({ data: { type: 'liability' } }),
-        getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
-        getBudgets(),
-      ])
+    const [transactionsRes, budgetsRes] = await Promise.all([
+      getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
+      getBudgets(),
+    ])
 
     return {
-      cash: cashRes.ok ? cashRes.data : [],
-      investments: investmentsRes.ok ? investmentsRes.data : [],
-      liabilities: liabilitiesRes.ok ? liabilitiesRes.data : [],
       transactions: transactionsRes.ok ? transactionsRes.data?.transactions : [],
       budgets: budgetsRes.ok ? budgetsRes.data : [],
     }
@@ -43,48 +28,16 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
-  const { cash, investments, liabilities, transactions, budgets } = Route.useLoaderData()
+  const { transactions, budgets } = Route.useLoaderData()
   const { data: userPreferences } = useUserPreferences()
 
-  const cashTotal = cash.reduce((acc, curr) => acc + Number(curr.currentBalance || 0), 0)
-  const investmentsTotal = investments.reduce(
-    (acc, curr) => acc + Number(curr.currentBalance || 0),
-    0
-  )
-  const liabilitiesTotal = liabilities.reduce(
-    (acc, curr) => acc + Number(curr.currentBalance || 0),
-    0
-  )
-
-  const netWorth = cashTotal + investmentsTotal - liabilitiesTotal
-
-  const previousCashTotal = cash.reduce((acc, curr) => acc + Number(curr.previousBalance || 0), 0)
-  const previousInvestmentsTotal = investments.reduce(
-    (acc, curr) => acc + Number(curr.previousBalance || 0),
-    0
-  )
-  const previousLiabilitiesTotal = liabilities.reduce(
-    (acc, curr) => acc + Number(curr.previousBalance || 0),
-    0
-  )
-
-  const previousNetWorth = previousCashTotal + previousInvestmentsTotal - previousLiabilitiesTotal
+  // const previousNetWorth = previousCashTotal + previousInvestmentsTotal - previousLiabilitiesTotal
+  // const netWorthChange = netWorth - previousNetWorth
+  const previousNetWorth = 0 // Placeholder value
+  const netWorth = 0 // Placeholder value
   const netWorthChange = netWorth - previousNetWorth
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
-
-  // Calculate percentages for progress bars
-  const totalAssets = cashTotal + investmentsTotal
-  const cashProgress = totalAssets > 0 ? (cashTotal / totalAssets) * 100 : 0
-  const investmentsProgress = totalAssets > 0 ? (investmentsTotal / totalAssets) * 100 : 0
-  const liabilitiesProgress = netWorth > 0 ? Math.min((liabilitiesTotal / netWorth) * 100, 100) : 0
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    })
-  }
 
   return (
     <>
@@ -95,7 +48,7 @@ function App() {
           <div>
             <p className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</p>
             {!userPreferences ? (
-              <Skeleton className='mt-2 h-10 w-40 rounded-sm' />
+              <Skeleton className='mt-2 h-9 w-40 rounded-sm' />
             ) : (
               <p className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
                 {parseCurrency(netWorth, userPreferences.region, userPreferences.currency)}
@@ -125,57 +78,6 @@ function App() {
           <div className='h-70 w-full rounded-sm border border-neutral-200/50 bg-neutral-50/10' />
         </section>
 
-        {/* Cards */}
-        <section className='mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-          {!userPreferences ? (
-            <>
-              <Skeleton className='h-43 w-full rounded-sm' />
-              <Skeleton className='h-43 w-full rounded-sm' />
-              <Skeleton className='h-43 w-full rounded-sm' />
-            </>
-          ) : (
-            <>
-              <Link to='/accounts'>
-                <DashboardCard
-                  color='teal'
-                  icon={Wallet01Icon}
-                  progress={cashProgress}
-                  subtitle='Cash & Equivalents'
-                  value={parseCurrency(cashTotal, userPreferences.region, userPreferences.currency)}
-                />
-              </Link>
-
-              <Link to='/accounts'>
-                <DashboardCard
-                  color='blue'
-                  icon={NewsIcon}
-                  progress={investmentsProgress}
-                  subtitle='Investments'
-                  value={parseCurrency(
-                    investmentsTotal,
-                    userPreferences.region,
-                    userPreferences.currency
-                  )}
-                />
-              </Link>
-
-              <Link to='/accounts'>
-                <DashboardCard
-                  color='red'
-                  icon={CreditCardPosIcon}
-                  progress={liabilitiesProgress}
-                  subtitle='Liabilities'
-                  value={parseCurrency(
-                    liabilitiesTotal,
-                    userPreferences.region,
-                    userPreferences.currency
-                  )}
-                />
-              </Link>
-            </>
-          )}
-        </section>
-
         <section className='mt-10 grid grid-cols-1 gap-y-6 md:grid-cols-3 md:gap-x-6'>
           <div className='col-span-2'>
             <div className='space-y-4 lg:col-span-2'>
@@ -193,9 +95,9 @@ function App() {
                 <table className='w-full text-left text-xs'>
                   <thead className='border-neutral-800 border-b bg-neutral-900/30 text-neutral-500'>
                     <tr>
-                      <th className='px-5 py-3 font-medium'>Description</th>
-                      <th className='hidden px-5 py-3 font-medium sm:table-cell'>Category</th>
                       <th className='hidden px-5 py-3 font-medium sm:table-cell'>Date</th>
+                      <th className='px-5 py-3 font-medium'>Title</th>
+                      <th className='hidden px-5 py-3 font-medium sm:table-cell'>Category</th>
                       <th className='px-5 py-3 text-right font-medium'>Amount</th>
                     </tr>
                   </thead>
@@ -205,17 +107,28 @@ function App() {
                         className='group transition-colors hover:bg-neutral-800/30'
                         key={transaction.id}
                       >
+                        <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
+                          {userPreferences ? (
+                            new Date(transaction.date).toLocaleDateString(userPreferences.region, {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          ) : (
+                            <Skeleton className='h-4 w-16 rounded-sm' />
+                          )}
+                        </td>
                         <td className='px-5 py-3.5'>
                           <div className='flex items-center gap-3'>
                             <div
-                              className={`flex h-8 w-8 items-center justify-center rounded-full border ${
+                              className={`flex size-7 items-center justify-center rounded-full border ${
                                 transaction.type === 'inflow'
                                   ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
-                                  : 'border-white/5 bg-white/5 text-white'
+                                  : 'border-red-500/20 bg-red-500/10 text-red-500'
                               }`}
                             >
                               <HugeiconsIcon
-                                className='size-3.5'
+                                className='size-3'
                                 icon={
                                   transaction.type === 'inflow'
                                     ? TRANSACTIONS_ICONS.inflow
@@ -227,25 +140,32 @@ function App() {
                           </div>
                         </td>
                         <td className='hidden px-5 py-3.5 sm:table-cell'>
-                          {transaction.categoryName && (
-                            <span className='inline-flex items-center rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-                              {transaction.categoryName}
-                            </span>
-                          )}
-                        </td>
-                        <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
-                          {formatDate(transaction.date)}
+                          <span className='inline-flex items-center gap-1.5 rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
+                            {transaction.categoryColor && (
+                              <span
+                                className='size-1.5 rounded-full'
+                                style={{ backgroundColor: transaction.categoryColor ?? '' }}
+                              />
+                            )}
+                            {transaction.categoryName ?? 'No Category'}
+                          </span>
                         </td>
                         <td
                           className={`px-5 py-3.5 text-right font-jetbrains font-medium ${
                             transaction.type === 'inflow' ? 'text-teal-500' : 'text-red-400'
                           }`}
                         >
-                          {transaction.type === 'inflow' ? '+' : '-'}
-                          {parseCurrency(
-                            Number(transaction.amount),
-                            userPreferences?.region,
-                            transaction.accountCurrency
+                          {userPreferences ? (
+                            <>
+                              {transaction.type === 'inflow' ? '+' : '-'}
+                              {parseCurrency(
+                                Number(transaction.amount),
+                                userPreferences.region,
+                                transaction.accountCurrency
+                              )}
+                            </>
+                          ) : (
+                            <Skeleton className='ml-auto h-4 w-20 rounded-sm' />
                           )}
                         </td>
                       </tr>
@@ -292,7 +212,7 @@ function App() {
                         <div className='flex items-center gap-2'>
                           <div
                             className='h-2 w-2 rounded-full'
-                            style={{ backgroundColor: `var(--${progressColor}-500, #14b8a6)` }}
+                            style={{ backgroundColor: progressColor }}
                           />
                           <span className='font-medium text-white text-xs'>
                             {budget.categoryName}
@@ -303,9 +223,11 @@ function App() {
                             isOverBudget ? 'font-medium text-orange-500' : 'text-neutral-400'
                           }`}
                         >
-                          {userPreferences
-                            ? `${parseCurrency(Number(budget.spent), userPreferences.region, userPreferences.currency)} / ${parseCurrency(Number(budget.amount), userPreferences.region, userPreferences.currency)}`
-                            : `${budget.spent} / ${budget.amount}`}
+                          {userPreferences ? (
+                            `${parseCurrency(Number(budget.spent), userPreferences.region, userPreferences.currency)} / ${parseCurrency(Number(budget.amount), userPreferences.region, userPreferences.currency)}`
+                          ) : (
+                            <Skeleton className='inline-block h-3 w-20 rounded-sm' />
+                          )}
                         </span>
                       </div>
                       <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
