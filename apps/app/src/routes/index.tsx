@@ -235,14 +235,14 @@ function App() {
                         </td>
                         <td
                           className={`px-5 py-3.5 text-right font-jetbrains font-medium ${
-                            transaction.type === 'inflow' ? 'text-teal-500' : 'text-white'
+                            transaction.type === 'inflow' ? 'text-teal-500' : 'text-red-400'
                           }`}
                         >
                           {transaction.type === 'inflow' ? '+' : '-'}
                           {parseCurrency(
                             Number(transaction.amount),
                             userPreferences?.region,
-                            userPreferences?.currency
+                            transaction.accountCurrency
                           )}
                         </td>
                       </tr>
