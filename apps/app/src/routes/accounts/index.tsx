@@ -132,8 +132,14 @@ function RouteComponent() {
       <AppHeader />
 
       <main className='container mx-auto space-y-8 px-5 py-10'>
-        <header className='mb-10 grid grid-cols-1 gap-6 md:grid-cols-5'>
-          <div className='md:col-span-3'>
+        <header className='mb-8 flex w-full flex-col-reverse items-start justify-between gap-6 sm:mb-10 sm:flex-row sm:items-center'>
+          <div>
+            <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Accounts</h1>
+            <p className='text-gray-400 text-sm'>
+              Manage your financial accounts and view your net worth
+            </p>
+          </div>
+          <div className='flex w-full items-baseline gap-3 sm:w-auto'>
             <h1 className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</h1>
             <div className='flex items-baseline gap-3'>
               <span className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
