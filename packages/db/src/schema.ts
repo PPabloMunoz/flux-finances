@@ -269,6 +269,26 @@ export const category = pgTable('category', {
   parentId: text('parent_id'),
 })
 
+export const budget = pgTable(
+  'budget',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => ulid()),
+    categoryId: text('category_id')
+      .references(() => category.id, { onDelete: 'cascade' })
+      .notNull(),
+    amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
+    month: date('month').notNull(), // First day of the month
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (t) => [uniqueIndex('budget_category_month_idx').on(t.categoryId, t.month)]
+)
+
 export const merchant = pgTable('merchant', {
   id: text('id')
     .primaryKey()
@@ -388,6 +408,18 @@ export const categoryRelations = relations(category, ({ one, many }) => ({
   }),
   subcategories: many(category, {
     relationName: 'category_parent',
+  }),
+  budgets: many(budget),
+}))
+
+export const budgetRelations = relations(budget, ({ one }) => ({
+  organization: one(organization, {
+    fields: [budget.categoryId],
+    references: [organization.id],
+  }),
+  category: one(category, {
+    fields: [budget.categoryId],
+    references: [category.id],
   }),
 }))
 
