@@ -1,6 +1,6 @@
 import { Button } from '@flux/ui/components/ui/button'
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import { Add01Icon } from '@hugeicons/core-free-icons'
+import { Add01Icon, CreditCardIcon, PieChartIcon, Wallet01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -77,12 +77,7 @@ function RouteComponent() {
                 Total Budget
               </span>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
-                <span
-                  className='iconify'
-                  data-icon='lucide:wallet'
-                  data-stroke-width='1.5'
-                  data-width='16'
-                />
+                <HugeiconsIcon icon={Wallet01Icon} size={16} />
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
@@ -104,12 +99,7 @@ function RouteComponent() {
                 Total Spent
               </span>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
-                <span
-                  className='iconify'
-                  data-icon='lucide:credit-card'
-                  data-stroke-width='1.5'
-                  data-width='16'
-                />
+                <HugeiconsIcon icon={CreditCardIcon} size={16} />
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
@@ -137,12 +127,7 @@ function RouteComponent() {
                 Remaining
               </span>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-800/50 text-neutral-400'>
-                <span
-                  className='iconify'
-                  data-icon='lucide:pie-chart'
-                  data-stroke-width='1.5'
-                  data-width='16'
-                />
+                <HugeiconsIcon icon={PieChartIcon} size={16} />
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
@@ -182,12 +167,7 @@ function RouteComponent() {
           ) : budgets.length === 0 ? (
             <div className='flex flex-col items-center justify-center rounded-xl border border-neutral-800 border-dashed bg-neutral-900/20 py-16 text-center'>
               <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-800/50'>
-                <span
-                  className='iconify text-neutral-500'
-                  data-icon='lucide:wallet'
-                  data-stroke-width='1.5'
-                  data-width='24'
-                />
+                <HugeiconsIcon className='text-neutral-500' icon={Wallet01Icon} size={24} />
               </div>
               <h3 className='mb-1 font-medium text-white'>No budgets yet</h3>
               <p className='mb-6 max-w-xs text-neutral-500 text-sm'>

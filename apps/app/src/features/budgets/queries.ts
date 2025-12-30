@@ -45,8 +45,6 @@ export const getBudgets = createServerFn({ method: 'GET' })
         .where(eq(category.organizationId, activeOrgId))
         .groupBy(budget.id, category.id)
 
-      console.log('Budgets with spending:', budgetsWithSpending)
-
       // Calculate remaining and percentage for each budget
       const budgetsWithCalculations: TBudgetWithSpending[] = budgetsWithSpending.map((b) => {
         const budgetAmount = Number(b.amount)
