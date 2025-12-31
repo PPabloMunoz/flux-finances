@@ -2,10 +2,13 @@ import { Card } from '@flux/ui/components/ui/card'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import { TradeDownIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import { authStateFn } from '@/features/auth/queries'
 import { getBudgets } from '@/features/budgets/queries'
+import { getNetWorthAction } from '@/features/general/queries'
 import { getTransactionsAction } from '@/features/transactions/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { TRANSACTIONS_ICONS } from '@/lib/constants'
@@ -14,27 +17,51 @@ import { parseCurrency } from '@/lib/utils'
 export const Route = createFileRoute('/')({
   component: App,
   beforeLoad: async () => await authStateFn(),
-  loader: async () => {
-    const [transactionsRes, budgetsRes] = await Promise.all([
-      getTransactionsAction({ data: { page: 1, pageSize: 5 } }),
-      getBudgets(),
-    ])
-
-    return {
-      transactions: transactionsRes.ok ? transactionsRes.data?.transactions : [],
-      budgets: budgetsRes.ok ? budgetsRes.data : [],
-    }
-  },
 })
 
 function App() {
-  const { transactions, budgets } = Route.useLoaderData()
   const { data: userPreferences } = useUserPreferences()
+
+  const { data: netWorthData, isPending: netWorthPending } = useQuery({
+    queryKey: ['networth'],
+    queryFn: async () => {
+      const res = await getNetWorthAction()
+      if (!res.ok) {
+        toast.error(res.error)
+        return { currentNetWorth: 0, previousNetWorth: 0 }
+      }
+      return res.data
+    },
+  })
+
+  const { data: transactions = [], isPending: transactionsPending } = useQuery({
+    queryKey: ['transactions', { page: 1, pageSize: 5 }],
+    queryFn: async () => {
+      const res = await getTransactionsAction({ data: { page: 1, pageSize: 5 } })
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data.transactions
+    },
+  })
+
+  const { data: budgets = [], isPending: budgetsPending } = useQuery({
+    queryKey: ['budgets'],
+    queryFn: async () => {
+      const res = await getBudgets()
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data
+    },
+  })
 
   // const previousNetWorth = previousCashTotal + previousInvestmentsTotal - previousLiabilitiesTotal
   // const netWorthChange = netWorth - previousNetWorth
-  const previousNetWorth = 0 // Placeholder value
-  const netWorth = 0 // Placeholder value
+  const previousNetWorth = netWorthData?.previousNetWorth ?? 0
+  const netWorth = netWorthData?.currentNetWorth ?? 0
   const netWorthChange = netWorth - previousNetWorth
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
@@ -47,7 +74,7 @@ function App() {
         <header className='mb-10 flex items-center justify-between'>
           <div>
             <p className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</p>
-            {!userPreferences ? (
+            {!userPreferences || netWorthPending ? (
               <Skeleton className='mt-2 h-9 w-40 rounded-sm' />
             ) : (
               <p className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
@@ -55,22 +82,26 @@ function App() {
               </p>
             )}
           </div>
-          <div
-            className={`flex w-auto items-center gap-2 rounded-sm border px-2 py-1 ${
-              netWorthChangePercentage >= 0
-                ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
-                : 'border-red-500/20 bg-red-500/10 text-red-500'
-            }`}
-          >
-            <HugeiconsIcon
-              className='size-4.5'
-              icon={netWorthChangePercentage >= 0 ? TradeUpIcon : TradeDownIcon}
-            />
-            <span className='font-medium text-xs'>
-              {netWorthChangePercentage >= 0 ? '+' : ''}
-              {netWorthChangePercentage.toFixed(1)}% this month
-            </span>
-          </div>
+          {netWorthPending ? (
+            <Skeleton className='h-7 w-24 rounded-sm' />
+          ) : (
+            <div
+              className={`flex w-auto items-center gap-2 rounded-sm border px-2 py-1 ${
+                netWorthChangePercentage >= 0
+                  ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
+                  : 'border-red-500/20 bg-red-500/10 text-red-500'
+              }`}
+            >
+              <HugeiconsIcon
+                className='size-4.5'
+                icon={netWorthChangePercentage >= 0 ? TradeUpIcon : TradeDownIcon}
+              />
+              <span className='font-medium text-xs'>
+                {netWorthChangePercentage >= 0 ? '+' : ''}
+                {netWorthChangePercentage.toFixed(1)}% this month
+              </span>
+            </div>
+          )}
         </header>
 
         {/* Graph */}
@@ -102,75 +133,95 @@ function App() {
                     </tr>
                   </thead>
                   <tbody className='divide-y divide-neutral-800/50'>
-                    {transactions?.map((transaction) => (
-                      <tr
-                        className='group transition-colors hover:bg-neutral-800/30'
-                        key={transaction.id}
-                      >
-                        <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
-                          {userPreferences ? (
-                            new Date(transaction.date).toLocaleDateString(userPreferences.region, {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })
-                          ) : (
-                            <Skeleton className='h-4 w-16 rounded-sm' />
-                          )}
-                        </td>
-                        <td className='px-5 py-3.5'>
-                          <div className='flex items-center gap-3'>
-                            <div
-                              className={`flex size-7 items-center justify-center rounded-full border ${
-                                transaction.type === 'inflow'
-                                  ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
-                                  : 'border-red-500/20 bg-red-500/10 text-red-500'
+                    {transactionsPending
+                      ? [0, 1, 2, 3, 4].map((i) => (
+                          <tr className='group transition-colors hover:bg-neutral-800/30' key={i}>
+                            <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
+                              <Skeleton className='h-4 w-16 rounded-sm' />
+                            </td>
+                            <td className='px-5 py-3.5'>
+                              <Skeleton className='h-4 w-32 rounded-sm' />
+                            </td>
+                            <td className='hidden px-5 py-3.5 sm:table-cell'>
+                              <Skeleton className='h-4 w-24 rounded-sm' />
+                            </td>
+                            <td className='px-5 py-3.5 text-right'>
+                              <Skeleton className='ml-auto h-4 w-20 rounded-sm' />
+                            </td>
+                          </tr>
+                        ))
+                      : transactions.map((transaction) => (
+                          <tr
+                            className='group transition-colors hover:bg-neutral-800/30'
+                            key={transaction.id}
+                          >
+                            <td className='hidden px-5 py-3.5 text-neutral-500 sm:table-cell'>
+                              {userPreferences ? (
+                                new Date(transaction.date).toLocaleDateString(
+                                  userPreferences.region,
+                                  {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                  }
+                                )
+                              ) : (
+                                <Skeleton className='h-4 w-16 rounded-sm' />
+                              )}
+                            </td>
+                            <td className='px-5 py-3.5'>
+                              <div className='flex items-center gap-3'>
+                                <div
+                                  className={`flex size-7 items-center justify-center rounded-full border ${
+                                    transaction.type === 'inflow'
+                                      ? 'border-teal-500/20 bg-teal-500/10 text-teal-500'
+                                      : 'border-red-500/20 bg-red-500/10 text-red-500'
+                                  }`}
+                                >
+                                  <HugeiconsIcon
+                                    className='size-3'
+                                    icon={
+                                      transaction.type === 'inflow'
+                                        ? TRANSACTIONS_ICONS.inflow
+                                        : TRANSACTIONS_ICONS.outflow
+                                    }
+                                  />
+                                </div>
+                                <span className='font-medium text-white'>{transaction.title}</span>
+                              </div>
+                            </td>
+                            <td className='hidden px-5 py-3.5 sm:table-cell'>
+                              <span className='inline-flex items-center gap-1.5 rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
+                                {transaction.categoryColor && (
+                                  <span
+                                    className='size-1.5 rounded-full'
+                                    style={{ backgroundColor: transaction.categoryColor ?? '' }}
+                                  />
+                                )}
+                                {transaction.categoryName ?? 'No Category'}
+                              </span>
+                            </td>
+                            <td
+                              className={`px-5 py-3.5 text-right font-jetbrains font-medium ${
+                                transaction.type === 'inflow' ? 'text-teal-500' : 'text-red-400'
                               }`}
                             >
-                              <HugeiconsIcon
-                                className='size-3'
-                                icon={
-                                  transaction.type === 'inflow'
-                                    ? TRANSACTIONS_ICONS.inflow
-                                    : TRANSACTIONS_ICONS.outflow
-                                }
-                              />
-                            </div>
-                            <span className='font-medium text-white'>{transaction.title}</span>
-                          </div>
-                        </td>
-                        <td className='hidden px-5 py-3.5 sm:table-cell'>
-                          <span className='inline-flex items-center gap-1.5 rounded border border-neutral-700 bg-neutral-800 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-                            {transaction.categoryColor && (
-                              <span
-                                className='size-1.5 rounded-full'
-                                style={{ backgroundColor: transaction.categoryColor ?? '' }}
-                              />
-                            )}
-                            {transaction.categoryName ?? 'No Category'}
-                          </span>
-                        </td>
-                        <td
-                          className={`px-5 py-3.5 text-right font-jetbrains font-medium ${
-                            transaction.type === 'inflow' ? 'text-teal-500' : 'text-red-400'
-                          }`}
-                        >
-                          {userPreferences ? (
-                            <>
-                              {transaction.type === 'inflow' ? '+' : '-'}
-                              {parseCurrency(
-                                Number(transaction.amount),
-                                userPreferences.region,
-                                transaction.accountCurrency
+                              {userPreferences ? (
+                                <>
+                                  {transaction.type === 'inflow' ? '+' : '-'}
+                                  {parseCurrency(
+                                    Number(transaction.amount),
+                                    userPreferences.region,
+                                    transaction.accountCurrency
+                                  )}
+                                </>
+                              ) : (
+                                <Skeleton className='ml-auto h-4 w-20 rounded-sm' />
                               )}
-                            </>
-                          ) : (
-                            <Skeleton className='ml-auto h-4 w-20 rounded-sm' />
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {(!transactions || transactions.length === 0) && (
+                            </td>
+                          </tr>
+                        ))}
+                    {!transactionsPending && (!transactions || transactions.length === 0) && (
                       <tr>
                         <td className='px-5 py-8 text-center text-neutral-500' colSpan={4}>
                           No recent transactions found
@@ -194,68 +245,80 @@ function App() {
             </div>
 
             <Card className='mt-4 space-y-4 rounded-sm p-5'>
-              {!budgets || budgets.length === 0 ? (
+              {budgetsPending
+                ? [0, 1, 2].map((i) => (
+                    <div key={i}>
+                      <div className='mb-2 flex items-center justify-between'>
+                        <div className='flex items-center gap-2'>
+                          <Skeleton className='h-2 w-2 rounded-full' />
+                          <Skeleton className='h-3 w-20 rounded-sm' />
+                        </div>
+                        <Skeleton className='h-3 w-20 rounded-sm' />
+                      </div>
+                      <Skeleton className='h-2 w-full rounded-full' />
+                    </div>
+                  ))
+                : budgets.slice(0, 3).map((budget) => {
+                    const isOverBudget = budget.percentageUsed > 100
+                    const exceededAmount = isOverBudget
+                      ? Number(budget.spent) - Number(budget.amount)
+                      : 0
+                    const progressColor = budget.categoryColor || 'teal'
+
+                    return (
+                      <div key={budget.id}>
+                        <div className='mb-2 flex items-center justify-between'>
+                          <div className='flex items-center gap-2'>
+                            <div
+                              className='h-2 w-2 rounded-full'
+                              style={{ backgroundColor: progressColor }}
+                            />
+                            <span className='font-medium text-white text-xs'>
+                              {budget.categoryName}
+                            </span>
+                          </div>
+                          <span
+                            className={`font-jetbrains text-xs ${
+                              isOverBudget ? 'font-medium text-orange-500' : 'text-neutral-400'
+                            }`}
+                          >
+                            {userPreferences ? (
+                              `${parseCurrency(Number(budget.spent), userPreferences.region, userPreferences.currency)} / ${parseCurrency(Number(budget.amount), userPreferences.region, userPreferences.currency)}`
+                            ) : (
+                              <Skeleton className='inline-block h-3 w-20 rounded-sm' />
+                            )}
+                          </span>
+                        </div>
+                        <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
+                          <div
+                            className='absolute top-0 left-0 h-full rounded-full'
+                            style={{
+                              width: `${Math.min(budget.percentageUsed, 100)}%`,
+                              backgroundColor: isOverBudget
+                                ? '#f97316'
+                                : `var(--${progressColor}-500, #14b8a6)`,
+                            }}
+                          />
+                        </div>
+                        {isOverBudget && (
+                          <p className='mt-1 text-[10px] text-orange-500/80'>
+                            Exceeded by{' '}
+                            {userPreferences
+                              ? parseCurrency(
+                                  exceededAmount,
+                                  userPreferences.region,
+                                  userPreferences.currency
+                                )
+                              : exceededAmount}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
+              {!budgetsPending && (!budgets || budgets.length === 0) && (
                 <p className='py-4 text-center text-neutral-500 text-xs'>
                   No budgets set for this month
                 </p>
-              ) : (
-                budgets.slice(0, 3).map((budget) => {
-                  const isOverBudget = budget.percentageUsed > 100
-                  const exceededAmount = isOverBudget
-                    ? Number(budget.spent) - Number(budget.amount)
-                    : 0
-                  const progressColor = budget.categoryColor || 'teal'
-
-                  return (
-                    <div key={budget.id}>
-                      <div className='mb-2 flex items-center justify-between'>
-                        <div className='flex items-center gap-2'>
-                          <div
-                            className='h-2 w-2 rounded-full'
-                            style={{ backgroundColor: progressColor }}
-                          />
-                          <span className='font-medium text-white text-xs'>
-                            {budget.categoryName}
-                          </span>
-                        </div>
-                        <span
-                          className={`font-jetbrains text-xs ${
-                            isOverBudget ? 'font-medium text-orange-500' : 'text-neutral-400'
-                          }`}
-                        >
-                          {userPreferences ? (
-                            `${parseCurrency(Number(budget.spent), userPreferences.region, userPreferences.currency)} / ${parseCurrency(Number(budget.amount), userPreferences.region, userPreferences.currency)}`
-                          ) : (
-                            <Skeleton className='inline-block h-3 w-20 rounded-sm' />
-                          )}
-                        </span>
-                      </div>
-                      <div className='relative h-2 overflow-hidden rounded-full bg-neutral-800'>
-                        <div
-                          className='absolute top-0 left-0 h-full rounded-full'
-                          style={{
-                            width: `${Math.min(budget.percentageUsed, 100)}%`,
-                            backgroundColor: isOverBudget
-                              ? '#f97316'
-                              : `var(--${progressColor}-500, #14b8a6)`,
-                          }}
-                        />
-                      </div>
-                      {isOverBudget && (
-                        <p className='mt-1 text-[10px] text-orange-500/80'>
-                          Exceeded by{' '}
-                          {userPreferences
-                            ? parseCurrency(
-                                exceededAmount,
-                                userPreferences.region,
-                                userPreferences.currency
-                              )
-                            : exceededAmount}
-                        </p>
-                      )}
-                    </div>
-                  )
-                })
               )}
             </Card>
           </div>
