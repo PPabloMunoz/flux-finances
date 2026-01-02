@@ -231,15 +231,6 @@ export const userPreferences = pgTable('user_preferences', {
   timezone: text('timezone').default('Europe/Madrid').notNull(),
 })
 
-export const institution = pgTable('institution', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  name: text('name').notNull(),
-  providerId: text('provider_id'), // Plaid/Teller ID
-  logoUrl: text('logo_url'),
-})
-
 export const account = pgTable('account', {
   id: text('id')
     .primaryKey()
@@ -247,7 +238,6 @@ export const account = pgTable('account', {
   organizationId: text('organization_id')
     .references(() => organization.id, { onDelete: 'cascade' })
     .notNull(),
-  institutionId: text('institution_id').references(() => institution.id),
   name: text('name').notNull(),
   type: accountTypeEnum('type').notNull(),
   subtype: text('subtype'),
@@ -288,24 +278,6 @@ export const budget = pgTable(
   (t) => [uniqueIndex('budget_category_idx').on(t.categoryId)]
 )
 
-export const merchant = pgTable('merchant', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  name: text('name').notNull().unique(),
-  logoUrl: text('logo_url'),
-})
-
-export const tag = pgTable('tag', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  organizationId: text('organization_id')
-    .references(() => organization.id, { onDelete: 'cascade' })
-    .notNull(),
-  name: text('name').notNull(),
-})
-
 export const transaction = pgTable('transaction', {
   id: text('id')
     .primaryKey()
@@ -314,7 +286,6 @@ export const transaction = pgTable('transaction', {
     .references(() => account.id, { onDelete: 'cascade' })
     .notNull(),
   categoryId: text('category_id').references(() => category.id),
-  merchantId: text('merchant_id').references(() => merchant.id),
   date: date('date').notNull(),
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
   type: transactionTypeEnum('type').notNull(),
@@ -326,32 +297,7 @@ export const transaction = pgTable('transaction', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const transactionTag = pgTable(
-  'transaction_tag',
-  {
-    transactionId: text('transaction_id')
-      .references(() => transaction.id)
-      .notNull(),
-    tagId: text('tag_id')
-      .references(() => tag.id)
-      .notNull(),
-  },
-  (t) => [uniqueIndex('transaction_tag_pk').on(t.transactionId, t.tagId)]
-)
-
 // --- INVESTMENT TABLES ---
-
-// For assets like real estate or cars that don't have a ticker
-export const valuation = pgTable('valuation', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  accountId: text('account_id')
-    .references(() => account.id)
-    .notNull(),
-  date: date('date').notNull(),
-  amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
-})
 
 export const accountBalance = pgTable(
   'account_balance',
@@ -368,16 +314,6 @@ export const accountBalance = pgTable(
   (t) => [uniqueIndex('account_date_idx').on(t.accountId, t.date)]
 )
 
-export const exchangeRate = pgTable('exchange_rate', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => ulid()),
-  fromCurrency: text('from_currency').notNull(),
-  toCurrency: text('to_currency').notNull(),
-  date: date('date').notNull(),
-  rate: numeric('rate', { precision: 19, scale: 6 }).notNull(),
-})
-
 // --- RELATIONS ---
 
 export const accountRelations = relations(account, ({ one, many }) => ({
@@ -385,13 +321,8 @@ export const accountRelations = relations(account, ({ one, many }) => ({
     fields: [account.organizationId],
     references: [organization.id],
   }),
-  institution: one(institution, {
-    fields: [account.institutionId],
-    references: [institution.id],
-  }),
   transactions: many(transaction),
   balances: many(accountBalance),
-  valuations: many(valuation),
   accountBalances: many(accountBalance),
 }))
 
@@ -422,7 +353,7 @@ export const budgetRelations = relations(budget, ({ one }) => ({
   }),
 }))
 
-export const transactionRelations = relations(transaction, ({ one, many }) => ({
+export const transactionRelations = relations(transaction, ({ one }) => ({
   account: one(account, {
     fields: [transaction.accountId],
     references: [account.id],
@@ -431,11 +362,6 @@ export const transactionRelations = relations(transaction, ({ one, many }) => ({
     fields: [transaction.categoryId],
     references: [category.id],
   }),
-  merchant: one(merchant, {
-    fields: [transaction.merchantId],
-    references: [merchant.id],
-  }),
-  tags: many(transactionTag),
 }))
 
 export const accountBalanceRelations = relations(accountBalance, ({ one }) => ({
@@ -443,30 +369,4 @@ export const accountBalanceRelations = relations(accountBalance, ({ one }) => ({
     fields: [accountBalance.accountId],
     references: [account.id],
   }),
-}))
-
-export const valuationRelations = relations(valuation, ({ one }) => ({
-  account: one(account, {
-    fields: [valuation.accountId],
-    references: [account.id],
-  }),
-}))
-
-export const transactionTagRelations = relations(transactionTag, ({ one }) => ({
-  transaction: one(transaction, {
-    fields: [transactionTag.transactionId],
-    references: [transaction.id],
-  }),
-  tag: one(tag, {
-    fields: [transactionTag.tagId],
-    references: [tag.id],
-  }),
-}))
-
-export const tagRelations = relations(tag, ({ one, many }) => ({
-  organization: one(organization, {
-    fields: [tag.organizationId],
-    references: [organization.id],
-  }),
-  transactions: many(transactionTag),
 }))
