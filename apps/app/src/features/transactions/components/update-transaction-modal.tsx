@@ -141,7 +141,7 @@ export default function UpdateTransactionModal() {
             : new Date().toISOString().split('T')[0]
         )
         form.setFieldValue('amount', parsedPayload.data.amount.toString())
-        // form.setFieldValue('type', parsedPayload.data.type)
+        form.setFieldValue('type', parsedPayload.data.type)
         form.setFieldValue('description', parsedPayload.data.description)
 
         return (

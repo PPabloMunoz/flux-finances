@@ -59,7 +59,6 @@ export const newTransactionAction = createServerFn({ method: 'POST' })
         if (!balance) tx.rollback()
       })
 
-      // Here you would typically insert the new transaction into your database
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
       console.error('Error creating transaction:', err)
