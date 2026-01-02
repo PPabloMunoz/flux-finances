@@ -223,7 +223,7 @@ export const userPreferences = pgTable('user_preferences', {
     .primaryKey()
     .$defaultFn(() => ulid()),
   userId: text('user_id')
-    .references(() => user.id)
+    .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),
   currency: currencyEnum('currency').default('EUR').notNull(),
   region: text('region').default('ES').notNull(), // For currency formatting, etc.
@@ -285,7 +285,7 @@ export const transaction = pgTable('transaction', {
   accountId: text('account_id')
     .references(() => account.id, { onDelete: 'cascade' })
     .notNull(),
-  categoryId: text('category_id').references(() => category.id),
+  categoryId: text('category_id').references(() => category.id, { onDelete: 'set null' }),
   date: date('date').notNull(),
   amount: numeric('amount', { precision: 19, scale: 4 }).notNull(),
   type: transactionTypeEnum('type').notNull(),
