@@ -6,7 +6,6 @@ import CategoriesSettings from '@/features/settings/components/categories'
 import PreferencesSettings from '@/features/settings/components/preferences'
 import ProfileSettings from '@/features/settings/components/profile'
 import SecuritySettings from '@/features/settings/components/security'
-import TagsSettings from '@/features/settings/components/tags'
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
@@ -38,9 +37,6 @@ function RouteComponent() {
             <TabsTrigger className='justify-start' value='category'>
               Category
             </TabsTrigger>
-            <TabsTrigger className='justify-start' value='tags'>
-              Tags
-            </TabsTrigger>
             <TabsTrigger className='justify-start' value='profile'>
               Profile
             </TabsTrigger>
@@ -54,9 +50,6 @@ function RouteComponent() {
             </TabsContent>
             <TabsContent className='mt-0' value='category'>
               <CategoriesSettings />
-            </TabsContent>
-            <TabsContent className='mt-0' value='tags'>
-              <TagsSettings />
             </TabsContent>
             <TabsContent className='mt-0' value='profile'>
               <ProfileSettings />
