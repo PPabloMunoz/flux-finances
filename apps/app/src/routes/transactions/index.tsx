@@ -123,6 +123,7 @@ function RouteComponent() {
     month: 'This Month',
     year: 'This Year',
   }
+  type DateRangeKey = keyof typeof dateRangeLabels
 
   return (
     <>
@@ -245,7 +246,7 @@ function RouteComponent() {
                 )}
               >
                 <HugeiconsIcon className='size-3' icon={Calendar01Icon} />
-                {dateRangeLabels[search.dateRange || 'all']}
+                {dateRangeLabels[(search.dateRange as DateRangeKey) || 'all']}
               </DropdownMenuTrigger>
               <DropdownMenuContent align='start'>
                 <DropdownMenuItem onClick={() => updateSearch({ dateRange: 'all' })}>

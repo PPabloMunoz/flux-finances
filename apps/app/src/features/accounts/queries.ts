@@ -27,7 +27,6 @@ export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
         .select({
           id: account.id,
           organizationId: account.organizationId,
-          institutionId: account.institutionId,
           subtype: account.subtype,
           name: account.name,
           type: account.type,
