@@ -36,7 +36,7 @@ export default function NewBudgetModal({ onConfirm }: Props) {
   const queryClient = useQueryClient()
 
   const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', { type: 'outflow' }],
     queryFn: async () => {
       const res = await getCategoriesAction({ data: { type: 'outflow' } })
       if (!res.ok) {
