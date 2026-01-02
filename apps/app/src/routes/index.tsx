@@ -58,10 +58,8 @@ function App() {
     },
   })
 
-  // const previousNetWorth = previousCashTotal + previousInvestmentsTotal - previousLiabilitiesTotal
-  // const netWorthChange = netWorth - previousNetWorth
-  const previousNetWorth = netWorthData?.previousNetWorth ?? 0
   const netWorth = netWorthData?.currentNetWorth ?? 0
+  const previousNetWorth = netWorthData?.previousNetWorth ?? 0
   const netWorthChange = netWorth - previousNetWorth
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
