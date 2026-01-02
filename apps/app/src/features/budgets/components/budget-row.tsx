@@ -89,9 +89,9 @@ export default function BudgetRow({ budget }: Props) {
             {/* Amounts */}
             <div className='flex items-center justify-between sm:block sm:min-w-[120px] sm:text-right'>
               <div className='font-medium text-sm text-white'>
-                {parseCurrency(spentAmount, userPreferences.region, 'USD')}
+                {parseCurrency(spentAmount, userPreferences.region, userPreferences.currency)}
                 <span className='ml-1 font-normal text-neutral-500'>
-                  / {parseCurrency(budgetAmount, userPreferences.region, 'USD')}
+                  / {parseCurrency(budgetAmount, userPreferences.region, userPreferences.currency)}
                 </span>
               </div>
               <div
@@ -101,8 +101,8 @@ export default function BudgetRow({ budget }: Props) {
                 )}
               >
                 {isOverBudget
-                  ? `${parseCurrency(Math.abs(remainingAmount), userPreferences.region, 'USD')} over`
-                  : `${parseCurrency(remainingAmount, userPreferences.region, 'USD')} left`}
+                  ? `${parseCurrency(Math.abs(remainingAmount), userPreferences.region, userPreferences.currency)} over`
+                  : `${parseCurrency(remainingAmount, userPreferences.region, userPreferences.currency)} left`}
               </div>
             </div>
           </div>

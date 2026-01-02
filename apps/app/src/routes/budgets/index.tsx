@@ -83,7 +83,7 @@ function RouteComponent() {
             <div className='flex items-baseline gap-2'>
               <div className='font-semibold text-2xl text-white tracking-tight'>
                 {userPreferences
-                  ? parseCurrency(totalBudget, userPreferences.region, 'USD')
+                  ? parseCurrency(totalBudget, userPreferences.region, userPreferences.currency)
                   : '$0.00'}
               </div>
             </div>
@@ -105,7 +105,7 @@ function RouteComponent() {
             <div className='flex items-baseline gap-2'>
               <div className='font-semibold text-2xl text-white tracking-tight'>
                 {userPreferences
-                  ? parseCurrency(totalSpent, userPreferences.region, 'USD')
+                  ? parseCurrency(totalSpent, userPreferences.region, userPreferences.currency)
                   : '$0.00'}
               </div>
               <span className='font-medium text-neutral-500 text-xs'>
@@ -133,7 +133,11 @@ function RouteComponent() {
             <div className='flex items-baseline gap-2'>
               <div className={`font-semibold text-2xl tracking-tight ${remainingColor}`}>
                 {userPreferences
-                  ? parseCurrency(Math.abs(totalRemaining), userPreferences.region, 'USD')
+                  ? parseCurrency(
+                      Math.abs(totalRemaining),
+                      userPreferences.region,
+                      userPreferences.currency
+                    )
                   : '$0.00'}
               </div>
               <span className='font-medium text-neutral-500 text-xs'>{statusText}</span>
