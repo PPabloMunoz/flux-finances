@@ -12,6 +12,7 @@ import {
 } from '@flux/ui/components/ui/chart'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
+import { addMonth, format } from '@formkit/tempo'
 import { TradeDownIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
@@ -20,7 +21,7 @@ import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import { authStateFn } from '@/features/auth/queries'
 import { getBudgets } from '@/features/budgets/queries'
-import { getNetWorthAction } from '@/features/general/queries'
+import { getIncomeExpenseHistoryAction, getNetWorthAction } from '@/features/general/queries'
 import { getTransactionsAction } from '@/features/transactions/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { TRANSACTIONS_ICONS } from '@/lib/constants'
@@ -34,14 +35,30 @@ export const Route = createFileRoute('/')({
 function App() {
   const { data: userPreferences } = useUserPreferences()
 
-  const { data: netWorthData, isPending: netWorthPending } = useQuery({
+  const { data: netWorthData = [], isPending: netWorthPending } = useQuery({
     queryKey: ['networth'],
     queryFn: async () => {
       const res = await getNetWorthAction()
       if (!res.ok) {
         toast.error(res.error)
-        return { currentNetWorth: 0, previousNetWorth: 0 }
+        return []
       }
+      return res.data
+    },
+  })
+
+  const {
+    data: incomeVsExpensesData = { incomeHistory: [], expenseHistory: [] },
+    isPending: incomeVsExpensesPending,
+  } = useQuery({
+    queryKey: ['incomeVsExpenses'],
+    queryFn: async () => {
+      const res = await getIncomeExpenseHistoryAction()
+      if (!res.ok) {
+        toast.error(res.error)
+        return { incomeHistory: [], expenseHistory: [] }
+      }
+      console.log(res.data)
       return res.data
     },
   })
@@ -70,11 +87,37 @@ function App() {
     },
   })
 
-  const netWorth = netWorthData?.currentNetWorth ?? 0
-  const previousNetWorth = netWorthData?.previousNetWorth ?? 0
+  const currentMonth = new Date().getMonth()
+  const netWorth = netWorthData[11] ?? 0
+  const previousNetWorth = netWorthData[10] ?? 0
   const netWorthChange = netWorth - previousNetWorth
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
+
+  const netWorthDisplayData = netWorthData.map((item, i) => {
+    const month = format({
+      date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
+      format: 'MMMM',
+      locale: userPreferences?.region,
+      tz: userPreferences?.timezone,
+    })
+    return { month, netWorth: item }
+  })
+
+  const incomeVsExpensesDisplayData = []
+  for (let i = 0; i < incomeVsExpensesData.expenseHistory.length; i++) {
+    const month = format({
+      date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
+      format: 'MMMM',
+      locale: userPreferences?.region,
+      tz: userPreferences?.timezone,
+    })
+    incomeVsExpensesDisplayData.push({
+      month,
+      income: incomeVsExpensesData.incomeHistory[i] || 0,
+      expenses: incomeVsExpensesData.expenseHistory[i] || 0,
+    })
+  }
 
   return (
     <>
@@ -118,7 +161,7 @@ function App() {
         <section>
           <Tabs className='w-full' defaultValue='netWorth'>
             <div className='mb-2 flex items-center justify-end'>
-              <TabsList className='bg-neutral-900/50'>
+              <TabsList className='bg-neutral-900/30 p-1'>
                 <TabsTrigger
                   className='rounded-sm data-[state=active]:bg-neutral-800 data-[state=active]:text-white'
                   value='netWorth'
@@ -135,104 +178,96 @@ function App() {
             </div>
 
             <TabsContent value='netWorth'>
-              <ChartContainer
-                className='h-70 w-full'
-                config={{
-                  netWorth: {
-                    label: 'Net Worth',
-                    color: '#14b8a6',
-                  },
-                }}
-              >
-                <AreaChart
-                  accessibilityLayer
-                  data={[
-                    { month: 'January', netWorth: 186 },
-                    { month: 'February', netWorth: 305 },
-                    { month: 'March', netWorth: 237 },
-                    { month: 'April', netWorth: 73 },
-                    { month: 'May', netWorth: 209 },
-                    { month: 'June', netWorth: 214 },
-                    { month: 'July', netWorth: 340 },
-                    { month: 'August', netWorth: 280 },
-                    { month: 'September', netWorth: 400 },
-                    { month: 'October', netWorth: 360 },
-                    { month: 'November', netWorth: 450 },
-                    { month: 'December', netWorth: 500 },
-                  ]}
-                  margin={{
-                    left: 12,
-                    right: 12,
+              {userPreferences ? (
+                <ChartContainer
+                  className='max-h-120 min-h-70 w-full'
+                  config={{
+                    netWorth: {
+                      label: 'Net Worth',
+                      color: '#14b8a6',
+                    },
                   }}
                 >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    axisLine={false}
-                    dataKey='month'
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    tickLine={false}
-                    tickMargin={8}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent indicator='line' />} cursor={false} />
-                  <Area
-                    dataKey='netWorth'
-                    fill='var(--color-netWorth)'
-                    fillOpacity={0.4}
-                    stroke='var(--color-netWorth)'
-                    type='natural'
-                  />
-                </AreaChart>
-              </ChartContainer>
+                  <AreaChart
+                    accessibilityLayer
+                    data={netWorthDisplayData}
+                    margin={{
+                      left: 12,
+                      right: 12,
+                    }}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      axisLine={false}
+                      dataKey='month'
+                      tickFormatter={(value) => value.slice(0, 3)}
+                      tickLine={false}
+                      tickMargin={8}
+                    />
+                    <ChartTooltip
+                      content={<ChartTooltipContent indicator='line' />}
+                      cursor={false}
+                    />
+                    <Area
+                      dataKey='netWorth'
+                      fill='var(--color-netWorth)'
+                      fillOpacity={0.4}
+                      stroke='var(--color-netWorth)'
+                      type='natural'
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              ) : (
+                <div className='flex h-70 w-full items-center justify-center'>
+                  <Skeleton className='h-70 w-full rounded-sm' />
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value='incomeVsExpenses'>
-              <ChartContainer
-                className='h-70 w-full'
-                config={{
-                  income: {
-                    label: 'Income',
-                    color: '#14b8a6',
-                  },
-                  expenses: {
-                    label: 'Expenses',
-                    color: '#ef4444',
-                  },
-                }}
-              >
-                <BarChart
-                  accessibilityLayer
-                  data={[
-                    { month: 'January', income: 5000, expenses: 3000 },
-                    { month: 'February', income: 5500, expenses: 3200 },
-                    { month: 'March', income: 4800, expenses: 2900 },
-                    { month: 'April', income: 5200, expenses: 3500 },
-                    { month: 'May', income: 6000, expenses: 4000 },
-                    { month: 'June', income: 5800, expenses: 3800 },
-                    { month: 'July', income: 6200, expenses: 4100 },
-                    { month: 'August', income: 6100, expenses: 3900 },
-                    { month: 'September', income: 7000, expenses: 4500 },
-                    { month: 'October', income: 6800, expenses: 4200 },
-                    { month: 'November', income: 7200, expenses: 4600 },
-                    { month: 'December', income: 7500, expenses: 4800 },
-                  ]}
-                  margin={{
-                    left: 12,
-                    right: 12,
+              {userPreferences ? (
+                <ChartContainer
+                  className='max-h-120 min-h-70 w-full'
+                  config={{
+                    income: {
+                      label: 'Income',
+                      color: '#14b8a6',
+                    },
+                    expenses: {
+                      label: 'Expenses',
+                      color: '#ef4444',
+                    },
                   }}
                 >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    axisLine={false}
-                    dataKey='month'
-                    tickFormatter={(value) => value.slice(0, 3)}
-                    tickLine={false}
-                    tickMargin={8}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent indicator='line' />} cursor={false} />
-                  <Bar dataKey='income' fill='var(--color-income)' radius={[4, 4, 0, 0]} />
-                  <Bar dataKey='expenses' fill='var(--color-expenses)' radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ChartContainer>
+                  <BarChart
+                    accessibilityLayer
+                    data={incomeVsExpensesDisplayData}
+                    margin={{
+                      left: 12,
+                      right: 12,
+                    }}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      axisLine={false}
+                      dataKey='month'
+                      tickFormatter={(value) => value.slice(0, 3)}
+                      tickLine={false}
+                      tickMargin={8}
+                    />
+                    <ChartTooltip
+                      content={<ChartTooltipContent indicator='line' />}
+                      cursor={false}
+                    />
+                    <Bar dataKey='income' fill='var(--color-income)' radius={[4, 4, 0, 0]} />
+                    <Bar dataKey='expenses' fill='var(--color-expenses)' radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ChartContainer>
+              ) : (
+                <div className='flex h-70 w-full items-center justify-center'>
+                  <Skeleton className='h-48 w-96 rounded-sm' />
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </section>
