@@ -210,60 +210,6 @@ export default function CategoriesSettings() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Category Usage Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Category Spending</CardTitle>
-          <CardDescription>Your top spending categories this month</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='space-y-3'>
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='flex items-center gap-2'>
-                <div className='size-3 rounded-full bg-[#f97316]' />
-                <span className='font-medium text-sm'>Restaurants</span>
-              </div>
-              <div className='flex w-full items-center gap-3 sm:w-auto'>
-                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
-                  <div className='h-full w-3/4 bg-primary' />
-                </div>
-                <Badge className='min-w-20 justify-center font-mono' variant='secondary'>
-                  $1,245
-                </Badge>
-              </div>
-            </div>
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='flex items-center gap-2'>
-                <div className='size-3 rounded-full bg-[#3b82f6]' />
-                <span className='font-medium text-sm'>Transportation</span>
-              </div>
-              <div className='flex w-full items-center gap-3 sm:w-auto'>
-                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
-                  <div className='h-full w-1/2 bg-primary' />
-                </div>
-                <Badge className='min-w-20 justify-center font-mono' variant='secondary'>
-                  $680
-                </Badge>
-              </div>
-            </div>
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='flex items-center gap-2'>
-                <div className='size-3 rounded-full bg-[#8b5cf6]' />
-                <span className='font-medium text-sm'>Shopping</span>
-              </div>
-              <div className='flex w-full items-center gap-3 sm:w-auto'>
-                <div className='h-2 flex-1 overflow-hidden rounded-full bg-muted sm:w-32 sm:flex-none'>
-                  <div className='h-full w-1/3 bg-primary' />
-                </div>
-                <Badge className='min-w-20 justify-center font-mono' variant='secondary'>
-                  $425
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
