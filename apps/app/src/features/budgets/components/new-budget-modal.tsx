@@ -27,7 +27,11 @@ import { NewBudgetSchema } from '../schema'
 
 export const newBudgetDialogHandle = BaseUIDialog.createHandle()
 
-export default function NewBudgetModal() {
+interface Props {
+  onConfirm?: () => void
+}
+
+export default function NewBudgetModal({ onConfirm }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
@@ -73,6 +77,7 @@ export default function NewBudgetModal() {
         queryClient.invalidateQueries({ queryKey: ['budgets'] })
         newBudgetDialogHandle.close()
         form.reset()
+        onConfirm?.()
       }
     },
   })

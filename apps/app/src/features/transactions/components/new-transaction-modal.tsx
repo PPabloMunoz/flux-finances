@@ -38,7 +38,11 @@ import { NewTransactionSchema } from '../schema'
 
 export const newTransactionModalHandle = BaseUIDialog.createHandle()
 
-export default function NewTransactionModal() {
+interface Props {
+  onConfirm?: () => void
+}
+
+export default function NewTransactionModal({ onConfirm }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const [categoriesToShow, setCategoriesToShow] = useState<TCategory[]>([])
   const queryClient = useQueryClient()
@@ -105,6 +109,7 @@ export default function NewTransactionModal() {
         queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
         newTransactionModalHandle.close()
         form.reset()
+        onConfirm?.()
       }
     },
   })

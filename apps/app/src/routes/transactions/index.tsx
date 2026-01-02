@@ -25,9 +25,7 @@ import AppHeader from '@/components/header'
 import { getAllAccountsAction } from '@/features/accounts/queries'
 import { getCategoriesAction } from '@/features/settings/queries'
 import DeleteTransactionModal from '@/features/transactions/components/delete-transaction-modal'
-import NewTransactionModal, {
-  newTransactionModalHandle,
-} from '@/features/transactions/components/new-transaction-modal'
+import { newTransactionModalHandle } from '@/features/transactions/components/new-transaction-modal'
 import TransactionRow from '@/features/transactions/components/transaction-row'
 import UpdateTransactionModal from '@/features/transactions/components/update-transaction-modal'
 import { getTransactionSummaryAction, getTransactionsAction } from '@/features/transactions/queries'
@@ -127,7 +125,6 @@ function RouteComponent() {
 
   return (
     <>
-      <NewTransactionModal />
       <UpdateTransactionModal />
       <DeleteTransactionModal />
 

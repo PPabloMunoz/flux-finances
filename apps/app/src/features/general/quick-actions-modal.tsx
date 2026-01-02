@@ -1,50 +1,23 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@flux/ui/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@flux/ui/components/ui/dialog'
 import {
   ArrowRight01Icon,
   CreditCardIcon,
   Target01Icon,
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { newAccountDialogHandle } from '../accounts/components/new-account-modal'
+import { newBudgetDialogHandle } from '../budgets/components/new-budget-modal'
+import { newTransactionModalHandle } from '../transactions/components/new-transaction-modal'
 
 export const quickActionsDialogHandle = BaseUIDialog.createHandle()
-
-type ACTIONS_ID = 'add-transaction' | 'create-account' | 'new-transfer' | 'create-goal'
-
-interface ActionOption {
-  id: ACTIONS_ID
-  icon: IconSvgElement
-  label: string
-  desc: string
-}
-
-const ACTIONS: ActionOption[] = [
-  {
-    id: 'add-transaction',
-    icon: CreditCardIcon,
-    label: 'Add Transaction',
-    desc: 'Log a new income or expense',
-  },
-  {
-    id: 'create-account',
-    icon: Wallet01Icon,
-    label: 'Create Account',
-    desc: 'Link a new bank feed',
-  },
-  {
-    id: 'new-transfer',
-    icon: ArrowRight01Icon,
-    label: 'New Transfer',
-    desc: 'Move money between accounts',
-  },
-  {
-    id: 'create-goal',
-    icon: Target01Icon,
-    label: 'Create Goal',
-    desc: 'Set a new saving target',
-  },
-]
 
 export default function QuickActionsModal() {
   return (
@@ -54,31 +27,89 @@ export default function QuickActionsModal() {
           <DialogTitle>Quick Actions</DialogTitle>
         </DialogHeader>
         <div className='space-y-1'>
-          {ACTIONS.map((action) => {
-            return (
+          <DialogTrigger
+            handle={newTransactionModalHandle}
+            render={
               <button
                 className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
-                key={action.id}
-                onClick={() => {
-                  console.log(`Clicked: ${action.label}`)
-                  quickActionsDialogHandle.close()
-                }}
                 type='button'
               >
                 <div className='flex items-center gap-3'>
                   <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
-                    <HugeiconsIcon icon={action.icon} size={18} />
+                    <HugeiconsIcon icon={CreditCardIcon} size={18} />
                   </div>
                   <div>
-                    <div className='font-medium text-sm'>{action.label}</div>
-                    <div className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
-                      {action.desc}
-                    </div>
+                    <p className='font-medium text-sm'>Add Transaction</p>
+                    <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
+                      Log a new income or expense
+                    </span>
                   </div>
                 </div>
               </button>
-            )
-          })}
+            }
+          />
+
+          <DialogTrigger
+            handle={newAccountDialogHandle}
+            payload={{ type: 'cash' }}
+            render={
+              <button
+                className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
+                type='button'
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
+                    <HugeiconsIcon icon={Wallet01Icon} size={18} />
+                  </div>
+                  <div>
+                    <p className='font-medium text-sm'>Create Account</p>
+                    <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
+                      Create a new account
+                    </span>
+                  </div>
+                </div>
+              </button>
+            }
+          />
+
+          <button
+            className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
+            type='button'
+          >
+            <div className='flex items-center gap-3'>
+              <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
+                <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
+              </div>
+              <div>
+                <p className='font-medium text-sm'>New Transfer</p>
+                <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
+                  Move money between accounts
+                </span>
+              </div>
+            </div>
+          </button>
+
+          <DialogTrigger
+            handle={newBudgetDialogHandle}
+            render={
+              <button
+                className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
+                type='button'
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
+                    <HugeiconsIcon icon={Target01Icon} size={18} />
+                  </div>
+                  <div>
+                    <p className='font-medium text-sm'>Create Budget</p>
+                    <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
+                      Set up a new budget
+                    </span>
+                  </div>
+                </div>
+              </button>
+            }
+          />
         </div>
       </DialogContent>
     </Dialog>

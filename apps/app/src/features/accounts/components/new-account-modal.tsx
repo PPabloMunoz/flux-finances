@@ -21,11 +21,15 @@ import { NewAccountSchema } from '../schema'
 
 export const newAccountDialogHandle = BaseUIDialog.createHandle()
 
+interface Props {
+  onConfirm?: () => void
+}
+
 const PayloadSchema = z.object({
   type: z.enum(ACCOUNT_TYPES),
 })
 
-export default function NewAccountModal() {
+export default function NewAccountModal({ onConfirm }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
@@ -60,6 +64,7 @@ export default function NewAccountModal() {
         queryClient.invalidateQueries({ queryKey: ['accounts', value.type] })
         newAccountDialogHandle.close()
         form.reset()
+        onConfirm?.()
       }
     },
   })
