@@ -1,5 +1,17 @@
 import { Card } from '@flux/ui/components/ui/card'
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  XAxis,
+} from '@flux/ui/components/ui/chart'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { TradeDownIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
@@ -104,7 +116,125 @@ function App() {
 
         {/* Graph */}
         <section>
-          <div className='h-70 w-full rounded-sm border border-neutral-200/50 bg-neutral-50/10' />
+          <Tabs className='w-full' defaultValue='netWorth'>
+            <div className='mb-2 flex items-center justify-end'>
+              <TabsList className='bg-neutral-900/50'>
+                <TabsTrigger
+                  className='rounded-sm data-[state=active]:bg-neutral-800 data-[state=active]:text-white'
+                  value='netWorth'
+                >
+                  Net Worth
+                </TabsTrigger>
+                <TabsTrigger
+                  className='rounded-sm data-[state=active]:bg-neutral-800 data-[state=active]:text-white'
+                  value='incomeVsExpenses'
+                >
+                  Income vs Expenses
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value='netWorth'>
+              <ChartContainer
+                className='h-70 w-full'
+                config={{
+                  netWorth: {
+                    label: 'Net Worth',
+                    color: '#14b8a6',
+                  },
+                }}
+              >
+                <AreaChart
+                  accessibilityLayer
+                  data={[
+                    { month: 'January', netWorth: 186 },
+                    { month: 'February', netWorth: 305 },
+                    { month: 'March', netWorth: 237 },
+                    { month: 'April', netWorth: 73 },
+                    { month: 'May', netWorth: 209 },
+                    { month: 'June', netWorth: 214 },
+                    { month: 'July', netWorth: 340 },
+                    { month: 'August', netWorth: 280 },
+                    { month: 'September', netWorth: 400 },
+                    { month: 'October', netWorth: 360 },
+                    { month: 'November', netWorth: 450 },
+                    { month: 'December', netWorth: 500 },
+                  ]}
+                  margin={{
+                    left: 12,
+                    right: 12,
+                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    axisLine={false}
+                    dataKey='month'
+                    tickFormatter={(value) => value.slice(0, 3)}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent indicator='line' />} cursor={false} />
+                  <Area
+                    dataKey='netWorth'
+                    fill='var(--color-netWorth)'
+                    fillOpacity={0.4}
+                    stroke='var(--color-netWorth)'
+                    type='natural'
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </TabsContent>
+
+            <TabsContent value='incomeVsExpenses'>
+              <ChartContainer
+                className='h-70 w-full'
+                config={{
+                  income: {
+                    label: 'Income',
+                    color: '#14b8a6',
+                  },
+                  expenses: {
+                    label: 'Expenses',
+                    color: '#ef4444',
+                  },
+                }}
+              >
+                <BarChart
+                  accessibilityLayer
+                  data={[
+                    { month: 'January', income: 5000, expenses: 3000 },
+                    { month: 'February', income: 5500, expenses: 3200 },
+                    { month: 'March', income: 4800, expenses: 2900 },
+                    { month: 'April', income: 5200, expenses: 3500 },
+                    { month: 'May', income: 6000, expenses: 4000 },
+                    { month: 'June', income: 5800, expenses: 3800 },
+                    { month: 'July', income: 6200, expenses: 4100 },
+                    { month: 'August', income: 6100, expenses: 3900 },
+                    { month: 'September', income: 7000, expenses: 4500 },
+                    { month: 'October', income: 6800, expenses: 4200 },
+                    { month: 'November', income: 7200, expenses: 4600 },
+                    { month: 'December', income: 7500, expenses: 4800 },
+                  ]}
+                  margin={{
+                    left: 12,
+                    right: 12,
+                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    axisLine={false}
+                    dataKey='month'
+                    tickFormatter={(value) => value.slice(0, 3)}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent indicator='line' />} cursor={false} />
+                  <Bar dataKey='income' fill='var(--color-income)' radius={[4, 4, 0, 0]} />
+                  <Bar dataKey='expenses' fill='var(--color-expenses)' radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+            </TabsContent>
+          </Tabs>
         </section>
 
         <section className='mt-10 grid grid-cols-1 gap-y-6 md:grid-cols-3 md:gap-x-6'>

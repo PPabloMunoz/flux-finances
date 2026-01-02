@@ -312,11 +312,66 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config]
 }
 
+const Area = RechartsPrimitive.Area
+const AreaChart = RechartsPrimitive.AreaChart
+const Bar = RechartsPrimitive.Bar
+const BarChart = RechartsPrimitive.BarChart
+const CartesianGrid = RechartsPrimitive.CartesianGrid
+const Cell = RechartsPrimitive.Cell
+const ComposedChart = RechartsPrimitive.ComposedChart
+const Label = RechartsPrimitive.Label
+const LabelList = RechartsPrimitive.LabelList
+const Line = RechartsPrimitive.Line
+const LineChart = RechartsPrimitive.LineChart
+const Pie = RechartsPrimitive.Pie
+const PieChart = RechartsPrimitive.PieChart
+const PolarAngleAxis = RechartsPrimitive.PolarAngleAxis
+const PolarGrid = RechartsPrimitive.PolarGrid
+const PolarRadiusAxis = RechartsPrimitive.PolarRadiusAxis
+const Radar = RechartsPrimitive.Radar
+const RadarChart = RechartsPrimitive.RadarChart
+const RadialBar = RechartsPrimitive.RadialBar
+const RadialBarChart = RechartsPrimitive.RadialBarChart
+const ReferenceLine = RechartsPrimitive.ReferenceLine
+const ResponsiveContainer = RechartsPrimitive.ResponsiveContainer
+const Scatter = RechartsPrimitive.Scatter
+const ScatterChart = RechartsPrimitive.ScatterChart
+const Sector = RechartsPrimitive.Sector
+const XAxis = RechartsPrimitive.XAxis
+const YAxis = RechartsPrimitive.YAxis
+
 export {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
+  ComposedChart,
+  Label,
+  LabelList,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  RadialBar,
+  RadialBarChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Sector,
+  XAxis,
+  YAxis,
 }
