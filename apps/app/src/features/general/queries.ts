@@ -84,8 +84,6 @@ export const getIncomeExpenseHistoryAction = createServerFn({ method: 'GET' })
         const startOfMonth = addDay(monthStart(targetMonth), 1).toISOString().split('T')[0]
         const endOfMonth = monthEnd(targetMonth).toISOString().split('T')[0]
 
-        console.log(`Fetching data for month starting ${startOfMonth} to ${endOfMonth}`)
-
         // Fetch income (inflow) for the month
         const incomeResult = await db
           .select({
