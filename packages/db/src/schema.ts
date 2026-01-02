@@ -245,7 +245,7 @@ export const account = pgTable('account', {
     .primaryKey()
     .$defaultFn(() => ulid()),
   organizationId: text('organization_id')
-    .references(() => organization.id)
+    .references(() => organization.id, { onDelete: 'cascade' })
     .notNull(),
   institutionId: text('institution_id').references(() => institution.id),
   name: text('name').notNull(),
@@ -261,7 +261,7 @@ export const category = pgTable('category', {
     .primaryKey()
     .$defaultFn(() => ulid()),
   organizationId: text('organization_id')
-    .references(() => organization.id)
+    .references(() => organization.id, { onDelete: 'cascade' })
     .notNull(),
   name: text('name').notNull(),
   type: categoryTypeEnum('type').notNull(),
@@ -301,7 +301,7 @@ export const tag = pgTable('tag', {
     .primaryKey()
     .$defaultFn(() => ulid()),
   organizationId: text('organization_id')
-    .references(() => organization.id)
+    .references(() => organization.id, { onDelete: 'cascade' })
     .notNull(),
   name: text('name').notNull(),
 })
@@ -311,7 +311,7 @@ export const transaction = pgTable('transaction', {
     .primaryKey()
     .$defaultFn(() => ulid()),
   accountId: text('account_id')
-    .references(() => account.id)
+    .references(() => account.id, { onDelete: 'cascade' })
     .notNull(),
   categoryId: text('category_id').references(() => category.id),
   merchantId: text('merchant_id').references(() => merchant.id),
