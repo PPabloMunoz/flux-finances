@@ -58,7 +58,6 @@ function App() {
         toast.error(res.error)
         return { incomeHistory: [], expenseHistory: [] }
       }
-      console.log(res.data)
       return res.data
     },
   })
@@ -88,8 +87,8 @@ function App() {
   })
 
   const currentMonth = new Date().getMonth()
-  const netWorth = netWorthData[11] ?? 0
-  const previousNetWorth = netWorthData[10] ?? 0
+  const netWorth = netWorthData[netWorthData.length - 1] ?? 0
+  const previousNetWorth = netWorthData[netWorthData.length - 2] ?? 0
   const netWorthChange = netWorth - previousNetWorth
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
@@ -178,7 +177,7 @@ function App() {
             </div>
 
             <TabsContent value='netWorth'>
-              {userPreferences ? (
+              {userPreferences || netWorthPending ? (
                 <ChartContainer
                   className='max-h-120 min-h-70 w-full'
                   config={{
@@ -225,7 +224,7 @@ function App() {
             </TabsContent>
 
             <TabsContent value='incomeVsExpenses'>
-              {userPreferences ? (
+              {userPreferences || incomeVsExpensesPending ? (
                 <ChartContainer
                   className='max-h-120 min-h-70 w-full'
                   config={{
