@@ -1,15 +1,4 @@
 import { Card } from '@flux/ui/components/ui/card'
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  XAxis,
-} from '@flux/ui/components/ui/chart'
 import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { addMonth, format } from '@formkit/tempo'
@@ -21,6 +10,8 @@ import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import { authStateFn } from '@/features/auth/queries'
 import { getBudgets } from '@/features/budgets/queries'
+import IncomeVsExpensesCharts from '@/features/general/components/income-vs-expenses-charts'
+import NetworthChart from '@/features/general/components/networth-chart'
 import { getIncomeExpenseHistoryAction, getNetWorthAction } from '@/features/general/queries'
 import { getTransactionsAction } from '@/features/transactions/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
@@ -178,44 +169,7 @@ function App() {
 
             <TabsContent value='netWorth'>
               {userPreferences || netWorthPending ? (
-                <ChartContainer
-                  className='max-h-120 min-h-70 w-full'
-                  config={{
-                    netWorth: {
-                      label: 'Net Worth',
-                      color: '#14b8a6',
-                    },
-                  }}
-                >
-                  <AreaChart
-                    accessibilityLayer
-                    data={netWorthDisplayData}
-                    margin={{
-                      left: 12,
-                      right: 12,
-                    }}
-                  >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      axisLine={false}
-                      dataKey='month'
-                      tickFormatter={(value) => value.slice(0, 3)}
-                      tickLine={false}
-                      tickMargin={8}
-                    />
-                    <ChartTooltip
-                      content={<ChartTooltipContent indicator='line' />}
-                      cursor={false}
-                    />
-                    <Area
-                      dataKey='netWorth'
-                      fill='var(--color-netWorth)'
-                      fillOpacity={0.4}
-                      stroke='var(--color-netWorth)'
-                      type='natural'
-                    />
-                  </AreaChart>
-                </ChartContainer>
+                <NetworthChart data={netWorthDisplayData} />
               ) : (
                 <div className='flex h-70 w-full items-center justify-center'>
                   <Skeleton className='h-70 w-full rounded-sm' />
@@ -225,43 +179,7 @@ function App() {
 
             <TabsContent value='incomeVsExpenses'>
               {userPreferences || incomeVsExpensesPending ? (
-                <ChartContainer
-                  className='max-h-120 min-h-70 w-full'
-                  config={{
-                    income: {
-                      label: 'Income',
-                      color: '#14b8a6',
-                    },
-                    expenses: {
-                      label: 'Expenses',
-                      color: '#ef4444',
-                    },
-                  }}
-                >
-                  <BarChart
-                    accessibilityLayer
-                    data={incomeVsExpensesDisplayData}
-                    margin={{
-                      left: 12,
-                      right: 12,
-                    }}
-                  >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      axisLine={false}
-                      dataKey='month'
-                      tickFormatter={(value) => value.slice(0, 3)}
-                      tickLine={false}
-                      tickMargin={8}
-                    />
-                    <ChartTooltip
-                      content={<ChartTooltipContent indicator='line' />}
-                      cursor={false}
-                    />
-                    <Bar dataKey='income' fill='var(--color-income)' radius={[4, 4, 0, 0]} />
-                    <Bar dataKey='expenses' fill='var(--color-expenses)' radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ChartContainer>
+                <IncomeVsExpensesCharts data={incomeVsExpensesDisplayData} />
               ) : (
                 <div className='flex h-70 w-full items-center justify-center'>
                   <Skeleton className='h-48 w-96 rounded-sm' />
