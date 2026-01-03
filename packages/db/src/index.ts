@@ -7,5 +7,27 @@ if (!DB_URL) {
   throw new Error('DATABASE_URL is not defined in environment variables')
 }
 
-const queryClient = postgres(DB_URL)
-export const db = drizzle({ client: queryClient, schema })
+// biome-ignore lint/complexity/noBannedTypes: This is required by the postgres library
+const clientConfig: postgres.Options<{}> = {
+  max: process.env.NODE_ENV === 'production' ? 20 : 1,
+  ssl: 'prefer',
+  idle_timeout: 20,
+  connect_timeout: 10,
+}
+
+// Prevent multiple instances in development (Singleton)
+const globalForDb = global as unknown as {
+  conn: postgres.Sql | undefined
+}
+
+const conn = globalForDb.conn ?? postgres(DB_URL, clientConfig)
+if (process.env.NODE_ENV !== 'production') globalForDb.conn = conn
+
+export const db = drizzle(conn, { schema })
+
+// Close the connection pool when the process exits
+process.on('SIGTERM', async () => {
+  console.log('Closing database connection...')
+  await conn.end()
+  process.exit(0)
+})
