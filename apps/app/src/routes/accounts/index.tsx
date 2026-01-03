@@ -152,14 +152,14 @@ function RouteComponent() {
                   parseCurrency(netWorth, userPreferences.region, userPreferences.currency)
                 )}
               </span>
-              <div className='flex items-center gap-1 font-medium text-teal-500 text-xs'>
+              <div
+                className={cn(
+                  'flex items-center gap-1 font-medium text-teal-500 text-xs',
+                  netWorth - prevNetWorth >= 0 ? 'text-teal-500' : 'text-red-500'
+                )}
+              >
                 <HugeiconsIcon className='size-3' icon={TradeUpIcon} />
-                <span
-                  className={cn(
-                    'font-jetbrains',
-                    netWorth - prevNetWorth >= 0 ? 'text-teal-500' : 'text-red-500'
-                  )}
-                >
+                <span className='font-jetbrains'>
                   {cashAccountsPending ||
                   investmentAccountsPending ||
                   liabilityAccountsPending ||
