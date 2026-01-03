@@ -10,7 +10,13 @@ import {
 } from '@flux/ui/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
-import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@flux/ui/components/ui/select'
 import { cn } from '@flux/ui/lib/utils'
 import { Delete03Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -29,12 +35,17 @@ export default function UpdateBudgetModal() {
   const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
-  const { data: categoriesResult } = useQuery({
-    queryKey: ['categories', 'all'],
-    queryFn: () => getCategoriesAction({ data: {} }),
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories', { type: 'outflow' }],
+    queryFn: async () => {
+      const res = await getCategoriesAction({ data: { type: 'outflow' } })
+      if (!res.ok) {
+        toast.error(res.error)
+        return []
+      }
+      return res.data
+    },
   })
-
-  const categories = categoriesResult?.ok ? categoriesResult.data : []
 
   const form = useForm({
     defaultValues: {
@@ -81,7 +92,7 @@ export default function UpdateBudgetModal() {
 
         form.setFieldValue('id', budgetPayload.id)
         form.setFieldValue('categoryId', budgetPayload.categoryId)
-        form.setFieldValue('amount', budgetPayload.amount)
+        form.setFieldValue('amount', Number(budgetPayload.amount).toString())
 
         return (
           <DialogContent>
@@ -102,26 +113,50 @@ export default function UpdateBudgetModal() {
               <form.Field name='categoryId'>
                 {(field) => {
                   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                  const currentCategory = categories?.find((cat) => cat.id === field.state.value)
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                      <NativeSelect
+                      <Select
+                        aria-invalid={isInvalid}
                         disabled={isLoading}
                         id={field.name}
-                        name={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
+                        onValueChange={(value) => field.handleChange(value ?? '')}
                         value={field.state.value}
                       >
-                        <NativeSelectOption disabled value=''>
-                          Select a category
-                        </NativeSelectOption>
-                        {categories.map((cat) => (
-                          <NativeSelectOption key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </NativeSelectOption>
-                        ))}
-                      </NativeSelect>
+                        <SelectTrigger>
+                          <SelectValue>
+                            {(categoryId: string) => {
+                              if (!categoryId) return 'No Category'
+                              return (
+                                <span className='flex items-center gap-2'>
+                                  <div
+                                    className='flex size-2.5 items-center justify-center rounded-full border border-neutral-700/30'
+                                    style={{
+                                      backgroundColor: currentCategory?.color ?? '#000000',
+                                    }}
+                                  />
+                                  {currentCategory ? currentCategory.name : 'No Category'}
+                                </span>
+                              )
+                            }}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className='overflow-y-auto'>
+                          <SelectItem value=''>No Category</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              <div className='flex items-center gap-2'>
+                                <div
+                                  className='flex size-2.5 items-center justify-center rounded-full border border-neutral-700/30'
+                                  style={{ backgroundColor: category.color ?? '#000000' }}
+                                />
+                                <span>{category.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {isInvalid && <FieldError errors={field.state.meta.errors} />}
                     </Field>
                   )
