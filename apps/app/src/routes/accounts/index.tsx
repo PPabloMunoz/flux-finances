@@ -12,7 +12,7 @@ import AccountRow from '@/features/accounts/components/account-row'
 import DeleteAccountModal from '@/features/accounts/components/delete-account-modal'
 import { newAccountDialogHandle } from '@/features/accounts/components/new-account-modal'
 import UpdateAccountModal from '@/features/accounts/components/update-account-modal'
-import { getAccountsByTypeAction } from '@/features/accounts/queries'
+import { getAllAccountsWithBalancesAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { ACCOUNT_TYPES } from '@/lib/constants'
@@ -26,100 +26,79 @@ export const Route = createFileRoute('/accounts/')({
 function RouteComponent() {
   const { data: userPreferences } = useUserPreferences()
 
-  const { data: cashAccounts = [], isPending: cashAccountsPending } = useQuery({
-    queryKey: ['accounts', ACCOUNT_TYPES[0]],
+  const { data: accounts = [], isPending: accountsPending } = useQuery({
+    queryKey: ['accounts'],
     queryFn: async () => {
-      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[0] } })
+      const res = await getAllAccountsWithBalancesAction()
       if (!res.ok) {
-        toast.error('Failed to load cash accounts')
+        toast.error(res.error)
         return []
       }
       return res.data
     },
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
   })
 
-  const { data: investmentAccounts = [], isPending: investmentAccountsPending } = useQuery({
-    queryKey: ['accounts', ACCOUNT_TYPES[1]],
-    queryFn: async () => {
-      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[1] } })
-      if (!res.ok) {
-        toast.error('Failed to load investment accounts')
-        return []
-      }
-      return res.data
-    },
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
-  })
-
-  const { data: liabilityAccounts = [], isPending: liabilityAccountsPending } = useQuery({
-    queryKey: ['accounts', ACCOUNT_TYPES[2]],
-    queryFn: async () => {
-      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[2] } })
-      if (!res.ok) {
-        toast.error('Failed to load liability accounts')
-        return []
-      }
-      return res.data
-    },
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
-  })
-
-  const { data: assetAccounts = [], isPending: assetAccountsPending } = useQuery({
-    queryKey: ['accounts', ACCOUNT_TYPES[3]],
-    queryFn: async () => {
-      const res = await getAccountsByTypeAction({ data: { type: ACCOUNT_TYPES[3] } })
-      if (!res.ok) {
-        toast.error('Failed to load asset accounts')
-        return []
-      }
-      return res.data
-    },
-    staleTime: Number.POSITIVE_INFINITY,
-    gcTime: Number.POSITIVE_INFINITY,
-  })
+  const categorizedAccounts = useMemo(
+    () => ({
+      cash: accounts.filter((a) => a.type === ACCOUNT_TYPES[0]),
+      investment: accounts.filter((a) => a.type === ACCOUNT_TYPES[1]),
+      liability: accounts.filter((a) => a.type === ACCOUNT_TYPES[2]),
+      asset: accounts.filter((a) => a.type === ACCOUNT_TYPES[3]),
+    }),
+    [accounts]
+  )
+  console.log('categorizedAccounts', categorizedAccounts)
 
   const cashTotal = useMemo(() => {
-    return cashAccounts.reduce((total, account) => total + Number(account.currentBalance), 0)
-  }, [cashAccounts])
+    return categorizedAccounts.cash.reduce(
+      (total, account) => total + Number(account.currentBalance),
+      0
+    )
+  }, [categorizedAccounts])
   const investmentTotal = useMemo(() => {
-    return investmentAccounts.reduce((total, account) => total + Number(account.currentBalance), 0)
-  }, [investmentAccounts])
+    return categorizedAccounts.investment.reduce(
+      (total, account) => total + Number(account.currentBalance),
+      0
+    )
+  }, [categorizedAccounts])
   const liabilityTotal = useMemo(() => {
-    return liabilityAccounts.reduce((total, account) => total + Number(account.currentBalance), 0)
-  }, [liabilityAccounts])
+    return categorizedAccounts.liability.reduce(
+      (total, account) => total + Number(account.currentBalance),
+      0
+    )
+  }, [categorizedAccounts])
   const assetTotal = useMemo(() => {
-    return assetAccounts.reduce((total, account) => total + Number(account.currentBalance), 0)
-  }, [assetAccounts])
+    return categorizedAccounts.asset.reduce(
+      (total, account) => total + Number(account.currentBalance),
+      0
+    )
+  }, [categorizedAccounts])
   const netWorth = cashTotal + investmentTotal + assetTotal - liabilityTotal
 
   const prevCashTotal = useMemo(() => {
-    return cashAccounts.reduce((total, account) => {
+    return categorizedAccounts.cash.reduce((total, account) => {
       const prevBalance = account.previousBalance ? Number(account.previousBalance) : 0
       return total + prevBalance
     }, 0)
-  }, [cashAccounts])
+  }, [categorizedAccounts])
   const prevInvestmentTotal = useMemo(() => {
-    return investmentAccounts.reduce((total, account) => {
+    return categorizedAccounts.investment.reduce((total, account) => {
       const prevBalance = account.previousBalance ? Number(account.previousBalance) : 0
       return total + prevBalance
     }, 0)
-  }, [investmentAccounts])
+  }, [categorizedAccounts])
   const prevLiabilityTotal = useMemo(() => {
-    return liabilityAccounts.reduce((total, account) => {
+    return categorizedAccounts.liability.reduce((total, account) => {
       const prevBalance = account.previousBalance ? Number(account.previousBalance) : 0
       return total + prevBalance
     }, 0)
-  }, [liabilityAccounts])
+  }, [categorizedAccounts])
   const prevAssetTotal = useMemo(() => {
-    return assetAccounts.reduce((total, account) => {
+    return categorizedAccounts.asset.reduce((total, account) => {
       const prevBalance = account.previousBalance ? Number(account.previousBalance) : 0
       return total + prevBalance
     }, 0)
-  }, [assetAccounts])
+  }, [categorizedAccounts])
   const prevNetWorth = prevCashTotal + prevInvestmentTotal + prevAssetTotal - prevLiabilityTotal
 
   if (!userPreferences) return null
@@ -143,10 +122,7 @@ function RouteComponent() {
             <h1 className='mb-1 font-jetbrains text-neutral-500 text-sm uppercase'>Net Worth</h1>
             <div className='flex items-baseline gap-3'>
               <span className='font-jetbrains font-semibold text-4xl text-white tabular-nums tracking-tighter'>
-                {cashAccountsPending ||
-                investmentAccountsPending ||
-                liabilityAccountsPending ||
-                assetAccountsPending ? (
+                {accountsPending ? (
                   <Skeleton className='h-10 w-48 rounded-md' />
                 ) : (
                   parseCurrency(netWorth, userPreferences.region, userPreferences.currency)
@@ -160,10 +136,7 @@ function RouteComponent() {
               >
                 <HugeiconsIcon className='size-3' icon={TradeUpIcon} />
                 <span className='font-jetbrains'>
-                  {cashAccountsPending ||
-                  investmentAccountsPending ||
-                  liabilityAccountsPending ||
-                  assetAccountsPending ? (
+                  {accountsPending ? (
                     <Skeleton className='h-4 w-24 rounded-md' />
                   ) : prevNetWorth ? (
                     (() => {
@@ -193,13 +166,15 @@ function RouteComponent() {
           </div>
 
           <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
-            {cashAccountsPending ? (
+            {accountsPending ? (
               <div className='space-y-1 p-2'>
                 <Skeleton className='h-16 w-full rounded-sm' />
                 <Skeleton className='h-16 w-full rounded-sm' />
               </div>
-            ) : cashAccounts.length > 0 ? (
-              cashAccounts.map((account) => <AccountRow account={account} key={account.id} />)
+            ) : categorizedAccounts.cash.length > 0 ? (
+              categorizedAccounts.cash.map((account) => (
+                <AccountRow account={account} key={account.id} />
+              ))
             ) : (
               <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
                 <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
@@ -237,13 +212,15 @@ function RouteComponent() {
           </div>
 
           <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
-            {investmentAccountsPending ? (
+            {accountsPending ? (
               <div className='space-y-1 p-2'>
                 <Skeleton className='h-16 w-full rounded-sm' />
                 <Skeleton className='h-16 w-full rounded-sm' />
               </div>
-            ) : investmentAccounts.length > 0 ? (
-              investmentAccounts.map((account) => <AccountRow account={account} key={account.id} />)
+            ) : categorizedAccounts.investment.length > 0 ? (
+              categorizedAccounts.investment.map((account) => (
+                <AccountRow account={account} key={account.id} />
+              ))
             ) : (
               <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
                 <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
@@ -282,13 +259,13 @@ function RouteComponent() {
             </div>
 
             <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
-              {liabilityAccountsPending ? (
+              {accountsPending ? (
                 <div className='space-y-1 p-2'>
                   <Skeleton className='h-16 w-full rounded-sm' />
                   <Skeleton className='h-16 w-full rounded-sm' />
                 </div>
-              ) : liabilityAccounts.length > 0 ? (
-                liabilityAccounts.map((account) => (
+              ) : categorizedAccounts.liability.length > 0 ? (
+                categorizedAccounts.liability.map((account) => (
                   <AccountRow account={account} key={account.id} />
                 ))
               ) : (
@@ -327,13 +304,15 @@ function RouteComponent() {
             </div>
 
             <div className='overflow-hidden rounded-sm border border-white/10 bg-white/5 backdrop-blur-sm'>
-              {assetAccountsPending ? (
+              {accountsPending ? (
                 <div className='space-y-1 p-2'>
                   <Skeleton className='h-16 w-full rounded-sm' />
                   <Skeleton className='h-16 w-full rounded-sm' />
                 </div>
-              ) : assetAccounts.length > 0 ? (
-                assetAccounts.map((account) => <AccountRow account={account} key={account.id} />)
+              ) : categorizedAccounts.asset.length > 0 ? (
+                categorizedAccounts.asset.map((account) => (
+                  <AccountRow account={account} key={account.id} />
+                ))
               ) : (
                 <div className='flex flex-col items-center justify-center py-8 text-neutral-500'>
                   <HugeiconsIcon className='mb-2 size-8 opacity-50' icon={AddSquareIcon} />
