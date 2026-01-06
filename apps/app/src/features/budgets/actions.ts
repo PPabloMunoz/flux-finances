@@ -41,7 +41,10 @@ export const newBudgetAction = createServerFn({ method: 'POST' })
       return { ok: true, data: newBudget } satisfies ServerFnResult<typeof newBudget>
     } catch (err) {
       console.error('Error creating new budget:', err)
-      return { ok: false, error: 'Failed to create budget' } satisfies ServerFnResult<never>
+      return {
+        ok: false,
+        error: 'Failed to create budget. Check if the category has already a budget.',
+      } satisfies ServerFnResult<never>
     }
   })
 
