@@ -1,5 +1,6 @@
 import { Button } from '@flux/ui/components/ui/button'
 import { DialogTrigger } from '@flux/ui/components/ui/dialog'
+import { Skeleton } from '@flux/ui/components/ui/skeleton'
 import { Add01Icon, CreditCardIcon, PieChartIcon, Wallet01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
@@ -83,11 +84,13 @@ function RouteComponent() {
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className='font-semibold text-2xl text-white tracking-tight'>
-                {userPreferences
-                  ? parseCurrency(totalBudget, userPreferences.region, userPreferences.currency)
-                  : '$0.00'}
-              </div>
+              {userPreferences ? (
+                <div className='font-semibold text-2xl text-white tracking-tight'>
+                  {parseCurrency(totalBudget, userPreferences.region, userPreferences.currency)}
+                </div>
+              ) : (
+                <Skeleton className='h-9 w-32 rounded-sm' />
+              )}
             </div>
             <div className='mt-4 h-1.5 w-full rounded-full bg-neutral-800'>
               <div className='h-full w-full rounded-full bg-neutral-600' />
@@ -105,14 +108,18 @@ function RouteComponent() {
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className='font-semibold text-2xl text-white tracking-tight'>
-                {userPreferences
-                  ? parseCurrency(totalSpent, userPreferences.region, userPreferences.currency)
-                  : '$0.00'}
-              </div>
-              <span className='font-medium text-neutral-500 text-xs'>
-                {overallPercentage.toFixed(0)}%
-              </span>
+              {userPreferences ? (
+                <>
+                  <div className='font-semibold text-2xl text-white tracking-tight'>
+                    {parseCurrency(totalSpent, userPreferences.region, userPreferences.currency)}
+                  </div>
+                  <span className='font-medium text-neutral-500 text-xs'>
+                    {overallPercentage.toFixed(0)}%
+                  </span>
+                </>
+              ) : (
+                <Skeleton className='h-9 w-32 rounded-sm' />
+              )}
             </div>
             <div className='mt-4 h-1.5 w-full rounded-full bg-neutral-800'>
               <div
@@ -133,16 +140,20 @@ function RouteComponent() {
               </div>
             </div>
             <div className='flex items-baseline gap-2'>
-              <div className={`font-semibold text-2xl tracking-tight ${remainingColor}`}>
-                {userPreferences
-                  ? parseCurrency(
+              {userPreferences ? (
+                <>
+                  <div className={`font-semibold text-2xl tracking-tight ${remainingColor}`}>
+                    {parseCurrency(
                       Math.abs(totalRemaining),
                       userPreferences.region,
                       userPreferences.currency
-                    )
-                  : '$0.00'}
-              </div>
-              <span className='font-medium text-neutral-500 text-xs'>{statusText}</span>
+                    )}
+                  </div>
+                  <span className='font-medium text-neutral-500 text-xs'>{statusText}</span>
+                </>
+              ) : (
+                <Skeleton className='h-9 w-32 rounded-sm' />
+              )}
             </div>
             <div className='mt-4 flex gap-1'>
               <div
