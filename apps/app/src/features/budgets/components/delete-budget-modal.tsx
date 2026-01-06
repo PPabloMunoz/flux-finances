@@ -40,7 +40,7 @@ export default function DeleteBudgetModal() {
     onSuccess: () => {
       toast.success('Budget deleted successfully')
       queryClient.invalidateQueries({ queryKey: ['budgets'] })
-      queryClient.invalidateQueries({ queryKey: ['categories', 'without-budget'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
       deleteBudgetModalHandler.close()
       editBudgetDialogHandle.close()
     },

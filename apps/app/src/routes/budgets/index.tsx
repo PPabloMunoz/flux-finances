@@ -33,6 +33,8 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   // Calculate summary statistics

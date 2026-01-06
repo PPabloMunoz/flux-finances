@@ -45,6 +45,8 @@ export default function NewBudgetModal({ onConfirm }: Props) {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const form = useForm({

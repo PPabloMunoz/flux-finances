@@ -36,6 +36,8 @@ function App() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const {
@@ -51,6 +53,8 @@ function App() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const { data: transactions = [], isPending: transactionsPending } = useQuery({
@@ -63,6 +67,8 @@ function App() {
       }
       return res.data.transactions
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const { data: budgets = [], isPending: budgetsPending } = useQuery({
@@ -75,6 +81,8 @@ function App() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const currentMonth = new Date().getMonth()

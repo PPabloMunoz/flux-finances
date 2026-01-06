@@ -45,6 +45,8 @@ export default function UpdateBudgetModal() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const form = useForm({
@@ -77,7 +79,7 @@ export default function UpdateBudgetModal() {
       } else {
         toast.success('Budget updated successfully')
         queryClient.invalidateQueries({ queryKey: ['budgets'] })
-        queryClient.invalidateQueries({ queryKey: ['categories', 'without-budget'] })
+        queryClient.invalidateQueries({ queryKey: ['categories'] })
         editBudgetDialogHandle.close()
         form.reset()
       }

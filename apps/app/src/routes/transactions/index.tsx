@@ -66,6 +66,8 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const transactions = data?.transactions || []
@@ -81,6 +83,8 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const { data: accounts = [] } = useQuery({
@@ -93,6 +97,8 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const { data: summary, isPending: isSummaryPending } = useQuery({
@@ -105,6 +111,8 @@ function RouteComponent() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const updateSearch = (updates: Partial<typeof search>) => {

@@ -41,6 +41,7 @@ export default function DeleteAccountModal() {
     onSuccess: (type) => {
       toast.success('Account deleted successfully')
       queryClient.invalidateQueries({ queryKey: ['accounts', type] })
+      queryClient.invalidateQueries({ queryKey: ['networth'] })
       deleteAccountModalHandler.close()
       editAccountDialogHandle.close()
     },

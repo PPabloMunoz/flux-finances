@@ -55,6 +55,8 @@ export default function UpdateTransactionModal() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const { data: categories, isPending: categoriesPending } = useQuery({
@@ -67,6 +69,8 @@ export default function UpdateTransactionModal() {
       setCategoriesToShow(res.data)
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const isDisabled = accountsPending || categoriesPending || isLoading
@@ -107,6 +111,8 @@ export default function UpdateTransactionModal() {
         queryClient.invalidateQueries({ queryKey: ['transactions'] })
         queryClient.invalidateQueries({ queryKey: ['accounts'] })
         queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
+        queryClient.invalidateQueries({ queryKey: ['networth'] })
+        queryClient.invalidateQueries({ queryKey: ['incomeVsExpenses'] })
         updateTransactionModalHandle.close()
         form.reset()
       }

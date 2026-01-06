@@ -43,6 +43,8 @@ export default function CategoriesSettings() {
       }
       return res.data
     },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
   })
 
   const createCategoryMutation = useMutation({
