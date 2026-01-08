@@ -207,7 +207,6 @@ export const transaction = pgTable('transaction', {
   description: text('description').notNull().default(''),
   isPending: boolean('is_pending').default(false).notNull(),
   isInvestmentContribution: boolean('is_investment_contribution').default(false).notNull(),
-  providerId: text('provider_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
