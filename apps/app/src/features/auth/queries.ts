@@ -2,16 +2,30 @@ import { auth } from '@flux/auth/server'
 import { db } from '@flux/db'
 import { redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
+import { getRequest, getRequestHeaders } from '@tanstack/react-start/server'
+import { IS_CLOUD } from '@/lib/constants'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
+import { getUserSubscriptionStatus } from '../subscription/queries'
 import { createUserPreferencesAction } from './actions'
 import { UserPreferencesSchema } from './schema'
 
 export const authStateFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const req = getRequest()
   const headers = getRequestHeaders()
   const session = await auth.api.getSession({ headers })
   if (!session) throw redirect({ to: '/auth/login' })
+
+  const pathname = new URL(req.url).pathname
+
+  if ((pathname === '/sub' || pathname === '/success') && !IS_CLOUD) {
+    throw redirect({ to: '/' })
+  }
+
+  const hasSubscription = await getUserSubscriptionStatus()
+  if (IS_CLOUD && !hasSubscription && pathname !== '/sub') throw redirect({ to: '/sub' })
+  if (IS_CLOUD && hasSubscription && pathname === '/sub') throw redirect({ to: '/' })
+
   return { session }
 })
 

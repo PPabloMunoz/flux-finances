@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
+import { authStateFn } from '@/features/auth/queries'
 import BudgetRow from '@/features/budgets/components/budget-row'
 import DeleteBudgetModal from '@/features/budgets/components/delete-budget-modal'
 import NewBudgetModal, {
@@ -19,6 +20,7 @@ import { parseCurrency } from '@/lib/utils'
 
 export const Route = createFileRoute('/budgets/')({
   component: RouteComponent,
+  beforeLoad: async () => await authStateFn(),
 })
 
 function RouteComponent() {

@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import AppHeader from '@/components/header'
 import { getAllAccountsAction } from '@/features/accounts/queries'
+import { authStateFn } from '@/features/auth/queries'
 import { getCategoriesAction } from '@/features/settings/queries'
 import DeleteTransactionModal from '@/features/transactions/components/delete-transaction-modal'
 import { newTransactionModalHandle } from '@/features/transactions/components/new-transaction-modal'
@@ -40,6 +41,7 @@ const transactionsSearchSchema = z.object({
 
 export const Route = createFileRoute('/transactions/')({
   component: RouteComponent,
+  beforeLoad: async () => await authStateFn(),
   validateSearch: transactionsSearchSchema,
 })
 

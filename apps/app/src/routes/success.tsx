@@ -1,6 +1,8 @@
 import { Button } from '@flux/ui/components/ui/button'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
+import { authStateFn } from '@/features/auth/queries'
+import { IS_CLOUD } from '@/lib/constants'
 
 const CheckoutSearchParamsSchema = z.object({
   checkout_id: z.string().catch(''),
@@ -8,6 +10,10 @@ const CheckoutSearchParamsSchema = z.object({
 
 export const Route = createFileRoute('/success')({
   component: RouteComponent,
+  beforeLoad: async () => {
+    if (!IS_CLOUD) throw redirect({ to: '/' })
+    return await authStateFn()
+  },
   validateSearch: (searchParams) => CheckoutSearchParamsSchema.parse(searchParams),
 })
 

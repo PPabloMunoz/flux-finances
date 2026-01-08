@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryState } from 'nuqs'
 import AppHeader from '@/components/header'
+import { authStateFn } from '@/features/auth/queries'
 import CategoriesSettings from '@/features/settings/components/categories'
 import PreferencesSettings from '@/features/settings/components/preferences'
 import ProfileSettings from '@/features/settings/components/profile'
@@ -9,6 +10,7 @@ import SecuritySettings from '@/features/settings/components/security'
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
+  beforeLoad: async () => await authStateFn(),
 })
 
 function RouteComponent() {
