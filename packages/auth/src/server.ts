@@ -5,6 +5,10 @@ import { Polar } from '@polar-sh/sdk'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import {
+  createSubscription,
+  deleteSubscription,
+} from '../../../apps/app/src/features/subscription/actions'
 
 const {
   GOOGLE_CLIENT_ID: googleClientId,
@@ -62,11 +66,6 @@ export const auth = betterAuth({
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,
-      getCustomerCreateParams: async ({ user }) => ({
-        metadata: {
-          external_id: user.id ?? 'NO ID',
-        },
-      }),
       use: [
         checkout({
           products: [{ productId: process.env.POLAR_PRODUCT_ID || '', slug: 'cloud-pro-version' }],
@@ -78,12 +77,22 @@ export const auth = betterAuth({
           secret: process.env.POLAR_WEBHOOK_SECRET || '',
           onSubscriptionCreated: async ({ data }) => {
             console.log('Subscription created:', data.id)
+            const subId = data.id
+            const customerId = data.customer.id
+            const externalId = data.customer.externalId
+            if (!externalId) throw new Error('No externalId found on customer')
+
+            console.log(`Linking subscription ${subId} to user ${externalId}`)
+            await createSubscription(subId, customerId, externalId, data.status)
+            console.log('Subscription linked to user successfully')
           },
           onSubscriptionRevoked: async ({ data }) => {
             console.log('Subscription revoked:', data.id)
-          },
-          onSubscriptionCanceled: async ({ data }) => {
-            console.log('Subscription canceled:', data.id)
+            const subId = data.id
+
+            console.log(`Removing subscription ${subId} from database`)
+            await deleteSubscription(subId)
+            console.log('Subscription removed successfully')
           },
         }),
       ],
