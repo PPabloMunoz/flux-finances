@@ -6,6 +6,7 @@ import { TradeDownIcon, TradeUpIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { toast } from 'sonner'
 import AppHeader from '@/components/header'
 import { authStateFn } from '@/features/auth/queries'
@@ -92,30 +93,35 @@ function App() {
   const netWorthChangePercentage =
     previousNetWorth !== 0 ? (netWorthChange / Math.abs(previousNetWorth)) * 100 : 0
 
-  const netWorthDisplayData = netWorthData.map((item, i) => {
-    const month = format({
-      date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
-      format: 'MMMM',
-      locale: userPreferences?.region,
-      tz: userPreferences?.timezone,
+  const netWorthDisplayData = useMemo(() => {
+    return netWorthData.map((item, i) => {
+      const month = format({
+        date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
+        format: 'MMMM',
+        locale: userPreferences?.region,
+        tz: userPreferences?.timezone,
+      })
+      return { month, netWorth: item }
     })
-    return { month, netWorth: item }
-  })
+  }, [netWorthData, currentMonth, userPreferences])
 
-  const incomeVsExpensesDisplayData = []
-  for (let i = 0; i < incomeVsExpensesData.expenseHistory.length; i++) {
-    const month = format({
-      date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
-      format: 'MMMM',
-      locale: userPreferences?.region,
-      tz: userPreferences?.timezone,
-    })
-    incomeVsExpensesDisplayData.push({
-      month,
-      income: incomeVsExpensesData.incomeHistory[i] || 0,
-      expenses: incomeVsExpensesData.expenseHistory[i] || 0,
-    })
-  }
+  const incomeVsExpensesDisplayData = useMemo(() => {
+    const displayData = []
+    for (let i = 0; i < incomeVsExpensesData.expenseHistory.length; i++) {
+      const month = format({
+        date: addMonth(new Date(), (i + 12 - currentMonth) % 12),
+        format: 'MMMM',
+        locale: userPreferences?.region,
+        tz: userPreferences?.timezone,
+      })
+      displayData.push({
+        month,
+        income: incomeVsExpensesData.incomeHistory[i] || 0,
+        expenses: incomeVsExpensesData.expenseHistory[i] || 0,
+      })
+    }
+    return displayData
+  }, [incomeVsExpensesData, currentMonth, userPreferences])
 
   return (
     <>
