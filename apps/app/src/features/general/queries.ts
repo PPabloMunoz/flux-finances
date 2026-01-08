@@ -9,30 +9,28 @@ import type { ServerFnResult } from '@/types/types'
 export const getNetWorthAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const now = new Date()
 
-      // Helper to get a subquery for the latest balance IDs at a specific point in time
       const getLatestBalanceIds = (dateLimit: string) =>
         db
           .select({
-            id: sql<string>`max(${accountBalance.id})`, // Assumes IDs (ULID/UUID) or Dates are sortable
+            id: sql<string>`max(${accountBalance.id})`,
           })
           .from(accountBalance)
           .innerJoin(account, eq(accountBalance.accountId, account.id))
           .where(
             and(
-              eq(account.organizationId, activeOrgId),
+              eq(account.userId, userId),
               eq(account.isActive, true),
               lte(accountBalance.date, dateLimit)
             )
           )
           .groupBy(accountBalance.accountId)
 
-      // Fetch net worth for the last 12 months
       const networthHistory: number[] = []
 
       for (let i = 11; i >= 0; i--) {
@@ -49,7 +47,6 @@ export const getNetWorthAction = createServerFn({ method: 'GET' })
         networthHistory.push(balances[0]?.value ?? 0)
       }
 
-      // Add current month's net worth
       const today = now.toISOString().split('T')[0]
       const currentBalances = await db
         .select({
@@ -70,21 +67,19 @@ export const getNetWorthAction = createServerFn({ method: 'GET' })
 export const getIncomeExpenseHistoryAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const now = new Date()
       const incomeHistory: number[] = []
       const expenseHistory: number[] = []
 
-      // Loop through the last 12 months (including current month)
       for (let i = 12; i >= 0; i--) {
         const targetMonth = addMonth(now, -i)
         const startOfMonth = addDay(monthStart(targetMonth), 1).toISOString().split('T')[0]
         const endOfMonth = monthEnd(targetMonth).toISOString().split('T')[0]
 
-        // Fetch income (inflow) for the month
         const incomeResult = await db
           .select({
             value: sql<number>`sum(${transaction.amount})`.mapWith(Number),
@@ -93,14 +88,13 @@ export const getIncomeExpenseHistoryAction = createServerFn({ method: 'GET' })
           .innerJoin(account, eq(transaction.accountId, account.id))
           .where(
             and(
-              eq(account.organizationId, activeOrgId),
+              eq(account.userId, userId),
               eq(account.isActive, true),
               eq(transaction.type, 'inflow'),
               between(transaction.date, startOfMonth, endOfMonth)
             )
           )
 
-        // Fetch expenses (outflow) for the month
         const expenseResult = await db
           .select({
             value: sql<number>`sum(${transaction.amount})`.mapWith(Number),
@@ -109,7 +103,7 @@ export const getIncomeExpenseHistoryAction = createServerFn({ method: 'GET' })
           .innerJoin(account, eq(transaction.accountId, account.id))
           .where(
             and(
-              eq(account.organizationId, activeOrgId),
+              eq(account.userId, userId),
               eq(account.isActive, true),
               eq(transaction.type, 'outflow'),
               between(transaction.date, startOfMonth, endOfMonth)

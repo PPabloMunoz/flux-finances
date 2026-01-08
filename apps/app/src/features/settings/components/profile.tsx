@@ -10,7 +10,7 @@ import {
 import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
 import { Input } from '@flux/ui/components/ui/input'
 import { cn } from '@flux/ui/lib/utils'
-import { Alert02Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
+import { Alert02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
@@ -19,14 +19,9 @@ import { z } from 'zod'
 const PersonalInfoValidator = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters long'),
 })
-const HouseholdValidator = z.object({
-  householdName: z.string().min(2, 'Household name must be at least 2 characters long'),
-})
 
 export default function ProfileSettings() {
   const { data, error } = authClient.useSession()
-  const { data: org } = authClient.useActiveOrganization()
-  const household = { id: org?.id || 'home', householdName: org?.name || 'My Household' }
 
   const personalInfoForm = useForm({
     defaultValues: { fullName: error ? 'Error loading name' : data?.user.name || 'Loading...' },
@@ -36,24 +31,6 @@ export default function ProfileSettings() {
       const { error } = await authClient.updateUser({ name: value.fullName })
       if (error) toast.error(`Error updating profile: ${error.message}`)
       else toast.success('Profile updated successfully')
-    },
-  })
-
-  const householdForm = useForm({
-    defaultValues: { householdName: org?.name || 'loading...' },
-    validators: { onChange: HouseholdValidator },
-    onSubmit: async ({ value }) => {
-      if (value.householdName === household.householdName) return toast.info('No changes detected')
-      const res = await authClient.organization.update({
-        organizationId: org?.id || '',
-        data: { name: value.householdName },
-      })
-
-      if (res.error) {
-        toast.error(`Error updating household: ${res.error.message}`)
-      } else {
-        toast.success('Household updated successfully')
-      }
     },
   })
 
@@ -121,95 +98,6 @@ export default function ProfileSettings() {
               <Button disabled={personalInfoForm.state.isDirty} type='submit'>
                 Save Changes
               </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <HugeiconsIcon className='size-5' icon={UserGroupIcon} />
-            Household Settings
-          </CardTitle>
-          <CardDescription>Manage shared account and household members</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className='space-y-4'
-            onSubmit={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              householdForm.handleSubmit(e)
-            }}
-          >
-            <householdForm.Field name='householdName'>
-              {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field className='space-y-2'>
-                    <FieldLabel htmlFor={field.name}>Household Name</FieldLabel>
-                    <Input
-                      className={cn('', !org && 'cursor-not-allowed opacity-50')}
-                      defaultValue={field.state.value}
-                      id={field.name}
-                      name={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder={household.householdName}
-                      required
-                      type='text'
-                      value={field.state.value}
-                    />
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                  </Field>
-                )
-              }}
-            </householdForm.Field>
-
-            <div className='border border-border bg-muted/50 p-4'>
-              <h4 className='mb-3 font-medium text-muted-foreground text-sm'>
-                Household Members (Coming Soon)
-              </h4>
-              <div className='space-y-2'>
-                <div className='flex items-center justify-between rounded-md bg-card px-3 py-2'>
-                  <div>
-                    <p className='font-medium text-sm'>
-                      {data?.user.name} <span className='text-muted-foreground text-xs'>(You)</span>
-                    </p>
-                    <p className='text-muted-foreground text-xs'>{data?.user.email} • Admin</p>
-                  </div>
-                </div>
-                <div className='flex items-center justify-between rounded-md bg-card px-3 py-2 opacity-50'>
-                  <div>
-                    <p className='font-medium text-sm'>Jane Doe</p>
-                    <p className='text-muted-foreground text-xs'>jane.doe@example.com • Member</p>
-                  </div>
-                  <Button className='text-muted-foreground' disabled size='sm' variant='ghost'>
-                    Remove
-                  </Button>
-                </div>
-              </div>
-              <Button className='mt-3 w-full bg-transparent' disabled size='sm' variant='outline'>
-                Invite Member
-              </Button>
-            </div>
-
-            <div className='flex w-full flex-col-reverse justify-between gap-2 pt-4 sm:flex-row'>
-              <Button variant='destructive'>Leave Household</Button>
-              <Button variant='destructive'>Delete Household</Button>
-              <div className='mb-4 flex w-full flex-col justify-end gap-2 sm:mb-0 sm:flex-row'>
-                <Button
-                  className='w-full sm:w-auto'
-                  onClick={() => householdForm.reset()}
-                  variant='outline'
-                >
-                  Reset
-                </Button>
-                <Button className='w-full sm:w-auto' type='submit'>
-                  Save Changes
-                </Button>
-              </div>
             </div>
           </form>
         </CardContent>

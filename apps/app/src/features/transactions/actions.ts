@@ -9,11 +9,8 @@ import { DeleteTransactionSchema, NewTransactionSchema, UpdateTransactionSchema 
 export const newTransactionAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(NewTransactionSchema)
-  .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+  .handler(async ({ data }) => {
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
-
       await db.transaction(async (tx) => {
         const [newTransaction] = await tx
           .insert(transaction)
@@ -69,13 +66,9 @@ export const newTransactionAction = createServerFn({ method: 'POST' })
 export const updateTransactionAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(UpdateTransactionSchema)
-  .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+  .handler(async ({ data }) => {
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
-
       await db.transaction(async (tx) => {
-        // 1. Get the OLD state before updating
         const [oldTx] = await tx
           .select()
           .from(transaction)
@@ -84,7 +77,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
 
         if (!oldTx) tx.rollback()
 
-        // 2. Update the transaction record
         const [newTx] = await tx
           .update(transaction)
           .set({
@@ -105,9 +97,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
         const newAccountId = newTx.accountId
 
         if (oldAccountId !== newAccountId) {
-          // --- CASE A: ACCOUNT CHANGED ---
-
-          // 1. REVERSE impact on the OLD account
           const [oldAccEntry] = await tx
             .select()
             .from(accountBalance)
@@ -117,7 +106,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
 
           if (oldAccEntry) {
             const oldAmount = Number.parseFloat(oldTx.amount)
-            // If it was an inflow, we subtract to reverse. If outflow, we add.
             const reversalAdjustment = oldTx.type === 'inflow' ? -oldAmount : oldAmount
             const updatedOldAccBalance = Number.parseFloat(oldAccEntry.balance) + reversalAdjustment
 
@@ -134,7 +122,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
               })
           }
 
-          // 2. APPLY impact on the NEW account
           const [newAccEntry] = await tx
             .select()
             .from(accountBalance)
@@ -160,8 +147,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
               set: { balance: updatedNewAccBalance.toString() },
             })
         } else {
-          // --- CASE B: SAME ACCOUNT ---
-
           const [lastEntry] = await tx
             .select()
             .from(accountBalance)
@@ -174,7 +159,6 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
           const oldAmountParsed = Number.parseFloat(oldTx.amount)
           const newAmountParsed = Number.parseFloat(newTx.amount)
 
-          // Math: (New Impact) - (Old Impact)
           const oldImpact = oldTx.type === 'inflow' ? oldAmountParsed : -oldAmountParsed
           const newImpact = newTx.type === 'inflow' ? newAmountParsed : -newAmountParsed
           const diff = newImpact - oldImpact
@@ -205,11 +189,8 @@ export const updateTransactionAction = createServerFn({ method: 'POST' })
 export const deleteTransactionAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(DeleteTransactionSchema)
-  .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+  .handler(async ({ data }) => {
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
-
       await db.transaction(async (tx) => {
         const [deletedTransaction] = await tx
           .delete(transaction)

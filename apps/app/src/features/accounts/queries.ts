@@ -16,31 +16,29 @@ export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .inputValidator(GetInputSchema)
   .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const date = monthStart(new Date())
-      const dateString = date.toISOString().split('T')[0] // 'YYYY-MM-DD'
+      const dateString = date.toISOString().split('T')[0]
 
       const cashAccounts = await db
         .select({
           id: account.id,
-          organizationId: account.organizationId,
+          userId: account.userId,
           subtype: account.subtype,
           name: account.name,
           type: account.type,
           currency: account.currency,
           isActive: account.isActive,
           createdAt: account.createdAt,
-          // Latest balance entry
           currentBalance: sql<string>`(
             SELECT balance FROM ${accountBalance}
             WHERE ${accountBalance.accountId} = ${account.id}
             ORDER BY ${accountBalance.date} DESC
             LIMIT 1
           )`.mapWith(String),
-          // Balance from ~30 days ago
           previousBalance: sql<string>`(
             SELECT balance FROM ${accountBalance}
             WHERE ${accountBalance.accountId} = ${account.id}
@@ -50,7 +48,7 @@ export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
           )`.mapWith(String),
         })
         .from(account)
-        .where(and(eq(account.organizationId, activeOrgId), eq(account.type, data.type)))
+        .where(and(eq(account.userId, userId), eq(account.type, data.type)))
         .leftJoin(accountBalance, eq(account.id, accountBalance.accountId))
         .groupBy(account.id)
 
@@ -64,14 +62,14 @@ export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
 export const getAllAccountsAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const accounts = await db
         .select()
         .from(account)
-        .where(eq(account.organizationId, activeOrgId))
+        .where(eq(account.userId, userId))
         .orderBy(asc(account.type), asc(account.name), desc(account.createdAt))
 
       return { ok: true, data: accounts } satisfies ServerFnResult<typeof accounts>

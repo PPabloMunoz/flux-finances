@@ -10,19 +10,18 @@ export const newBudgetAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(NewBudgetSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
-      // Verify the category belongs to the organization
       const categoryExists = await db
         .select({ id: category.id })
         .from(category)
-        .where(and(eq(category.id, data.categoryId), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(category.id, data.categoryId), eq(category.userId, userId)))
         .limit(1)
 
       if (categoryExists.length === 0) {
-        throw new Error('Category not found or does not belong to your organization')
+        throw new Error('Category not found or does not belong to you')
       }
 
       const newBudget = await db
@@ -52,31 +51,29 @@ export const updateBudgetAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(EditBudgetSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
-      // Verify the category belongs to the organization
       const categoryExists = await db
         .select({ id: category.id })
         .from(category)
-        .where(and(eq(category.id, data.categoryId), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(category.id, data.categoryId), eq(category.userId, userId)))
         .limit(1)
 
       if (categoryExists.length === 0) {
-        throw new Error('Category not found or does not belong to your organization')
+        throw new Error('Category not found or does not belong to you')
       }
 
-      // Verify the budget exists and belongs to a category in the organization
       const budgetExists = await db
         .select({ id: budget.id })
         .from(budget)
         .innerJoin(category, eq(budget.categoryId, category.id))
-        .where(and(eq(budget.id, data.id), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(budget.id, data.id), eq(category.userId, userId)))
         .limit(1)
 
       if (budgetExists.length === 0) {
-        throw new Error('Budget not found or does not belong to your organization')
+        throw new Error('Budget not found or does not belong to you')
       }
 
       const updatedBudget = await db
@@ -104,20 +101,19 @@ export const deleteBudgetAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(DeleteBudgetSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
-      // Verify the budget exists and belongs to a category in the organization
       const budgetExists = await db
         .select({ id: budget.id })
         .from(budget)
         .innerJoin(category, eq(budget.categoryId, category.id))
-        .where(and(eq(budget.id, data.id), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(budget.id, data.id), eq(category.userId, userId)))
         .limit(1)
 
       if (budgetExists.length === 0) {
-        throw new Error('Budget not found or does not belong to your organization')
+        throw new Error('Budget not found or does not belong to you')
       }
 
       await db.delete(budget).where(eq(budget.id, data.id))

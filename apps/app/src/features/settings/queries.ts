@@ -10,15 +10,19 @@ export const getCategoriesAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .inputValidator(GetCategoriesSchema)
   .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
-      const typeFilter = data.type
-        ? and(eq(category.organizationId, activeOrgId), eq(category.type, data.type))
-        : eq(category.organizationId, activeOrgId)
+      const typeFilter = data.type ? eq(category.type, data.type) : undefined
 
-      const categories = await db.select().from(category).where(typeFilter).orderBy(category.name)
+      const categories = await db
+        .select()
+        .from(category)
+        .where(
+          typeFilter ? and(typeFilter, eq(category.userId, userId)) : eq(category.userId, userId)
+        )
+        .orderBy(category.name)
 
       return { ok: true, data: categories } satisfies ServerFnResult<typeof categories>
     } catch (err) {

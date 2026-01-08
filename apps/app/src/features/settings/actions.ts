@@ -1,48 +1,23 @@
-import { auth } from '@flux/auth/server'
 import { db } from '@flux/db'
 import { category } from '@flux/db/schema'
 import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
-import {
-  CreateCategorySchema,
-  DeleteCategorySchema,
-  UpdateCategorySchema,
-  UpdateHouseholdInputValidator,
-} from './schemas'
-
-export const updateHouseholdAction = createServerFn({ method: 'POST' })
-  .inputValidator(UpdateHouseholdInputValidator)
-  .handler(async ({ data }) => {
-    try {
-      const session = await auth.api.getSession()
-      if (!session) throw new Error('Unauthorized')
-
-      console.log(session.user)
-      console.log('Updating household with data:', data)
-
-      // const newHousehold = await db.update(household).set({}).where(eq(household.id, data.id))
-
-      return { ok: true, data: null } satisfies ServerFnResult<null>
-    } catch (err) {
-      console.error('Error updating household:', err)
-      return { ok: false, error: 'Failed to update household' } satisfies ServerFnResult<never>
-    }
-  })
+import { CreateCategorySchema, DeleteCategorySchema, UpdateCategorySchema } from './schemas'
 
 export const createCategoryAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(CreateCategorySchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const newCategory = await db
         .insert(category)
         .values({
-          organizationId: activeOrgId,
+          userId: userId,
           name: data.name,
           color: data.color,
           type: data.type,
@@ -65,9 +40,9 @@ export const updateCategoryAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(UpdateCategorySchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const [updatedCategory] = await db
         .update(category)
@@ -76,7 +51,7 @@ export const updateCategoryAction = createServerFn({ method: 'POST' })
           color: data.color,
           type: data.type,
         })
-        .where(and(eq(category.id, data.id), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(category.id, data.id), eq(category.userId, userId)))
         .returning()
 
       if (!updatedCategory) {
@@ -94,13 +69,13 @@ export const deleteCategoryAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(DeleteCategorySchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const [deletedCategory] = await db
         .delete(category)
-        .where(and(eq(category.id, data.id), eq(category.organizationId, activeOrgId)))
+        .where(and(eq(category.id, data.id), eq(category.userId, userId)))
         .returning()
 
       if (!deletedCategory) {

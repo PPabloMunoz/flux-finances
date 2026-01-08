@@ -10,11 +10,10 @@ import type { TBudgetWithSpending } from './schema'
 export const getBudgets = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
-      // Get the current month's start and end dates
       const now = new Date()
       const startOfMonth = monthStart(now)
       const endOfMonth = monthEnd(now)
@@ -28,12 +27,10 @@ export const getBudgets = createServerFn({ method: 'GET' })
           categoryId: budget.categoryId,
           categoryName: category.name,
           categoryColor: category.color,
-          // We sum the absolute value of transactions where amount < 0 (expenses)
           spent: sql<string>`COALESCE(SUM(${transaction.amount}), 0)`.mapWith(String),
         })
         .from(budget)
         .innerJoin(category, eq(budget.categoryId, category.id))
-        // Left join transactions so budgets with $0 spent still show up
         .leftJoin(
           transaction,
           and(
@@ -42,10 +39,9 @@ export const getBudgets = createServerFn({ method: 'GET' })
             lte(transaction.date, endOfMonth.toISOString().split('T')[0])
           )
         )
-        .where(eq(category.organizationId, activeOrgId))
+        .where(eq(category.userId, userId))
         .groupBy(budget.id, category.id)
 
-      // Calculate remaining and percentage for each budget
       const budgetsWithCalculations: TBudgetWithSpending[] = budgetsWithSpending.map((b) => {
         const budgetAmount = Number(b.amount)
         const spentAmount = Number(b.spent)

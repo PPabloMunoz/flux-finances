@@ -5,11 +5,6 @@ import { CATEGORY_TYPES } from '@/lib/constants'
 
 export type TCategory = InferSelectModel<typeof category>
 
-export const UpdateHouseholdInputValidator = z.object({
-  id: z.ulid(),
-  newName: z.string().min(2, 'Household name must be at least 2 characters long'),
-})
-
 const CategoryType = z.enum(CATEGORY_TYPES)
 
 export const GetCategoriesSchema = z.object({

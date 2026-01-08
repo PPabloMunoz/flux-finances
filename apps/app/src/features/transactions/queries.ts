@@ -19,13 +19,12 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .inputValidator(GetTransactionsInputSchema)
   .handler(async ({ context, data }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const { search, categoryId, accountId, dateRange, page, pageSize } = data
 
-      // Build date filter
       const getDateFilter = () => {
         const now = new Date()
         let startDate: Date | null = null
@@ -50,8 +49,7 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
         return startDate ? gte(transaction.date, startDate.toISOString().split('T')[0]) : null
       }
 
-      // Build filters array
-      const filters = [eq(account.organizationId, activeOrgId)]
+      const filters = [eq(account.userId, userId)]
 
       if (search) {
         const searchFilter = or(
@@ -76,7 +74,6 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
         filters.push(dateFilter)
       }
 
-      // Get total count
       const [countResult] = await db
         .select({ count: sql<number>`count(*)`.mapWith(Number) })
         .from(transaction)
@@ -86,7 +83,6 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
 
       const total = countResult?.count || 0
 
-      // Get paginated transactions
       const offset = (page - 1) * pageSize
       const transactions = await db
         .select({
@@ -136,9 +132,9 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
 export const getTransactionSummaryAction = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const startDate = new Date()
       startDate.setDate(startDate.getDate() - 30)
@@ -158,7 +154,8 @@ export const getTransactionSummaryAction = createServerFn({ method: 'GET' })
         .innerJoin(account, eq(transaction.accountId, account.id))
         .where(
           and(
-            eq(account.organizationId, activeOrgId),
+            eq(account.userId, userId),
+            eq(account.isActive, true),
             gte(transaction.date, startDate.toISOString().split('T')[0])
           )
         )

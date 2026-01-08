@@ -10,16 +10,16 @@ export const newAccountAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(NewAccountSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       const newAccount = await db
         .insert(account)
         .values({
           name: data.name,
           type: data.type,
-          organizationId: activeOrgId,
+          userId: userId,
         })
         .returning()
         .then((accounts) => accounts[0])
@@ -54,9 +54,9 @@ export const updateAccountAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(EditAccountSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       await db.transaction(async (tx) => {
         const [updatedAccount] = await tx
@@ -66,7 +66,7 @@ export const updateAccountAction = createServerFn({ method: 'POST' })
             type: data.type,
             currency: data.currency,
           })
-          .where(and(eq(account.id, data.id), eq(account.organizationId, activeOrgId)))
+          .where(and(eq(account.id, data.id), eq(account.userId, userId)))
           .returning()
 
         if (!updatedAccount) tx.rollback()
@@ -98,14 +98,14 @@ export const deleteAccountAction = createServerFn({ method: 'POST' })
   .middleware([functionAuthMiddleware])
   .inputValidator(DeleteAccountSchema)
   .handler(async ({ data, context }) => {
-    const activeOrgId = context.session?.session.activeOrganizationId
+    const userId = context.session?.user.id
     try {
-      if (!activeOrgId) throw new Error('Unauthorized')
+      if (!userId) throw new Error('Unauthorized')
 
       await db.transaction(async (tx) => {
         const deletedAccount = await tx
           .delete(account)
-          .where(and(eq(account.id, data.id), eq(account.organizationId, activeOrgId)))
+          .where(and(eq(account.id, data.id), eq(account.userId, userId)))
           .returning()
 
         if (deletedAccount.length === 0) tx.rollback()

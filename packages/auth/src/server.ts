@@ -2,7 +2,6 @@ import { db } from '@flux/db'
 import * as schema from '@flux/db/schema'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { organization } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
 const {
@@ -21,34 +20,20 @@ export const auth = betterAuth({
       account: schema.accountProvider,
     },
   }),
-  user: {
-    additionalFields: {
-      householdId: {
-        type: 'string',
-        fieldName: 'household_id',
-        required: false,
-        input: false,
-        returned: true,
-      },
-    },
-  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url, token }, _request) => {
-      // TODO: Create sending email function with resend
       console.log(`Simulatting sending email to ${user.email}...`)
       console.log(`URL sended: ${url}`)
       console.log(`Token: ${token}`)
     },
     onPasswordReset: async ({ user }, _request) => {
-      // TODO: Create sending email function with resend
       console.log('INFO: TODO SEND EMAIL - PASSWORD HAS BEEN RESET')
       console.log(`Password for user ${user.email} has been reset.`)
     },
   },
   emailVerification: {
     sendVerificationEmail: async (data) => {
-      // TODO: Create sending email function with resend
       console.log('Send verification email to:', data.user.email)
       console.log('Verification link:', data.url)
       console.log('Verification Token:', data.token)
@@ -66,5 +51,5 @@ export const auth = betterAuth({
       clientSecret: githubClientSecret ?? '',
     },
   },
-  plugins: [organization(), tanstackStartCookies()], // make sure tanstackStartCookies is the last plugin in the array
+  plugins: [tanstackStartCookies()],
 })
