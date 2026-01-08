@@ -7,6 +7,7 @@ import { defineConfig } from 'vite'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 
 const config = defineConfig({
+  server: { allowedHosts: ['sparrow-welcomed-blindly.ngrok-free.app'] },
   plugins: [
     devtools(),
     nitro(),

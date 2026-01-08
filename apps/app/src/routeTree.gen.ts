@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuccessRouteImport } from './routes/success'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
+import { Route as SubIndexRouteImport } from './routes/sub/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as BudgetsIndexRouteImport } from './routes/budgets/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
@@ -21,6 +23,11 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const SuccessRoute = SuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -29,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
   id: '/transactions/',
   path: '/transactions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubIndexRoute = SubIndexRouteImport.update({
+  id: '/sub/',
+  path: '/sub/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
@@ -79,6 +91,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/success': typeof SuccessRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -87,11 +100,13 @@ export interface FileRoutesByFullPath {
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/sub': typeof SubIndexRoute
   '/transactions': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/success': typeof SuccessRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -100,12 +115,14 @@ export interface FileRoutesByTo {
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/sub': typeof SubIndexRoute
   '/transactions': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/success': typeof SuccessRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
@@ -114,6 +131,7 @@ export interface FileRoutesById {
   '/accounts/': typeof AccountsIndexRoute
   '/budgets/': typeof BudgetsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/sub/': typeof SubIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -121,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/success'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
@@ -129,11 +148,13 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/budgets'
     | '/settings'
+    | '/sub'
     | '/transactions'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/success'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
@@ -142,11 +163,13 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/budgets'
     | '/settings'
+    | '/sub'
     | '/transactions'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
+    | '/success'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
@@ -155,12 +178,14 @@ export interface FileRouteTypes {
     | '/accounts/'
     | '/budgets/'
     | '/settings/'
+    | '/sub/'
     | '/transactions/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SuccessRoute: typeof SuccessRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
@@ -169,12 +194,20 @@ export interface RootRouteChildren {
   AccountsIndexRoute: typeof AccountsIndexRoute
   BudgetsIndexRoute: typeof BudgetsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
+  SubIndexRoute: typeof SubIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/success': {
+      id: '/success'
+      path: '/success'
+      fullPath: '/success'
+      preLoaderRoute: typeof SuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -187,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/transactions'
       fullPath: '/transactions'
       preLoaderRoute: typeof TransactionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sub/': {
+      id: '/sub/'
+      path: '/sub'
+      fullPath: '/sub'
+      preLoaderRoute: typeof SubIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/': {
@@ -257,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SuccessRoute: SuccessRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
@@ -265,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountsIndexRoute: AccountsIndexRoute,
   BudgetsIndexRoute: BudgetsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
+  SubIndexRoute: SubIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

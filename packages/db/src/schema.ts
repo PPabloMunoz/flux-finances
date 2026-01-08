@@ -279,3 +279,28 @@ export const accountBalanceRelations = relations(accountBalance, ({ one }) => ({
     references: [account.id],
   }),
 }))
+
+export const subscriptionStatusEnum = pgEnum('subscription_status', [
+  'active',
+  'past_due',
+  'canceled',
+  'trialing',
+  'unpaid',
+])
+
+export const subscriptions = pgTable('subscriptions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .references(() => user.id, { onDelete: 'cascade' })
+    .unique()
+    .notNull(),
+  customerId: text('customer_id').notNull(),
+  status: subscriptionStatusEnum('status').notNull(),
+  currentPeriodEnd: timestamp('current_period_end').notNull(),
+  cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+})

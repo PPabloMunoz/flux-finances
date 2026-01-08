@@ -9,6 +9,8 @@ import {
 } from '@hugeicons/core-free-icons'
 import type { IconSvgElement } from '@hugeicons/react'
 
+export const IS_CLOUD = process.env.IS_CLOUD === 'true'
+
 export const CURRENCY_CODES = [
   'USD',
   'EUR',
