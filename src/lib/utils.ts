@@ -1,4 +1,11 @@
+import type { ClassValue } from 'clsx'
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 import type { CURRENCY_CODES, TCountryCode } from './constants'
+
+export function cn(...inputs: Array<ClassValue>) {
+  return twMerge(clsx(inputs))
+}
 
 export function parseCurrency(
   val: number,

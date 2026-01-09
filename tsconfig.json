@@ -1,35 +1,34 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "include": ["**/*.ts", "**/*.tsx", "*.config.js", "vite.config.ts"],
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2022",
+    "jsx": "react-jsx",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    /* Modern Resolution - Essential for Vite/TanStack */
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-
-    /* JSX Logic */
-    "jsx": "react-jsx",
     "jsxImportSource": "react",
-
-    /* Strictness & Safety */
-    "strict": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
 
-    /* Astro Compatibility */
-    "verbatimModuleSyntax": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
 
+    /* Linting */
+    "skipLibCheck": true,
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-
     "baseUrl": ".",
     "paths": {
-      "@flux/ui/*": ["./packages/ui/src/*"]
+      "@/*": ["./src/*"]
     }
   }
 }
