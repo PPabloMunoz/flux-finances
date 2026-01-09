@@ -219,7 +219,7 @@ export default function AppHeader() {
                 </button>
 
                 <Link
-                  className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-red-400'
+                  className='flex items-center gap-2 p-2 text-red-400 text-xs transition-colors hover:bg-white/5 hover:text-red-500'
                   to='/auth/logout'
                 >
                   <HugeiconsIcon className='size-3.5' icon={Logout05Icon} />
