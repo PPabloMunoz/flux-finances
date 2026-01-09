@@ -20,7 +20,6 @@ export const deleteAccountModalHandler = BaseUIAlertDialog.createHandle()
 
 const PayloadSchema = z.object({
   id: z.ulid(),
-  type: z.string(),
 })
 
 export default function DeleteAccountModal() {
@@ -28,7 +27,7 @@ export default function DeleteAccountModal() {
   const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationFn: async (data: { id: string; type: string }) => {
+    mutationFn: async (data: { id: string }) => {
       setIsLoading(true)
       const res = await deleteAccountAction({ data: { id: data.id } })
       setIsLoading(false)
@@ -36,11 +35,10 @@ export default function DeleteAccountModal() {
       if (!res.ok) {
         throw new Error('Failed to delete account')
       }
-      return data.type
     },
-    onSuccess: (type) => {
+    onSuccess: () => {
       toast.success('Account deleted successfully')
-      queryClient.invalidateQueries({ queryKey: ['accounts', type] })
+      queryClient.invalidateQueries({ queryKey: ['accounts'] })
       queryClient.invalidateQueries({ queryKey: ['networth'] })
       deleteAccountModalHandler.close()
       editAccountDialogHandle.close()
@@ -63,7 +61,7 @@ export default function DeleteAccountModal() {
               <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 disabled={isLoading}
-                onClick={() => mutate({ id: parsedPayload.data.id, type: parsedPayload.data.type })}
+                onClick={() => mutate({ id: parsedPayload.data.id })}
                 variant='destructive'
               >
                 Delete Account

@@ -61,7 +61,7 @@ export default function NewAccountModal({ onConfirm }: Props) {
         toast.error(res.error)
       } else {
         toast.success('Account created successfully')
-        queryClient.invalidateQueries({ queryKey: ['accounts', value.type] })
+        queryClient.invalidateQueries({ queryKey: ['accounts'] })
         queryClient.invalidateQueries({ queryKey: ['networth'] })
         newAccountDialogHandle.close()
         form.reset()
