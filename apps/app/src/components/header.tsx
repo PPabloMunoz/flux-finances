@@ -7,6 +7,7 @@ import {
   Calculator01Icon,
   CommandIcon,
   Dollar02FreeIcons,
+  Invoice02Icon,
   Invoice03Icon,
   Logout05Icon,
   Menu01Icon,
@@ -208,6 +209,15 @@ export default function AppHeader() {
                 <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
               </PopoverTrigger>
               <PopoverContent className='max-w-45 gap-0.5 p-2'>
+                <button
+                  className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                  onClick={() => authClient.customer.portal()}
+                  type='button'
+                >
+                  <HugeiconsIcon className='size-3.5' icon={Invoice02Icon} />
+                  Billing
+                </button>
+
                 <Link
                   className='flex items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-red-400'
                   to='/auth/logout'
