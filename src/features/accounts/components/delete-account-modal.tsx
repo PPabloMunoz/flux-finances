@@ -1,4 +1,8 @@
 import { AlertDialog as BaseUIAlertDialog } from '@base-ui/react/alert-dialog'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { z } from 'zod'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,11 +12,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@flux/ui/components/ui/alert-dialog'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { z } from 'zod'
+} from '@/components/ui/alert-dialog'
 import { deleteAccountAction } from '../actions'
 import { editAccountDialogHandle } from './update-account-modal'
 

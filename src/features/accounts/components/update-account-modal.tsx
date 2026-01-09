@@ -1,24 +1,24 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
-import { AlertDialogTrigger } from '@flux/ui/components/ui/alert-dialog'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@flux/ui/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
-import { Input } from '@flux/ui/components/ui/input'
-import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
-import { cn } from '@flux/ui/lib/utils'
 import { Delete03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { CURRENCY_CODES } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { updateAccountAction } from '../actions'
 import { EditAccountSchema } from '../schema'
 import { deleteAccountModalHandler } from './delete-account-modal'

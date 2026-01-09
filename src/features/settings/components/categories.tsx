@@ -1,15 +1,3 @@
-import { Badge } from '@flux/ui/components/ui/badge'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Input } from '@flux/ui/components/ui/input'
-import { Label } from '@flux/ui/components/ui/label'
-import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
 import {
   Add01Icon,
   Delete03Icon,
@@ -20,6 +8,12 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { createCategoryAction, deleteCategoryAction } from '../actions'
 import { getCategoriesAction } from '../queries'
 

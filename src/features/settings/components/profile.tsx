@@ -1,20 +1,14 @@
 import { authClient } from '@flux/auth/client'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
-import { Input } from '@flux/ui/components/ui/input'
-import { cn } from '@flux/ui/lib/utils'
 import { Alert02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 const PersonalInfoValidator = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters long'),

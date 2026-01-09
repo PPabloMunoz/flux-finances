@@ -1,8 +1,8 @@
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
-import { cn } from '@flux/ui/lib/utils'
 import { ArrowRight01Icon, Tick02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import type * as React from 'react'
+import { cn } from '@/lib/utils'
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot='dropdown-menu' {...props} />
@@ -160,7 +160,7 @@ function DropdownMenuCheckboxItem({
       {...props}
     >
       <span
-        className='pointer-events-none pointer-events-none absolute right-2 flex items-center justify-center'
+        className='pointer-events-none absolute right-2 flex items-center justify-center'
         data-slot='dropdown-menu-checkbox-item-indicator'
       >
         <MenuPrimitive.CheckboxItemIndicator>
@@ -187,7 +187,7 @@ function DropdownMenuRadioItem({ className, children, ...props }: MenuPrimitive.
       {...props}
     >
       <span
-        className='pointer-events-none pointer-events-none absolute right-2 flex items-center justify-center'
+        className='pointer-events-none absolute right-2 flex items-center justify-center'
         data-slot='dropdown-menu-radio-item-indicator'
       >
         <MenuPrimitive.RadioItemIndicator>

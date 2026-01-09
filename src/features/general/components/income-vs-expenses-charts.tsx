@@ -10,7 +10,7 @@ import {
   LabelList,
   XAxis,
   YAxis,
-} from '@flux/ui/components/ui/chart'
+} from '@/components/ui/chart'
 
 interface Props {
   data: {

@@ -1,18 +1,18 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@flux/ui/components/ui/dialog'
-import {
   ArrowRight01Icon,
   CreditCardIcon,
   Target01Icon,
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { newAccountDialogHandle } from '../accounts/components/new-account-modal'
 import { newBudgetDialogHandle } from '../budgets/components/new-budget-modal'
 import { newTransactionModalHandle } from '../transactions/components/new-transaction-modal'

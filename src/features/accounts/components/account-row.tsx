@@ -1,9 +1,8 @@
-import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import { cn } from '@flux/ui/lib/utils'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { DialogTrigger } from '@/components/ui/dialog'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import { ACCOUNT_TYPES_ICONS } from '@/lib/constants'
-import { parseCurrency } from '@/lib/utils'
+import { cn, parseCurrency } from '@/lib/utils'
 import type { TAccount } from '../schema'
 import { editAccountDialogHandle } from './update-account-modal'
 

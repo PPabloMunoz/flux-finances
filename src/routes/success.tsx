@@ -1,6 +1,6 @@
-import { Button } from '@flux/ui/components/ui/button'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
+import { Button } from '@/components/ui/button'
 import { authStateFn } from '@/features/auth/queries'
 import { IS_CLOUD } from '@/lib/constants'
 

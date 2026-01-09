@@ -1,6 +1,6 @@
-import { authClient } from '@flux/auth/client'
-import { Button } from '@flux/ui/components/ui/button'
-import { Card } from '@flux/ui/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { authClient } from '@/lib/auth/client'
 
 export function SubscribePaywall() {
   const handleSubscribe = async () => {

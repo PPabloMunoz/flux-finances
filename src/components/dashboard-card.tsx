@@ -1,3 +1,5 @@
+import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react'
 import {
   Card,
   CardAction,
@@ -5,11 +7,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Progress } from '@flux/ui/components/ui/progress'
-import { cn } from '@flux/ui/lib/utils'
-import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react'
+} from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 
 interface Props {
   icon: IconSvgElement

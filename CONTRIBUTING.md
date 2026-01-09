@@ -48,7 +48,7 @@ Use Turbo for efficient monorepo operations.
 - **Linting**: Follow TanStack ESLint config (import/order is disabled; use import-sorting plugin instead).
 - **Formatting**: Use Prettier with plugins for sort-imports, Astro, and Tailwind CSS.
 - **Naming**: camelCase for variables/functions, PascalCase for components, kebab-case for files.
-- **Structure**: Keep code modular. Use path aliases like `@flux/ui/*` for imports.
+- **Structure**: Keep code modular. Use path aliases like `@/*` for imports.
 - **Security**: Never commit secrets or keys. Avoid logging sensitive data.
 
 ## Commits

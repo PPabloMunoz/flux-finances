@@ -1,13 +1,3 @@
-import { Button } from '@flux/ui/components/ui/button'
-import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@flux/ui/components/ui/dropdown-menu'
-import { Skeleton } from '@flux/ui/components/ui/skeleton'
-import { cn } from '@flux/ui/lib/utils'
 import {
   Add01Icon,
   ArrowLeft01Icon,
@@ -22,6 +12,15 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import AppHeader from '@/components/header'
+import { Button } from '@/components/ui/button'
+import { DialogTrigger } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
 import { getAllAccountsAction } from '@/features/accounts/queries'
 import { authStateFn } from '@/features/auth/queries'
 import { getCategoriesAction } from '@/features/settings/queries'
@@ -30,6 +29,7 @@ import { newTransactionModalHandle } from '@/features/transactions/components/ne
 import TransactionRow from '@/features/transactions/components/transaction-row'
 import UpdateTransactionModal from '@/features/transactions/components/update-transaction-modal'
 import { getTransactionSummaryAction, getTransactionsAction } from '@/features/transactions/queries'
+import { cn } from '@/lib/utils'
 
 const transactionsSearchSchema = z.object({
   search: z.string().optional(),

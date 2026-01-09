@@ -1,4 +1,4 @@
-import { cn } from '@flux/ui/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface Props {
   className?: string

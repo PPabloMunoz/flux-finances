@@ -1,15 +1,9 @@
-import { Badge } from '@flux/ui/components/ui/badge'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Switch } from '@flux/ui/components/ui/switch'
 import { Shield01Icon, SmartPhone01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
 
 export default function SecuritySettings() {
   return (

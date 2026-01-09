@@ -1,8 +1,7 @@
-import { Button } from '@flux/ui/components/ui/button'
-import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import { cn } from '@flux/ui/lib/utils'
 import { PencilEdit02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { Button } from '@/components/ui/button'
+import { DialogTrigger } from '@/components/ui/dialog'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
 import {
   type ACCOUNT_TYPES,
@@ -11,7 +10,7 @@ import {
   TRANSACTIONS_ICONS,
   type TRANSACTIONS_TYPES,
 } from '@/lib/constants'
-import { parseCurrency } from '@/lib/utils'
+import { cn, parseCurrency } from '@/lib/utils'
 import { updateTransactionModalHandle } from './update-transaction-modal'
 
 interface Props {

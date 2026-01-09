@@ -1,15 +1,4 @@
 import { authClient } from '@flux/auth/client'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@flux/ui/components/ui/field'
-import { Input } from '@flux/ui/components/ui/input'
-import { cn } from '@flux/ui/lib/utils'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
@@ -17,7 +6,12 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { ResetPasswordSchema } from '@/features/auth/schema'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/auth/reset-password')({
   component: RouteComponent,

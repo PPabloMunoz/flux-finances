@@ -1,6 +1,3 @@
-import { authClient } from '@flux/auth/client'
-import { DialogTrigger } from '@flux/ui/components/ui/dialog'
-import { Popover, PopoverContent, PopoverTrigger } from '@flux/ui/components/ui/popover'
 import {
   Add01FreeIcons,
   ArrowDown01Icon,
@@ -16,10 +13,13 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { DialogTrigger } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import NewBudgetModal from '@/features/budgets/components/new-budget-modal'
 import { quickActionsDialogHandle } from '@/features/general/quick-actions-modal'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
+import { authClient } from '@/lib/auth/client'
 
 export default function AppHeader() {
   const [isMounted, setIsMounted] = useState(false)

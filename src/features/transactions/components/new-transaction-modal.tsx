@@ -1,29 +1,28 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@flux/ui/components/ui/dialog'
-import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
-import { Input } from '@flux/ui/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@flux/ui/components/ui/select'
-import { Textarea } from '@flux/ui/components/ui/textarea'
-import { cn } from '@flux/ui/lib/utils'
 import { AddIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { getAllAccountsAction } from '@/features/accounts/queries'
 import { getCategoriesAction } from '@/features/settings/queries'
 import type { TCategory } from '@/features/settings/schemas'
@@ -33,6 +32,7 @@ import {
   TRANSACTIONS_TYPE_LABELS,
   TRANSACTIONS_TYPES,
 } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { newTransactionAction } from '../actions'
 import { NewTransactionSchema } from '../schema'
 

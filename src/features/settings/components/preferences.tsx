@@ -1,19 +1,13 @@
-import { Button } from '@flux/ui/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@flux/ui/components/ui/card'
-import { Field, FieldError, FieldLabel } from '@flux/ui/components/ui/field'
-import { NativeSelect, NativeSelectOption } from '@flux/ui/components/ui/native-select'
 import { Calendar01Icon, Globe02Icon, Settings05Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { updateUserPreferencesAction } from '@/features/auth/actions'
 import { UpdateUserPreferencesSchema } from '@/features/auth/schema'
 import { useUserPreferences } from '@/hooks/use-user-preferences'

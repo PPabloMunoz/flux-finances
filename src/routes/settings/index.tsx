@@ -1,7 +1,7 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@flux/ui/components/ui/tabs'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryState } from 'nuqs'
 import AppHeader from '@/components/header'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { authStateFn } from '@/features/auth/queries'
 import CategoriesSettings from '@/features/settings/components/categories'
 import PreferencesSettings from '@/features/settings/components/preferences'
