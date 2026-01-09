@@ -72,7 +72,7 @@ export const auth = betterAuth({
           successUrl: process.env.POLAR_SUCCESS_URL,
           authenticatedUsersOnly: true,
         }),
-        portal(),
+        portal({ returnUrl: process.env.POLAR_PORTAL_RETURN_URL }),
         webhooks({
           secret: process.env.POLAR_WEBHOOK_SECRET || '',
           onSubscriptionCreated: async ({ data }) => {
