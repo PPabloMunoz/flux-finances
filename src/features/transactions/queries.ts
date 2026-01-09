@@ -1,8 +1,8 @@
-import { db } from '@flux/db'
-import { account, category, transaction } from '@flux/db/schema'
 import { createServerFn } from '@tanstack/react-start'
 import { and, desc, eq, gte, ilike, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
+import { db } from '@/lib/db'
+import { account, category, transaction } from '@/lib/db/schema'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 

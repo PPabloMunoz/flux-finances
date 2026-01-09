@@ -1,7 +1,7 @@
-import type { account } from '@flux/db/schema'
 import type { InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod'
 import { ACCOUNT_TYPES, CURRENCY_CODES } from '@/lib/constants'
+import type { account } from '@/lib/db/schema'
 
 export type TAccount = InferSelectModel<typeof account>
 

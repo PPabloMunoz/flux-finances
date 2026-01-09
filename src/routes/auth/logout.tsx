@@ -1,7 +1,7 @@
-import { authClient } from '@flux/auth/client'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Spinner } from '@/components/ui/spinner'
+import { authClient } from '@/lib/auth/client'
 
 export const Route = createFileRoute('/auth/logout')({
   component: RouteComponent,

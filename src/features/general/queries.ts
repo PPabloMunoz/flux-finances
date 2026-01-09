@@ -1,8 +1,8 @@
-import { db } from '@flux/db'
-import { account, accountBalance, transaction } from '@flux/db/schema'
 import { addDay, addMonth, monthEnd, monthStart } from '@formkit/tempo'
 import { createServerFn } from '@tanstack/react-start'
 import { and, between, eq, inArray, lte, sql } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { account, accountBalance, transaction } from '@/lib/db/schema'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 

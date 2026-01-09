@@ -1,6 +1,6 @@
-import { db } from '@flux/db'
-import { type subscriptionStatusEnum, subscriptions } from '@flux/db/schema'
 import { eq } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { type subscriptionStatusEnum, subscriptions } from '@/lib/db/schema'
 
 type TSubscriptionStatus = (typeof subscriptionStatusEnum.enumValues)[number]
 

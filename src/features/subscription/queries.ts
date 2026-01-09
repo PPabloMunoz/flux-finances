@@ -1,5 +1,5 @@
-import { db } from '@flux/db'
 import { createServerFn } from '@tanstack/react-start'
+import { db } from '@/lib/db'
 import { functionAuthMiddleware } from '@/middleware/auth'
 
 export const getUserSubscriptionStatus = createServerFn({ method: 'GET' })

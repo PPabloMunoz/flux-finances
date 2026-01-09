@@ -1,4 +1,3 @@
-import { authClient } from '@flux/auth/client'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
@@ -18,6 +17,7 @@ import {
   FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/auth/login')({

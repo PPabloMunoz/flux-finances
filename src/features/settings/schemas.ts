@@ -1,7 +1,7 @@
-import type { category } from '@flux/db/schema'
 import type { InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod'
 import { CATEGORY_TYPES } from '@/lib/constants'
+import type { category } from '@/lib/db/schema'
 
 export type TCategory = InferSelectModel<typeof category>
 

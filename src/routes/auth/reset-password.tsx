@@ -1,4 +1,3 @@
-import { authClient } from '@flux/auth/client'
 import { Dollar02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
@@ -11,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ResetPasswordSchema } from '@/features/auth/schema'
+import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/auth/reset-password')({
