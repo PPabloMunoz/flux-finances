@@ -1,20 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useQueryState } from 'nuqs'
+import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import AppHeader from '@/components/header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { authStateFn } from '@/features/auth/queries'
 import CategoriesSettings from '@/features/settings/components/categories'
 import PreferencesSettings from '@/features/settings/components/preferences'
 import ProfileSettings from '@/features/settings/components/profile'
-import SecuritySettings from '@/features/settings/components/security'
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
   beforeLoad: async () => await authStateFn(),
 })
 
+const tabValues = ['preferences', 'category', 'profile'] as const
+
 function RouteComponent() {
-  const [tab, setTab] = useQueryState('tab')
+  const [tab, setTab] = useQueryState('tab', parseAsStringLiteral(tabValues))
 
   return (
     <>
@@ -42,9 +43,6 @@ function RouteComponent() {
             <TabsTrigger className='justify-start' value='profile'>
               Profile
             </TabsTrigger>
-            <TabsTrigger className='justify-start' value='security'>
-              Security
-            </TabsTrigger>
           </TabsList>
           <div className='flex-1'>
             <TabsContent className='mt-0' value='preferences'>
@@ -55,9 +53,6 @@ function RouteComponent() {
             </TabsContent>
             <TabsContent className='mt-0' value='profile'>
               <ProfileSettings />
-            </TabsContent>
-            <TabsContent className='mt-0' value='security'>
-              <SecuritySettings />
             </TabsContent>
           </div>
         </Tabs>
