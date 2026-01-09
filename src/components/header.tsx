@@ -1,12 +1,10 @@
 import {
   Add01FreeIcons,
   ArrowDown01Icon,
-  Calculator01Icon,
   CommandIcon,
   Dollar02FreeIcons,
   Download02Icon,
   Invoice02Icon,
-  Invoice03Icon,
   Logout05Icon,
   Menu01Icon,
   Settings01Icon,
@@ -88,14 +86,34 @@ export default function AppHeader() {
                       <HugeiconsIcon className='size-3.5' icon={Settings01Icon} />
                       Settings
                     </Link>
-                    <span className='flex items-center gap-2 rounded-md px-3 py-2 font-medium text-neutral-400/30 text-xs transition-colors'>
-                      <HugeiconsIcon className='size-3.5' icon={Invoice03Icon} />
-                      Import (Coming Soon)
-                    </span>
-                    <span className='flex items-center gap-2 rounded-md px-3 py-2 font-medium text-neutral-400/30 text-xs transition-colors'>
-                      <HugeiconsIcon className='size-3.5' icon={Calculator01Icon} />
-                      Tools (Coming Soon)
-                    </span>
+                    <DialogTrigger
+                      aria-expanded='false'
+                      aria-haspopup='dialog'
+                      handle={exportDialogHandle}
+                      render={
+                        <button
+                          className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                          type='button'
+                        >
+                          <HugeiconsIcon className='size-4' icon={Download02Icon} />
+                          Export
+                        </button>
+                      }
+                    />
+                    <DialogTrigger
+                      aria-expanded='false'
+                      aria-haspopup='dialog'
+                      handle={importDialogHandle}
+                      render={
+                        <button
+                          className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                          type='button'
+                        >
+                          <HugeiconsIcon className='size-4' icon={Upload01Icon} />
+                          Import
+                        </button>
+                      }
+                    />
                   </div>
                 </PopoverContent>
               </Popover>
