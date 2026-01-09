@@ -1,25 +1,27 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { authStateFn } from '@/features/auth/queries'
 import { IS_CLOUD } from '@/lib/constants'
 
-const CheckoutSearchParamsSchema = z.object({
-  checkout_id: z.string().catch(''),
-})
+type CheckOutSeachParams = {
+  checkout_id: string | null
+}
 
 export const Route = createFileRoute('/success')({
   component: RouteComponent,
-  beforeLoad: async () => {
-    if (!IS_CLOUD) throw redirect({ to: '/' })
+  validateSearch: (search: Record<string, unknown>): CheckOutSeachParams => {
+    const id = search.checkout_id
+    return { checkout_id: typeof id === 'string' ? id : null }
+  },
+  beforeLoad: async ({ search }) => {
+    if (!IS_CLOUD || !search.checkout_id) throw redirect({ to: '/' })
     return await authStateFn()
   },
-  validateSearch: (searchParams) => CheckoutSearchParamsSchema.parse(searchParams),
 })
 
 function RouteComponent() {
   const { checkout_id: checkoutId } = Route.useSearch()
-  if (!checkoutId) {
+  if (!checkoutId || checkoutId === 'null') {
     redirect({ to: '/' })
   }
 
