@@ -77,6 +77,7 @@ export default function CategoriesSettings() {
     onSuccess: () => {
       toast.success('Category deleted')
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['budgets'] })
     },
     onError: () => {
       toast.error('Failed to delete category')
