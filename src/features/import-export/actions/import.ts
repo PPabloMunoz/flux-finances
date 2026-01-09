@@ -4,16 +4,16 @@ import { db } from '@/lib/db'
 import { account, category, transaction } from '@/lib/db/schema'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
-import { parseCategoryCsv, parseAccountCsv, parseTransactionCsv } from '../lib/csv'
+import { parseAccountCsv, parseCategoryCsv, parseTransactionCsv } from '../lib/csv'
 import {
-  validateCategoryRow,
-  validateAccountRow,
-  validateTransactionRow,
-  parseDate,
   formatDateForDb,
+  parseDate,
+  validateAccountRow,
+  validateCategoryRow,
+  validateTransactionRow,
 } from '../lib/validators'
-import type { ValidatedRow } from '../types'
 import { PreviewImportSchema, ProcessImportSchema } from '../schemas'
+import type { ValidatedRow } from '../types'
 
 interface PreviewResponse {
   totalRows: number
@@ -37,7 +37,7 @@ export const previewImportAction = createServerFn({ method: 'POST' })
 
       let rows: ValidatedRow[] = []
       const accountsFound = new Map<string, string>()
-      let categoriesFound = new Map<string, string>()
+      const categoriesFound = new Map<string, string>()
 
       if (type === 'categories') {
         const rawRows = parseCategoryCsv(csvContent)
@@ -74,14 +74,6 @@ export const previewImportAction = createServerFn({ method: 'POST' })
           }
         }
       }
-
-      console.log('Preview import results:', {
-        totalRows: rows.length,
-        validRows: rows.length - invalidCount,
-        invalidRows: invalidCount,
-        errors,
-        canImport: invalidCount === 0,
-      })
 
       return {
         ok: true,

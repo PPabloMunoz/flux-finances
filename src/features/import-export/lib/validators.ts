@@ -1,3 +1,9 @@
+import {
+  accountTypeEnum,
+  categoryTypeEnum,
+  currencyEnum,
+  transactionTypeEnum,
+} from '@/lib/db/schema'
 import type {
   AccountCsvRow,
   CategoryCsvRow,
@@ -6,12 +12,6 @@ import type {
   ValidatedCategory,
   ValidatedTransaction,
 } from '../types'
-import {
-  accountTypeEnum,
-  categoryTypeEnum,
-  currencyEnum,
-  transactionTypeEnum,
-} from '@/lib/db/schema'
 
 const ACCOUNT_TYPES = accountTypeEnum.enumValues
 const CATEGORY_TYPES = categoryTypeEnum.enumValues

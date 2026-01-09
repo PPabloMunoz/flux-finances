@@ -10,12 +10,12 @@ interface PreviewTableProps {
 export default function PreviewTable({ data, errors }: PreviewTableProps) {
   if (data.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center py-12 text-center h-full'>
-        <div className='size-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-4'>
-          <HugeiconsIcon icon={Alert02Icon} className='size-6 text-neutral-500' />
+      <div className='flex h-full flex-col items-center justify-center py-12 text-center'>
+        <div className='mb-4 flex size-12 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900'>
+          <HugeiconsIcon className='size-6 text-neutral-500' icon={Alert02Icon} />
         </div>
-        <p className='text-sm font-medium text-neutral-400'>No data to preview</p>
-        <p className='text-xs text-neutral-500 mt-1'>Please check your CSV file content</p>
+        <p className='font-medium text-neutral-400 text-sm'>No data to preview</p>
+        <p className='mt-1 text-neutral-500 text-xs'>Please check your CSV file content</p>
       </div>
     )
   }
@@ -24,22 +24,22 @@ export default function PreviewTable({ data, errors }: PreviewTableProps) {
   const displayData = data.slice(0, 50)
 
   return (
-    <div className='relative h-full overflow-auto scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent'>
+    <div className='scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent relative h-full overflow-auto'>
       <table className='w-full border-collapse text-left'>
         <thead className='sticky top-0 z-20'>
           <tr className='bg-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.05)]'>
-            <th className='w-10 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-neutral-500'>
+            <th className='w-10 px-4 py-3 font-bold text-[10px] text-neutral-500 uppercase tracking-widest'>
               #
             </th>
             {headers.map((header) => (
               <th
+                className='min-w-[140px] px-4 py-3 font-bold text-[10px] text-neutral-500 uppercase tracking-widest'
                 key={header}
-                className='min-w-[140px] px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-neutral-500'
               >
                 {header}
               </th>
             ))}
-            <th className='sticky right-0 w-24 bg-neutral-900 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-neutral-500 shadow-[-1px_0_0_rgba(255,255,255,0.05)]'>
+            <th className='sticky right-0 w-24 bg-neutral-900 px-4 py-3 font-bold text-[10px] text-neutral-500 uppercase tracking-widest shadow-[-1px_0_0_rgba(255,255,255,0.05)]'>
               Status
             </th>
           </tr>
@@ -51,38 +51,47 @@ export default function PreviewTable({ data, errors }: PreviewTableProps) {
 
             return (
               <tr
-                key={`preview-row-${idx}`}
                 className={cn(
                   'group transition-colors',
-                  hasErrors ? 'bg-red-500/[0.02] hover:bg-red-500/[0.04]' : 'hover:bg-neutral-900/40'
+                  hasErrors
+                    ? 'bg-red-500/[0.02] hover:bg-red-500/[0.04]'
+                    : 'hover:bg-neutral-900/40'
                 )}
+                key={`preview-row-${idx}`}
               >
-                <td className='px-4 py-2.5 text-[10px] font-medium text-neutral-500'>
-                  {idx + 1}
-                </td>
+                <td className='px-4 py-2.5 font-medium text-[10px] text-neutral-500'>{idx + 1}</td>
                 {headers.map((header) => (
-                  <td key={`${idx}-${header}`} className='px-4 py-2.5'>
+                  <td className='px-4 py-2.5' key={`${idx}-${header}`}>
                     <div
-                      className='max-w-[200px] truncate text-xs text-neutral-300'
+                      className='max-w-[200px] truncate text-neutral-300 text-xs'
                       title={row[header]}
                     >
                       {row[header] || <span className='text-neutral-600'>—</span>}
                     </div>
                   </td>
                 ))}
-                <td className={cn(
-                  'sticky right-0 px-4 py-2.5 shadow-[-1px_0_0_rgba(255,255,255,0.05)] transition-colors',
-                  hasErrors ? 'bg-red-950/20 group-hover:bg-red-950/30' : 'bg-neutral-950/50 group-hover:bg-neutral-900/60'
-                )}>
+                <td
+                  className={cn(
+                    'sticky right-0 px-4 py-2.5 shadow-[-1px_0_0_rgba(255,255,255,0.05)] transition-colors',
+                    hasErrors
+                      ? 'bg-red-950/20 group-hover:bg-red-950/30'
+                      : 'bg-neutral-950/50 group-hover:bg-neutral-900/60'
+                  )}
+                >
                   {hasErrors ? (
-                    <div className='flex items-center gap-1.5 text-red-400' title={rowErrors.join(', ')}>
+                    <div
+                      className='flex items-center gap-1.5 text-red-400'
+                      title={rowErrors.join(', ')}
+                    >
                       <HugeiconsIcon className='size-3.5' icon={Alert02Icon} />
-                      <span className='text-[10px] font-bold uppercase tracking-tight'>Invalid</span>
+                      <span className='font-bold text-[10px] uppercase tracking-tight'>
+                        Invalid
+                      </span>
                     </div>
                   ) : (
                     <div className='flex items-center gap-1.5 text-teal-500'>
                       <HugeiconsIcon className='size-3.5' icon={CheckmarkCircle02Icon} />
-                      <span className='text-[10px] font-bold uppercase tracking-tight'>Ready</span>
+                      <span className='font-bold text-[10px] uppercase tracking-tight'>Ready</span>
                     </div>
                   )}
                 </td>
@@ -92,8 +101,8 @@ export default function PreviewTable({ data, errors }: PreviewTableProps) {
         </tbody>
       </table>
       {data.length > 50 && (
-        <div className='sticky bottom-0 bg-neutral-900/90 backdrop-blur-sm border-t border-neutral-800 px-4 py-2 text-center'>
-          <p className='text-[10px] font-bold uppercase tracking-widest text-neutral-500'>
+        <div className='sticky bottom-0 border-neutral-800 border-t bg-neutral-900/90 px-4 py-2 text-center backdrop-blur-sm'>
+          <p className='font-bold text-[10px] text-neutral-500 uppercase tracking-widest'>
             Showing first 50 of {data.length} records
           </p>
         </div>

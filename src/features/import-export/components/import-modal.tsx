@@ -1,11 +1,11 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
 import {
   ArrowLeft01Icon,
-  Upload02Icon,
   CheckmarkCircle02Icon,
   Database01Icon,
   FolderOpenIcon,
   Table01Icon,
+  Upload02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -20,10 +20,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { previewImportAction, processImportAction } from '../actions/import'
 import { parseCsv } from '../lib/csv'
-import { processImportAction, previewImportAction } from '../actions/import'
-import PreviewTable from './preview-table'
 import type { ImportType } from '../types'
+import PreviewTable from './preview-table'
 
 export const importDialogHandle = BaseUIDialog.createHandle()
 
@@ -163,37 +163,39 @@ export default function ImportModal() {
 
   return (
     <Dialog handle={importDialogHandle}>
-      <DialogContent className='sm:max-w-2xl w-full flex flex-col gap-0 p-0 overflow-hidden'>
-        <div className='p-6 pb-4 border-b border-neutral-800/50 bg-neutral-900/20'>
-          <div className='flex items-center gap-6 mb-6'>
+      <DialogContent className='flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'>
+        <div className='border-neutral-800/50 border-b bg-neutral-900/20 p-6 pb-4'>
+          <div className='mb-6 flex items-center gap-6'>
             {STEPS.map((s, idx) => {
               const isActive = step === s.id
               const isCompleted = currentStepIndex > idx
               return (
-                <div key={s.id} className='flex items-center gap-2.5'>
+                <div className='flex items-center gap-2.5' key={s.id}>
                   <div
                     className={cn(
-                      'size-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all border',
+                      'flex size-5 items-center justify-center rounded-full border font-bold text-[10px] transition-all',
                       isActive
-                        ? 'bg-teal-500 border-teal-500 text-black shadow-[0_0_10px_rgba(20,184,166,0.3)]'
+                        ? 'border-teal-500 bg-teal-500 text-black shadow-[0_0_10px_rgba(20,184,166,0.3)]'
                         : isCompleted
-                          ? 'bg-teal-500/10 border-teal-500/50 text-teal-500'
-                          : 'bg-neutral-900 border-neutral-800 text-neutral-500'
+                          ? 'border-teal-500/50 bg-teal-500/10 text-teal-500'
+                          : 'border-neutral-800 bg-neutral-900 text-neutral-500'
                     )}
                   >
-                    {isCompleted ? <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3" /> : idx + 1}
+                    {isCompleted ? (
+                      <HugeiconsIcon className='size-3' icon={CheckmarkCircle02Icon} />
+                    ) : (
+                      idx + 1
+                    )}
                   </div>
                   <span
                     className={cn(
-                      'text-[10px] font-bold uppercase tracking-widest',
+                      'font-bold text-[10px] uppercase tracking-widest',
                       isActive ? 'text-neutral-100' : 'text-neutral-500'
                     )}
                   >
                     {s.label}
                   </span>
-                  {idx < STEPS.length - 1 && (
-                    <div className='h-px w-6 bg-neutral-800 ml-1' />
-                  )}
+                  {idx < STEPS.length - 1 && <div className='ml-1 h-px w-6 bg-neutral-800' />}
                 </div>
               )
             })}
@@ -213,36 +215,40 @@ export default function ImportModal() {
           </DialogHeader>
         </div>
 
-        <div className='flex-1 overflow-y-auto min-h-[340px] p-6'>
+        <div className='min-h-[340px] flex-1 overflow-y-auto p-6'>
           {step === 'select' && (
             <div className='grid gap-3'>
               {importTypes.map((type) => (
                 <button
-                  key={type.value}
                   className={cn(
                     'group relative flex items-start gap-4 rounded-xl border p-4 text-left transition-all',
                     importType === type.value
                       ? 'border-teal-500/40 bg-teal-500/5 ring-1 ring-teal-500/20'
                       : 'border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900/50'
                   )}
+                  key={type.value}
                   onClick={() => setImportType(type.value)}
                   type='button'
                 >
-                  <div className={cn(
-                    'flex size-10 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                    importType === type.value
-                      ? 'border-teal-500/50 bg-teal-500/10 text-teal-400'
-                      : 'border-neutral-800 bg-neutral-900 text-neutral-400 group-hover:border-neutral-700'
-                  )}>
+                  <div
+                    className={cn(
+                      'flex size-10 shrink-0 items-center justify-center rounded-lg border transition-colors',
+                      importType === type.value
+                        ? 'border-teal-500/50 bg-teal-500/10 text-teal-400'
+                        : 'border-neutral-800 bg-neutral-900 text-neutral-400 group-hover:border-neutral-700'
+                    )}
+                  >
                     <HugeiconsIcon icon={type.icon} size={20} />
                   </div>
                   <div className='flex-1 pr-6'>
-                    <div className='text-sm font-semibold text-neutral-200'>{type.label}</div>
-                    <div className='text-xs text-neutral-500 leading-relaxed mt-1'>{type.description}</div>
+                    <div className='font-semibold text-neutral-200 text-sm'>{type.label}</div>
+                    <div className='mt-1 text-neutral-500 text-xs leading-relaxed'>
+                      {type.description}
+                    </div>
                   </div>
                   {importType === type.value && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <div className="size-2 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.4)]" />
+                    <div className='absolute top-1/2 right-4 -translate-y-1/2'>
+                      <div className='size-2 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.4)]' />
                     </div>
                   )}
                 </button>
@@ -251,13 +257,13 @@ export default function ImportModal() {
           )}
 
           {step === 'upload' && (
-            <div className='flex flex-col h-full items-center justify-center py-4'>
+            <div className='flex h-full flex-col items-center justify-center py-4'>
               <div className='w-full max-w-md'>
                 <label
                   className={cn(
-                    'group relative flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed p-12 text-center transition-all cursor-pointer',
+                    'group relative flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed p-12 text-center transition-all',
                     previewMutation.isPending
-                      ? 'opacity-50 pointer-events-none border-neutral-800'
+                      ? 'pointer-events-none border-neutral-800 opacity-50'
                       : 'border-neutral-800 hover:border-teal-500/40 hover:bg-teal-500/5'
                   )}
                   htmlFor='csv-upload'
@@ -265,16 +271,19 @@ export default function ImportModal() {
                   <input
                     accept='.csv'
                     className='hidden'
-                    id='csv-upload'
-                    type='file'
-                    onChange={handleFileChange}
                     disabled={previewMutation.isPending}
+                    id='csv-upload'
+                    onChange={handleFileChange}
+                    type='file'
                   />
-                  <div className='flex size-14 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 group-hover:scale-110 group-hover:border-teal-500/50 transition-all'>
-                    <HugeiconsIcon className='size-6 text-neutral-400 group-hover:text-teal-400' icon={Upload02Icon} />
+                  <div className='flex size-14 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 transition-all group-hover:scale-110 group-hover:border-teal-500/50'>
+                    <HugeiconsIcon
+                      className='size-6 text-neutral-400 group-hover:text-teal-400'
+                      icon={Upload02Icon}
+                    />
                   </div>
                   <div className='space-y-1'>
-                    <p className='text-sm font-medium text-neutral-200'>
+                    <p className='font-medium text-neutral-200 text-sm'>
                       {csvFile ? csvFile.name : 'Click to select CSV'}
                     </p>
                     <p className='text-[10px] text-neutral-500 uppercase tracking-tight'>
@@ -285,8 +294,10 @@ export default function ImportModal() {
 
                 {previewMutation.isPending && (
                   <div className='mt-8 flex flex-col items-center gap-3'>
-                    <div className="size-4 border-2 border-teal-500/20 border-t-teal-500 rounded-full animate-spin" />
-                    <span className='text-[10px] uppercase tracking-widest font-bold text-neutral-500'>Processing records...</span>
+                    <div className='size-4 animate-spin rounded-full border-2 border-teal-500/20 border-t-teal-500' />
+                    <span className='font-bold text-[10px] text-neutral-500 uppercase tracking-widest'>
+                      Processing records...
+                    </span>
                   </div>
                 )}
               </div>
@@ -294,32 +305,39 @@ export default function ImportModal() {
           )}
 
           {step === 'preview' && (
-            <div className='space-y-4 flex flex-col h-full min-w-0'>
-              <div className='grid grid-cols-3 gap-3 shrink-0'>
+            <div className='flex h-full min-w-0 flex-col space-y-4'>
+              <div className='grid shrink-0 grid-cols-3 gap-3'>
                 <div className='rounded-xl border border-neutral-800 bg-neutral-900/30 p-3'>
-                  <div className='text-[9px] uppercase tracking-widest text-neutral-500 font-bold mb-1'>Total Rows</div>
-                  <div className='text-xl font-semibold text-neutral-200'>{previewData.length}</div>
+                  <div className='mb-1 font-bold text-[9px] text-neutral-500 uppercase tracking-widest'>
+                    Total Rows
+                  </div>
+                  <div className='font-semibold text-neutral-200 text-xl'>{previewData.length}</div>
                 </div>
                 <div className='rounded-xl border border-green-500/10 bg-green-500/5 p-3'>
-                  <div className='text-[9px] uppercase tracking-widest text-green-500/60 font-bold mb-1'>Valid</div>
-                  <div className='text-xl font-semibold text-green-400'>{validCount}</div>
+                  <div className='mb-1 font-bold text-[9px] text-green-500/60 uppercase tracking-widest'>
+                    Valid
+                  </div>
+                  <div className='font-semibold text-green-400 text-xl'>{validCount}</div>
                 </div>
                 <div className='rounded-xl border border-red-500/10 bg-red-500/5 p-3'>
-                  <div className='text-[9px] uppercase tracking-widest text-red-500/60 font-bold mb-1'>Invalid</div>
-                  <div className='text-xl font-semibold text-red-400'>{previewErrors.size}</div>
+                  <div className='mb-1 font-bold text-[9px] text-red-500/60 uppercase tracking-widest'>
+                    Invalid
+                  </div>
+                  <div className='font-semibold text-red-400 text-xl'>{previewErrors.size}</div>
                 </div>
               </div>
 
-              <div className='flex-1 min-w-0 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950'>
+              <div className='min-w-0 flex-1 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950'>
                 <PreviewTable data={previewData} errors={previewErrors} />
               </div>
 
               {previewErrors.size > 0 && (
-                <div className="flex items-start gap-2 rounded-lg bg-red-500/5 border border-red-500/10 p-3">
-                  <div className="size-1.5 rounded-full bg-red-500 mt-1 shrink-0" />
-                  <p className="text-[10px] leading-relaxed text-red-400/80">
-                    <span className="font-bold uppercase mr-1">Warning:</span>
-                    {previewErrors.size} rows have formatting issues and will be skipped. Correct your CSV and re-upload if these rows are required.
+                <div className='flex items-start gap-2 rounded-lg border border-red-500/10 bg-red-500/5 p-3'>
+                  <div className='mt-1 size-1.5 shrink-0 rounded-full bg-red-500' />
+                  <p className='text-[10px] text-red-400/80 leading-relaxed'>
+                    <span className='mr-1 font-bold uppercase'>Warning:</span>
+                    {previewErrors.size} rows have formatting issues and will be skipped. Correct
+                    your CSV and re-upload if these rows are required.
                   </p>
                 </div>
               )}
@@ -327,21 +345,21 @@ export default function ImportModal() {
           )}
         </div>
 
-        <div className='p-4 border-t border-neutral-800 bg-neutral-900/20 flex gap-3'>
+        <div className='flex gap-3 border-neutral-800 border-t bg-neutral-900/20 p-4'>
           {step !== 'select' && (
             <Button
-              variant='outline'
+              className='h-9 px-4 font-bold text-xs uppercase tracking-wider'
               onClick={() => setStep(step === 'preview' ? 'upload' : 'select')}
-              className="h-9 px-4 text-xs font-bold uppercase tracking-wider"
+              variant='outline'
             >
-              <HugeiconsIcon icon={ArrowLeft01Icon} size={14} className="mr-1" />
+              <HugeiconsIcon className='mr-1' icon={ArrowLeft01Icon} size={14} />
               Back
             </Button>
           )}
 
           {step === 'select' && (
             <Button
-              className='flex-1 h-9 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold uppercase tracking-wider'
+              className='h-9 flex-1 bg-teal-600 font-bold text-white text-xs uppercase tracking-wider hover:bg-teal-500'
               disabled={!importType}
               onClick={() => setStep('upload')}
             >
@@ -351,7 +369,7 @@ export default function ImportModal() {
 
           {step === 'upload' && (
             <Button
-              className='flex-1 h-9 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold uppercase tracking-wider'
+              className='h-9 flex-1 bg-teal-600 font-bold text-white text-xs uppercase tracking-wider hover:bg-teal-500'
               disabled={!csvFile || previewMutation.isPending}
               onClick={() => previewMutation.mutate(csvContent)}
             >
@@ -361,7 +379,7 @@ export default function ImportModal() {
 
           {step === 'preview' && (
             <Button
-              className='flex-1 h-9 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold uppercase tracking-wider'
+              className='h-9 flex-1 bg-teal-600 font-bold text-white text-xs uppercase tracking-wider hover:bg-teal-500'
               disabled={!canImport || importMutation.isPending}
               onClick={handleConfirmImport}
             >

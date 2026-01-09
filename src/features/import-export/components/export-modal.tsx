@@ -1,7 +1,7 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
 import {
-  Download02Icon,
   Database01Icon,
+  Download02Icon,
   FolderOpenIcon,
   Table01Icon,
 } from '@hugeicons/core-free-icons'
@@ -88,13 +88,13 @@ export default function ExportModal() {
 
   return (
     <Dialog handle={exportDialogHandle}>
-      <DialogContent className='sm:max-w-xl w-full flex flex-col gap-0 p-0 overflow-hidden'>
-        <div className='p-6 pb-4 border-b border-neutral-800/50 bg-neutral-900/20'>
-          <div className='flex items-center gap-2.5 mb-4'>
-            <div className='size-5 rounded-full flex items-center justify-center bg-teal-500/10 border border-teal-500/50 text-teal-500'>
-              <HugeiconsIcon icon={Download02Icon} className='size-3' />
+      <DialogContent className='flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-xl'>
+        <div className='border-neutral-800/50 border-b bg-neutral-900/20 p-6 pb-4'>
+          <div className='mb-4 flex items-center gap-2.5'>
+            <div className='flex size-5 items-center justify-center rounded-full border border-teal-500/50 bg-teal-500/10 text-teal-500'>
+              <HugeiconsIcon className='size-3' icon={Download02Icon} />
             </div>
-            <span className='text-[10px] font-bold uppercase tracking-widest text-neutral-100'>
+            <span className='font-bold text-[10px] text-neutral-100 uppercase tracking-widest'>
               Data Export
             </span>
           </div>
@@ -111,13 +111,13 @@ export default function ExportModal() {
           <div className='grid gap-3'>
             {exportTypes.map((type) => (
               <button
-                key={type.value}
                 className={cn(
                   'group relative flex items-start gap-4 rounded-xl border p-4 text-left transition-all',
                   selectedType === type.value
                     ? 'border-teal-500/40 bg-teal-500/5 ring-1 ring-teal-500/20'
                     : 'border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900/50'
                 )}
+                key={type.value}
                 onClick={() => setSelectedType(type.value)}
                 type='button'
               >
@@ -132,13 +132,13 @@ export default function ExportModal() {
                   <HugeiconsIcon icon={type.icon} size={20} />
                 </div>
                 <div className='flex-1 pr-6'>
-                  <div className='text-sm font-semibold text-neutral-200'>{type.label}</div>
-                  <div className='text-xs text-neutral-500 leading-relaxed mt-1'>
+                  <div className='font-semibold text-neutral-200 text-sm'>{type.label}</div>
+                  <div className='mt-1 text-neutral-500 text-xs leading-relaxed'>
                     {type.description}
                   </div>
                 </div>
                 {selectedType === type.value && (
-                  <div className='absolute right-4 top-1/2 -translate-y-1/2'>
+                  <div className='absolute top-1/2 right-4 -translate-y-1/2'>
                     <div className='size-2 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.4)]' />
                   </div>
                 )}
@@ -147,13 +147,13 @@ export default function ExportModal() {
           </div>
         </div>
 
-        <div className='p-4 border-t border-neutral-800 bg-neutral-900/20'>
+        <div className='border-neutral-800 border-t bg-neutral-900/20 p-4'>
           <Button
-            className='w-full h-10 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold uppercase tracking-wider'
+            className='h-10 w-full bg-teal-600 font-bold text-white text-xs uppercase tracking-wider hover:bg-teal-500'
             disabled={isLoading}
             onClick={handleExport}
           >
-            <HugeiconsIcon icon={Download02Icon} className='mr-2' size={16} />
+            <HugeiconsIcon className='mr-2' icon={Download02Icon} size={16} />
             {isLoading ? 'Preparing Export...' : `Download ${selectedType} CSV`}
           </Button>
         </div>
