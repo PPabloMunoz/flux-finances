@@ -6,7 +6,7 @@
     "dev": "bun --bun vite dev --port 3001",
     "build": "bun --bun vite build",
     "start": "bun run .output/server/index.mjs",
-    "preview": "bun --bun vite preview",
+    "preview": "bun --bun vite preview --port 3001",
     "lint": "biome check .",
     "format": "biome format --write .",
     "check": "biome check . && biome format --write .",
@@ -14,7 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "clean": "rm -rf node_modules dist .turbo .output"
+    "clean": "rm -rf node_modules .output"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",
@@ -31,7 +31,7 @@
     "@tanstack/react-query": "5.90.12",
     "@tanstack/react-router": "1.134.4",
     "@tanstack/react-router-ssr-query": "1.134.4",
-    "@tanstack/react-start": "1.134.6",
+    "@tanstack/react-start": "1.134.4",
     "@tanstack/router-plugin": "1.134.4",
     "better-auth": "1.4.7",
     "class-variance-authority": "0.7.1",
