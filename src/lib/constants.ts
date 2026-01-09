@@ -1,4 +1,3 @@
-import { accountTypeEnum, categoryTypeEnum, transactionTypeEnum } from '@flux/db/schema'
 import {
   AnalyticsUpIcon,
   ArrowDownLeft01Icon,
@@ -8,6 +7,7 @@ import {
   TradeDownIcon,
 } from '@hugeicons/core-free-icons'
 import type { IconSvgElement } from '@hugeicons/react'
+import { accountTypeEnum, categoryTypeEnum, transactionTypeEnum } from '@/lib/db/schema'
 
 export const IS_CLOUD = process.env.IS_CLOUD === 'true'
 

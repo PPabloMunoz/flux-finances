@@ -1,14 +1,11 @@
-import { db } from '@flux/db'
-import * as schema from '@flux/db/schema'
 import { checkout, polar, portal, webhooks } from '@polar-sh/better-auth'
 import { Polar } from '@polar-sh/sdk'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import {
-  createSubscription,
-  deleteSubscription,
-} from '../../../apps/app/src/features/subscription/actions'
+import { createSubscription, deleteSubscription } from '@/features/subscription/actions'
+import { db } from '@/lib/db'
+import * as schema from '@/lib/db/schema'
 
 const {
   GOOGLE_CLIENT_ID: googleClientId,
