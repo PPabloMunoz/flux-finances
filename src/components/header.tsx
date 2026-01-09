@@ -4,11 +4,13 @@ import {
   Calculator01Icon,
   CommandIcon,
   Dollar02FreeIcons,
+  Download02Icon,
   Invoice02Icon,
   Invoice03Icon,
   Logout05Icon,
   Menu01Icon,
   Settings01Icon,
+  Upload01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
@@ -18,6 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import NewBudgetModal from '@/features/budgets/components/new-budget-modal'
 import { quickActionsDialogHandle } from '@/features/general/quick-actions-modal'
+import { exportDialogHandle, ImportModal, importDialogHandle } from '@/features/import-export'
+import ExportModal from '@/features/import-export/components/export-modal'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
 import { authClient } from '@/lib/auth/client'
 
@@ -34,6 +38,8 @@ export default function AppHeader() {
       <NewTransactionModal onConfirm={() => quickActionsDialogHandle.close()} />
       <NewAccountModal onConfirm={() => quickActionsDialogHandle.close()} />
       <NewBudgetModal onConfirm={() => quickActionsDialogHandle.close()} />
+      <ExportModal />
+      <ImportModal />
 
       <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
         <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-4 md:px-6'>
@@ -159,14 +165,34 @@ export default function AppHeader() {
                     <HugeiconsIcon className='size-3.5' icon={Settings01Icon} />
                     Settings
                   </Link>
-                  <span className='flex items-center gap-2 p-2 text-neutral-400/30 text-xs transition-colors'>
-                    <HugeiconsIcon className='size-3.5' icon={Invoice03Icon} />
-                    Import (Comimg Soon)
-                  </span>
-                  <span className='flex items-center gap-2 p-2 text-neutral-400/30 text-xs transition-colors'>
-                    <HugeiconsIcon className='size-3.5' icon={Calculator01Icon} />
-                    Tools (Coming Soon)
-                  </span>
+                  <DialogTrigger
+                    aria-expanded='false'
+                    aria-haspopup='dialog'
+                    handle={exportDialogHandle}
+                    render={
+                      <button
+                        className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                        type='button'
+                      >
+                        <HugeiconsIcon className='size-4' icon={Download02Icon} />
+                        Export
+                      </button>
+                    }
+                  />
+                  <DialogTrigger
+                    aria-expanded='false'
+                    aria-haspopup='dialog'
+                    handle={importDialogHandle}
+                    render={
+                      <button
+                        className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                        type='button'
+                      >
+                        <HugeiconsIcon className='size-4' icon={Upload01Icon} />
+                        Import
+                      </button>
+                    }
+                  />
                 </PopoverContent>
               </Popover>
             </div>
