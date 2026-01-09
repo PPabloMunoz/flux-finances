@@ -43,6 +43,7 @@ export default function DeleteTransactionModal() {
       queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
       queryClient.invalidateQueries({ queryKey: ['networth'] })
       queryClient.invalidateQueries({ queryKey: ['incomeVsExpenses'] })
+      queryClient.invalidateQueries({ queryKey: ['budgets'] })
       deleteTransactionModalHandler.close()
       updateTransactionModalHandle.close()
     },

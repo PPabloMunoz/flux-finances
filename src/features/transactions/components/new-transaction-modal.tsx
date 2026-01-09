@@ -113,6 +113,7 @@ export default function NewTransactionModal({ onConfirm }: Props) {
         queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
         queryClient.invalidateQueries({ queryKey: ['networth'] })
         queryClient.invalidateQueries({ queryKey: ['incomeVsExpenses'] })
+        queryClient.invalidateQueries({ queryKey: ['budgets'] })
         newTransactionModalHandle.close()
         form.reset()
         onConfirm?.()

@@ -113,6 +113,7 @@ export default function UpdateTransactionModal() {
         queryClient.invalidateQueries({ queryKey: ['transactions-summary'] })
         queryClient.invalidateQueries({ queryKey: ['networth'] })
         queryClient.invalidateQueries({ queryKey: ['incomeVsExpenses'] })
+        queryClient.invalidateQueries({ queryKey: ['budgets'] })
         updateTransactionModalHandle.close()
         form.reset()
       }
