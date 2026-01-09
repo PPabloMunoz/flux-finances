@@ -10,7 +10,7 @@ const config = defineConfig({
   server: { allowedHosts: ['sparrow-welcomed-blindly.ngrok-free.app'] },
   plugins: [
     devtools(),
-    nitro({ preset: 'vercel' }),
+    nitro({ preset: 'bun' }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({ projects: ['./tsconfig.json'] }),
     tailwindcss(),
