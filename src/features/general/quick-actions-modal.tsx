@@ -6,6 +6,7 @@ import {
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,20 @@ import { newTransactionModalHandle } from '../transactions/components/new-transa
 export const quickActionsDialogHandle = BaseUIDialog.createHandle()
 
 export default function QuickActionsModal() {
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        if (!quickActionsDialogHandle.isOpen) {
+          quickActionsDialogHandle.open(null)
+        }
+      }
+    }
+
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
+
   return (
     <Dialog handle={quickActionsDialogHandle}>
       <DialogContent className='w-full max-w-xl! px-5'>
