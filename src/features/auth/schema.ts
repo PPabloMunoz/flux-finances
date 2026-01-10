@@ -47,6 +47,9 @@ export const UserPreferencesSchema = z.object({
   region: RegionSchema,
   dateFormat: DateFormatSchema,
   timezone: TimezoneSchema,
+  emailSummaries: z.boolean(),
+  budgetAlerts: z.boolean(),
+  transactionReminders: z.boolean(),
 })
 
 export const UpdateUserPreferencesSchema = z.object({
@@ -54,4 +57,10 @@ export const UpdateUserPreferencesSchema = z.object({
   region: RegionSchema,
   dateFormat: DateFormatSchema,
   timezone: TimezoneSchema,
+})
+
+export const UpdateNotificationPreferencesSchema = z.object({
+  emailSummaries: z.boolean(),
+  budgetAlerts: z.boolean(),
+  transactionReminders: z.boolean(),
 })

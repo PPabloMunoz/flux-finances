@@ -4,6 +4,8 @@ import AppHeader from '@/components/header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { authStateFn } from '@/features/auth/queries'
 import CategoriesSettings from '@/features/settings/components/categories'
+import DataSettings from '@/features/settings/components/data'
+import NotificationsSettings from '@/features/settings/components/notifications'
 import PreferencesSettings from '@/features/settings/components/preferences'
 import ProfileSettings from '@/features/settings/components/profile'
 
@@ -12,7 +14,7 @@ export const Route = createFileRoute('/settings/')({
   beforeLoad: async () => await authStateFn(),
 })
 
-const tabValues = ['preferences', 'category', 'profile'] as const
+const tabValues = ['preferences', 'notifications', 'data', 'category', 'profile'] as const
 
 function RouteComponent() {
   const [tab, setTab] = useQueryState('tab', parseAsStringLiteral(tabValues))
@@ -37,8 +39,14 @@ function RouteComponent() {
             <TabsTrigger className='justify-start' value='preferences'>
               Preferences
             </TabsTrigger>
+            <TabsTrigger className='justify-start' value='notifications'>
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger className='justify-start' value='data'>
+              Data
+            </TabsTrigger>
             <TabsTrigger className='justify-start' value='category'>
-              Category
+              Categories
             </TabsTrigger>
             <TabsTrigger className='justify-start' value='profile'>
               Profile
@@ -47,6 +55,12 @@ function RouteComponent() {
           <div className='flex-1'>
             <TabsContent className='mt-0' value='preferences'>
               <PreferencesSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='notifications'>
+              <NotificationsSettings />
+            </TabsContent>
+            <TabsContent className='mt-0' value='data'>
+              <DataSettings />
             </TabsContent>
             <TabsContent className='mt-0' value='category'>
               <CategoriesSettings />

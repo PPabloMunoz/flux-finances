@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
 import appCss from '../styles.css?url'
+import BodyProvider from '@/components/body-provider'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -41,12 +42,12 @@ const queryClient = new QueryClient()
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <html className='dark' lang='en'>
+      <html lang='en'>
         <head>
           <HeadContent />
         </head>
         <NuqsAdapter>
-          <body>
+          <BodyProvider>
             <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
 
             {children}
@@ -54,7 +55,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <QuickActionsModal />
             <NewAccountModal />
 
-            <Toaster theme='dark' />
+            <Toaster />
             <Scripts />
             {import.meta.env.DEV && (
               <TanStackDevtools
@@ -62,7 +63,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
               />
             )}
-          </body>
+          </BodyProvider>
         </NuqsAdapter>
       </html>
     </QueryClientProvider>

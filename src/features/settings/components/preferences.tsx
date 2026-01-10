@@ -1,4 +1,10 @@
-import { Calendar01Icon, Globe02Icon, Settings05Icon } from '@hugeicons/core-free-icons'
+import {
+  Calendar01Icon,
+  Globe02Icon,
+  Moon01Icon,
+  Settings05Icon,
+  Sun01Icon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
@@ -8,9 +14,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Switch } from '@/components/ui/switch'
 import { updateUserPreferencesAction } from '@/features/auth/actions'
 import { UpdateUserPreferencesSchema } from '@/features/auth/schema'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
+import { useTheme } from '@/hooks/use-theme'
 import {
   type COUNTRY_CODES,
   CURRENCY_CODES,
@@ -25,6 +33,7 @@ export default function PreferencesSettings() {
   const [isLoading, setIsLoading] = useState(false)
   const { data: userPreferences, isPending } = useUserPreferences()
   const queryClient = useQueryClient()
+  const { isDark, toggleTheme } = useTheme()
 
   const form = useForm({
     defaultValues: {
@@ -35,7 +44,6 @@ export default function PreferencesSettings() {
     },
     validators: { onSubmit: UpdateUserPreferencesSchema },
     onSubmit: async ({ value }) => {
-      // No changes made
       if (
         value.currency === userPreferences?.currency &&
         value.region === userPreferences?.region &&
@@ -67,7 +75,31 @@ export default function PreferencesSettings() {
 
   return (
     <div className='space-y-6'>
-      {/* Regional Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className='flex items-center gap-2'>
+            <HugeiconsIcon className='size-5' icon={Settings05Icon} />
+            Theme
+          </CardTitle>
+          <CardDescription>Choose your preferred appearance.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-4'>
+              <div className='flex items-center gap-2'>
+                <HugeiconsIcon className='size-5' icon={Sun01Icon} />
+                <span className='font-medium text-sm'>Light</span>
+              </div>
+              <Switch checked={isDark} onCheckedChange={() => toggleTheme()} />
+              <div className='flex items-center gap-2'>
+                <HugeiconsIcon className='size-5' icon={Moon01Icon} />
+                <span className='font-medium text-sm'>Dark</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>

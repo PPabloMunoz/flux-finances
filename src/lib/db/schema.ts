@@ -144,6 +144,9 @@ export const userPreferences = pgTable('user_preferences', {
   region: text('region').default('ES').notNull(),
   dateFormat: text('date_format').default('DD/MM/YYYY').notNull(),
   timezone: text('timezone').default('Europe/Madrid').notNull(),
+  emailSummaries: boolean('email_summaries').default(true).notNull(),
+  budgetAlerts: boolean('budget_alerts').default(true).notNull(),
+  transactionReminders: boolean('transaction_reminders').default(false).notNull(),
 })
 
 export const account = pgTable('account', {
