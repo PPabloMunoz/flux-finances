@@ -28,6 +28,7 @@ interface Props {
     categoryId: string | null
     categoryName: string | null
     categoryColor: string | null
+    transferId: string | null
   }
 }
 
@@ -63,11 +64,13 @@ export default function TransactionRow({ transaction }: Props) {
       </td>
       <td className='px-4 py-3'>
         <div className='inline-flex items-center border border-neutral-800 bg-neutral-900 px-2 py-0.5 font-medium text-[10px] text-neutral-400'>
-          <div
-            className='mr-1.5 size-1.5 rounded-full'
-            style={{ backgroundColor: transaction.categoryColor ?? '#525252' }}
-          />
-          {transaction.categoryName || 'No Category'}
+          {!transaction.transferId && (
+            <div
+              className='mr-1.5 size-1.5 rounded-full'
+              style={{ backgroundColor: transaction.categoryColor ?? '#525252' }}
+            />
+          )}
+          {transaction.transferId ? 'Transfer' : transaction.categoryName || 'No Category'}
         </div>
       </td>
       <td className='px-4 py-3 text-neutral-400'>

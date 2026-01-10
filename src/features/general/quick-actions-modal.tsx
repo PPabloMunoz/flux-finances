@@ -17,6 +17,7 @@ import {
 import { newAccountDialogHandle } from '../accounts/components/new-account-modal'
 import { newBudgetDialogHandle } from '../budgets/components/new-budget-modal'
 import { newTransactionModalHandle } from '../transactions/components/new-transaction-modal'
+import { newTransferModalHandle } from '../transactions'
 
 export const quickActionsDialogHandle = BaseUIDialog.createHandle()
 
@@ -87,22 +88,27 @@ export default function QuickActionsModal() {
             }
           />
 
-          <button
-            className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
-            type='button'
-          >
-            <div className='flex items-center gap-3'>
-              <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
-                <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
-              </div>
-              <div>
-                <p className='font-medium text-sm'>New Transfer</p>
-                <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
-                  Move money between accounts
-                </span>
-              </div>
-            </div>
-          </button>
+          <DialogTrigger
+            handle={newTransferModalHandle}
+            render={
+              <button
+                className='group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-neutral-400 transition-all duration-200 hover:bg-neutral-800/50 hover:text-white hover:shadow-sm'
+                type='button'
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='rounded-md bg-neutral-800 p-2 text-neutral-500 transition-colors group-hover:bg-indigo-500/20 group-hover:text-indigo-300'>
+                    <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
+                  </div>
+                  <div>
+                    <p className='font-medium text-sm'>New Transfer</p>
+                    <span className='text-neutral-600 text-xs transition-colors group-hover:text-neutral-400'>
+                      Move money between accounts
+                    </span>
+                  </div>
+                </div>
+              </button>
+            }
+          />
 
           <DialogTrigger
             handle={newBudgetDialogHandle}

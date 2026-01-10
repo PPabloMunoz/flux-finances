@@ -99,6 +99,7 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
           categoryId: category.id,
           categoryName: category.name,
           categoryColor: category.color,
+          transferId: transaction.transferId,
         })
         .from(transaction)
         .innerJoin(account, eq(transaction.accountId, account.id))

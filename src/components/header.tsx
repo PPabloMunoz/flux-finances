@@ -22,6 +22,7 @@ import { exportDialogHandle, ImportModal, importDialogHandle } from '@/features/
 import ExportModal from '@/features/import-export/components/export-modal'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
 import { authClient } from '@/lib/auth/client'
+import { NewTransferModal } from '@/features/transactions'
 
 export default function AppHeader() {
   const [isMounted, setIsMounted] = useState(false)
@@ -38,6 +39,7 @@ export default function AppHeader() {
       <NewBudgetModal onConfirm={() => quickActionsDialogHandle.close()} />
       <ExportModal />
       <ImportModal />
+      <NewTransferModal />
 
       <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
         <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-4 md:px-6'>

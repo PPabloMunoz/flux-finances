@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm'
 import {
+  AnyPgColumn,
   boolean,
   date,
   index,
@@ -207,6 +208,9 @@ export const transaction = pgTable('transaction', {
   description: text('description').notNull().default(''),
   isPending: boolean('is_pending').default(false).notNull(),
   isInvestmentContribution: boolean('is_investment_contribution').default(false).notNull(),
+  transferId: text('transfer_id').references((): AnyPgColumn => transaction.id, {
+    onDelete: 'set null',
+  }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

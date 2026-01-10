@@ -1,5 +1,5 @@
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog'
-import { AddIcon, Delete03Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
+import { Delete03Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -73,7 +73,7 @@ export default function UpdateTransactionModal() {
     gcTime: Number.POSITIVE_INFINITY,
   })
 
-  const isDisabled = accountsPending || categoriesPending || isLoading
+  const isLoadingOrPending = accountsPending || categoriesPending || isLoading
 
   const form = useForm({
     defaultValues: {
@@ -88,7 +88,7 @@ export default function UpdateTransactionModal() {
     },
     validators: { onSubmit: UpdateTransactionSchema },
     onSubmit: async ({ value }) => {
-      if (isDisabled) return
+      if (isLoadingOrPending) return
       const parsedValue = UpdateTransactionSchema.safeParse(value)
       if (!parsedValue.success) {
         toast.error('Please fix the errors in the form.')
@@ -137,6 +137,10 @@ export default function UpdateTransactionModal() {
         const parsedPayload = UpdateTransactionSchema.safeParse(payload)
         if (!parsedPayload.success) return null
 
+        const payloadWithTransfer = payload as { transferId?: string }
+        const isTransfer = Boolean(payloadWithTransfer.transferId)
+        const isFormDisabled = isLoadingOrPending || isTransfer
+
         form.setFieldValue('id', parsedPayload.data.id)
         form.setFieldValue('title', parsedPayload.data.title)
         form.setFieldValue('accountId', parsedPayload.data.accountId)
@@ -154,9 +158,19 @@ export default function UpdateTransactionModal() {
         return (
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Update Transaction</DialogTitle>
-              <DialogDescription>Modify the details of your transaction below.</DialogDescription>
+              <DialogTitle>{isTransfer ? 'Transfer Details' : 'Update Transaction'}</DialogTitle>
+              <DialogDescription>
+                {isTransfer
+                  ? 'Transfers cannot be edited. Delete the transfer to make changes.'
+                  : 'Modify the details of your transaction below.'}
+              </DialogDescription>
             </DialogHeader>
+
+            {isTransfer && (
+              <div className='rounded-md bg-amber-500/10 px-3 py-2 text-amber-400 text-sm'>
+                This is a transfer. Transfers cannot be edited. Use the delete button to remove it.
+              </div>
+            )}
 
             <form
               className='space-y-4'
@@ -174,7 +188,7 @@ export default function UpdateTransactionModal() {
                       <FieldLabel htmlFor={field.name}>Transaction Name</FieldLabel>
                       <Input
                         aria-invalid={isInvalid}
-                        disabled={isDisabled}
+                        disabled={isFormDisabled}
                         id={field.name}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder='e.g. Grocery Shopping'
@@ -196,7 +210,7 @@ export default function UpdateTransactionModal() {
                         <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                         <Input
                           aria-invalid={isInvalid}
-                          disabled={isDisabled}
+                          disabled={isFormDisabled}
                           id={field.name}
                           min='0'
                           onChange={(e) => field.handleChange(e.target.value)}
@@ -220,7 +234,7 @@ export default function UpdateTransactionModal() {
                         <FieldLabel htmlFor={field.name}>Date</FieldLabel>
                         <Input
                           aria-invalid={isInvalid}
-                          disabled={isDisabled}
+                          disabled={isFormDisabled}
                           id={field.name}
                           onChange={(e) => field.handleChange(e.target.value)}
                           type='date'
@@ -243,7 +257,7 @@ export default function UpdateTransactionModal() {
                         <FieldLabel htmlFor={field.name}>Account</FieldLabel>
                         <Select
                           aria-invalid={isInvalid}
-                          disabled={isDisabled}
+                          disabled={isFormDisabled}
                           id={field.name}
                           onValueChange={(value) => field.handleChange(value ?? '')}
                           value={field.state.value}
@@ -272,7 +286,10 @@ export default function UpdateTransactionModal() {
                                         icon={
                                           selectedAccount
                                             ? ACCOUNT_TYPES_ICONS[selectedAccount.type]
-                                            : AddIcon
+                                            : TRANSACTIONS_ICONS[
+                                                field.state
+                                                  .value as (typeof TRANSACTIONS_TYPES)[number]
+                                              ] || TRANSACTIONS_ICONS.outflow
                                         }
                                       />
                                     </div>
@@ -326,7 +343,7 @@ export default function UpdateTransactionModal() {
                         <Select
                           aria-invalid={isInvalid}
                           defaultValue={parsedPayload.data.type}
-                          disabled={isDisabled}
+                          disabled={isFormDisabled}
                           id={field.name}
                           onValueChange={(value) => field.setValue(value ?? TRANSACTIONS_TYPES[1])}
                           value={field.state.value || parsedPayload.data.type}
@@ -386,7 +403,7 @@ export default function UpdateTransactionModal() {
                       <FieldLabel htmlFor={field.name}>Category</FieldLabel>
                       <Select
                         aria-invalid={isInvalid}
-                        disabled={isDisabled}
+                        disabled={isFormDisabled}
                         id={field.name}
                         onValueChange={(value) => field.handleChange(value ?? '')}
                         value={field.state.value}
@@ -438,7 +455,7 @@ export default function UpdateTransactionModal() {
                       <FieldLabel htmlFor={field.name}>Description (optional)</FieldLabel>
                       <Textarea
                         aria-invalid={isInvalid}
-                        disabled={isDisabled}
+                        disabled={isFormDisabled}
                         id={field.name}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder='Add any additional details about the transaction'
@@ -452,7 +469,7 @@ export default function UpdateTransactionModal() {
               </form.Field>
 
               <div className='mt-4 flex items-center justify-between gap-2'>
-                <Button className='w-full flex-1' disabled={isDisabled} type='submit'>
+                <Button className='w-full flex-1' disabled={isFormDisabled} type='submit'>
                   <HugeiconsIcon icon={FloppyDiskIcon} />
                   {isLoading ? 'Updating...' : 'Update Transaction'}
                 </Button>
@@ -460,7 +477,7 @@ export default function UpdateTransactionModal() {
                   handle={deleteTransactionModalHandler}
                   payload={{ id: parsedPayload.data.id }}
                   render={
-                    <Button disabled={isDisabled} type='button' variant='destructive'>
+                    <Button disabled={isLoadingOrPending} type='button' variant='destructive'>
                       <HugeiconsIcon icon={Delete03Icon} />
                     </Button>
                   }

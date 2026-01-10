@@ -23,3 +23,17 @@ export const UpdateTransactionSchema = NewTransactionSchema.extend({
 export const DeleteTransactionSchema = z.object({
   id: z.ulid({ error: 'Invalid transaction ID' }),
 })
+
+export const TransferSchema = z
+  .object({
+    fromAccountId: z.ulid({ error: 'Select source account' }),
+    toAccountId: z.ulid({ error: 'Select destination account' }),
+    amount: z.coerce.number<string>().positive().min(0.01, 'Amount must be at least 0.01'),
+    date: z
+      .string()
+      .refine((date) => !Number.isNaN(Date.parse(date)), { message: 'Invalid date format' }),
+  })
+  .refine((data) => data.fromAccountId !== data.toAccountId, {
+    message: 'Source and destination accounts must be different',
+    path: ['toAccountId'],
+  })
