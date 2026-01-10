@@ -9,6 +9,7 @@ import {
   Menu01Icon,
   Settings01Icon,
   Upload01Icon,
+  User02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
@@ -23,6 +24,7 @@ import ExportModal from '@/features/import-export/components/export-modal'
 import { NewTransferModal } from '@/features/transactions'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
 import { authClient } from '@/lib/auth/client'
+import { IS_CLOUD } from '@/lib/constants'
 
 export default function AppHeader() {
   const [isMounted, setIsMounted] = useState(false)
@@ -255,14 +257,24 @@ export default function AppHeader() {
                 <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
               </PopoverTrigger>
               <PopoverContent className='max-w-45 gap-0.5 p-2'>
-                <button
+                <Link
                   className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
-                  onClick={() => authClient.customer.portal()}
-                  type='button'
+                  search={{ tab: 'profile' }}
+                  to='/settings'
                 >
-                  <HugeiconsIcon className='size-3.5' icon={Invoice02Icon} />
-                  Billing
-                </button>
+                  <HugeiconsIcon className='size-3.5' icon={User02Icon} />
+                  Profile
+                </Link>
+                {IS_CLOUD && (
+                  <button
+                    className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
+                    onClick={() => authClient.customer.portal()}
+                    type='button'
+                  >
+                    <HugeiconsIcon className='size-3.5' icon={Invoice02Icon} />
+                    Billing
+                  </button>
+                )}
 
                 <Link
                   className='flex items-center gap-2 p-2 text-red-400 text-xs transition-colors hover:bg-white/5 hover:text-red-500'
