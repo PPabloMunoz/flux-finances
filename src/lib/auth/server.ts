@@ -2,6 +2,7 @@ import { checkout, polar, portal, webhooks } from '@polar-sh/better-auth'
 import { Polar } from '@polar-sh/sdk'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { twoFactor } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { createSubscription, deleteSubscription } from '@/features/subscription/actions'
 import { db } from '@/lib/db'
@@ -59,7 +60,9 @@ export const auth = betterAuth({
       clientSecret: githubClientSecret ?? '',
     },
   },
+  appName: 'Flux Finances',
   plugins: [
+    twoFactor(),
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,
