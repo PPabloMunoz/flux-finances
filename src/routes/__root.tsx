@@ -1,11 +1,8 @@
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import BodyProvider from '@/components/body-provider'
 import { Toaster } from '@/components/ui/sonner'
-import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
 import { ThemeProvider } from '@/lib/theme-provider'
 import appCss from '../styles.css?url'
@@ -51,20 +48,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <NuqsAdapter>
             <BodyProvider>
               <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
-
               {children}
-
               <QuickActionsModal />
-              <NewAccountModal />
-
               <Toaster />
               <Scripts />
-              {import.meta.env.DEV && (
-                <TanStackDevtools
-                  config={{ position: 'bottom-right' }}
-                  plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
-                />
-              )}
             </BodyProvider>
           </NuqsAdapter>
         </html>
