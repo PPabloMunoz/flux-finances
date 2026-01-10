@@ -63,7 +63,7 @@ export const auth = betterAuth({
   },
   appName: 'Flux Finances',
   plugins: [
-    twoFactor(),
+    twoFactor({ issuer: 'Flux Finances' }),
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,

@@ -36,7 +36,7 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
-      const { error, data } = await authClient.signIn.email({
+      const { error } = await authClient.signIn.email({
         email: value.email,
         password: value.password,
       })
@@ -45,10 +45,6 @@ function RouteComponent() {
       if (error) {
         toast.error(error.message)
       } else {
-        if ('twoFactorRedirect' in data) {
-          navigate({ to: '/auth/two-factor' })
-          return
-        }
         navigate({ to: '/' })
       }
     },
