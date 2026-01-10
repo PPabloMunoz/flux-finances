@@ -11,8 +11,12 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/auth/client'
 
-const TwoFactorVerifySchema = z.object({
+const TotpVerifySchema = z.object({
   code: z.string().length(6, 'Code must be 6 digits'),
+})
+
+const BackupCodeVerifySchema = z.object({
+  code: z.string().min(1, 'Backup code is required'),
 })
 
 export const Route = createFileRoute('/auth/two-factor')({
@@ -21,13 +25,14 @@ export const Route = createFileRoute('/auth/two-factor')({
 
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
+  const [verificationMethod, setVerificationMethod] = useState<'totp' | 'backup'>('totp')
   const navigate = useNavigate()
 
-  const form = useForm({
+  const totpForm = useForm({
     defaultValues: {
       code: '',
     },
-    validators: { onChange: TwoFactorVerifySchema },
+    validators: { onChange: TotpVerifySchema },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
       const { error } = await authClient.twoFactor.verifyTotp({
@@ -37,7 +42,29 @@ function RouteComponent() {
       setIsLoading(false)
 
       if (error) {
-        toast.error(`Invalid code: ${error.message}`)
+        toast.error('Invalid authentication code')
+        return
+      }
+
+      toast.success('Verified successfully')
+      navigate({ to: '/' })
+    },
+  })
+
+  const backupCodeForm = useForm({
+    defaultValues: {
+      code: '',
+    },
+    validators: { onChange: BackupCodeVerifySchema },
+    onSubmit: async ({ value }) => {
+      setIsLoading(true)
+      const { error } = await authClient.twoFactor.verifyBackupCode({
+        code: value.code,
+      })
+      setIsLoading(false)
+
+      if (error) {
+        toast.error('Invalid backup code')
         return
       }
 
@@ -55,45 +82,107 @@ function RouteComponent() {
               <HugeiconsIcon className='size-6' icon={Shield02Icon} />
             </div>
             <CardTitle className='text-xl'>Two-Factor Authentication</CardTitle>
-            <CardDescription>Enter the code from your authenticator app</CardDescription>
+            <CardDescription>
+              {verificationMethod === 'totp'
+                ? 'Enter the code from your authenticator app'
+                : 'Enter one of your backup codes'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                form.handleSubmit(e)
-              }}
-            >
-              <div className='flex flex-col gap-6'>
-                <form.Field name='code'>
-                  {(field) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>Authentication Code</FieldLabel>
-                      <Input
-                        autoComplete='one-time-code'
-                        className='text-center'
-                        disabled={isLoading}
-                        id={field.name}
-                        inputMode='numeric'
-                        name={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder='000000'
-                        required
-                        value={field.state.value}
-                      />
-                      {field.state.meta.errors.length > 0 && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  )}
-                </form.Field>
+            {verificationMethod === 'totp' ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  totpForm.handleSubmit(e)
+                }}
+              >
+                <div className='flex flex-col gap-6'>
+                  <totpForm.Field name='code'>
+                    {(field) => (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>Authentication Code</FieldLabel>
+                        <Input
+                          autoComplete='one-time-code'
+                          className='text-center'
+                          disabled={isLoading}
+                          id={field.name}
+                          inputMode='numeric'
+                          name={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder='000000'
+                          required
+                          value={field.state.value}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )}
+                  </totpForm.Field>
 
-                <Button disabled={isLoading} type='submit'>
-                  {isLoading ? 'Verifying...' : 'Verify'}
-                </Button>
-              </div>
-            </form>
+                  <Button disabled={isLoading} type='submit'>
+                    {isLoading ? 'Verifying...' : 'Verify'}
+                  </Button>
+
+                  <Button
+                    className='text-muted-foreground'
+                    disabled={isLoading}
+                    onClick={() => setVerificationMethod('backup')}
+                    type='button'
+                    variant='link'
+                  >
+                    Use a backup code instead
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  backupCodeForm.handleSubmit(e)
+                }}
+              >
+                <div className='flex flex-col gap-6'>
+                  <backupCodeForm.Field name='code'>
+                    {(field) => (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>Backup Code</FieldLabel>
+                        <Input
+                          autoComplete='off'
+                          className='text-center font-mono uppercase'
+                          disabled={isLoading}
+                          id={field.name}
+                          name={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value.toUpperCase())}
+                          placeholder='XXXXXXXX'
+                          required
+                          value={field.state.value}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    )}
+                  </backupCodeForm.Field>
+
+                  <Button disabled={isLoading} type='submit'>
+                    {isLoading ? 'Verifying...' : 'Verify'}
+                  </Button>
+
+                  <Button
+                    className='text-muted-foreground'
+                    disabled={isLoading}
+                    onClick={() => setVerificationMethod('totp')}
+                    type='button'
+                    variant='link'
+                  >
+                    Use authenticator code instead
+                  </Button>
+                </div>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
