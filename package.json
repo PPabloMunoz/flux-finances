@@ -9,7 +9,7 @@
     "preview": "bun --bun vite preview --port 3001",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "check": "biome check . && biome format --write .",
+    "check": "biome check --write . && tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

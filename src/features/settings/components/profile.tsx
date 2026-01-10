@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { deleteAccountAction } from '@/features/auth/actions'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
-import { deleteAccountAction } from '@/features/auth/actions'
 
 const PersonalInfoValidator = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters long'),
@@ -148,7 +148,7 @@ export default function ProfileSettings() {
               Once you delete your account, there is no going back. All your data, transactions, and
               settings will be permanently removed.
             </p>
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <Dialog onOpenChange={setIsDeleteDialogOpen} open={isDeleteDialogOpen}>
               <DialogTrigger>
                 <Button className='mt-3' size='sm' variant='destructive'>
                   Delete Account

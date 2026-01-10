@@ -18,7 +18,6 @@ import { Switch } from '@/components/ui/switch'
 import { updateUserPreferencesAction } from '@/features/auth/actions'
 import { UpdateUserPreferencesSchema } from '@/features/auth/schema'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
-import { useTheme } from '@/lib/theme-provider'
 import {
   type COUNTRY_CODES,
   CURRENCY_CODES,
@@ -28,6 +27,7 @@ import {
   SORTED_TIMEZONES,
   type TIMEZONE_CODES,
 } from '@/lib/constants'
+import { useTheme } from '@/lib/theme-provider'
 
 export default function PreferencesSettings() {
   const [isLoading, setIsLoading] = useState(false)

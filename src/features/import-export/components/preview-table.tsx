@@ -57,7 +57,7 @@ export default function PreviewTable({ data, errors }: PreviewTableProps) {
                     ? 'bg-red-500/[0.02] hover:bg-red-500/[0.04]'
                     : 'hover:bg-neutral-900/40'
                 )}
-                key={`preview-row-${idx}`}
+                key={`preview-row-${row}`}
               >
                 <td className='px-4 py-2.5 font-medium text-[10px] text-neutral-500'>{idx + 1}</td>
                 {headers.map((header) => (

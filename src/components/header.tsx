@@ -20,9 +20,9 @@ import NewBudgetModal from '@/features/budgets/components/new-budget-modal'
 import { quickActionsDialogHandle } from '@/features/general/quick-actions-modal'
 import { exportDialogHandle, ImportModal, importDialogHandle } from '@/features/import-export'
 import ExportModal from '@/features/import-export/components/export-modal'
+import { NewTransferModal } from '@/features/transactions'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
 import { authClient } from '@/lib/auth/client'
-import { NewTransferModal } from '@/features/transactions'
 
 export default function AppHeader() {
   const [isMounted, setIsMounted] = useState(false)

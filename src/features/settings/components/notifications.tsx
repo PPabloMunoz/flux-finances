@@ -1,11 +1,11 @@
 import { Alert02Icon, Mail02Icon, Wallet02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { updateNotificationPreferencesAction } from '@/features/auth/actions'
 import { useUserPreferences } from '@/hooks/use-user-preferences'
-import { useQueryClient } from '@tanstack/react-query'
 
 export default function NotificationsSettings() {
   const { data: userPreferences, isPending } = useUserPreferences()

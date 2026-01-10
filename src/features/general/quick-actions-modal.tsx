@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/dialog'
 import { newAccountDialogHandle } from '../accounts/components/new-account-modal'
 import { newBudgetDialogHandle } from '../budgets/components/new-budget-modal'
-import { newTransactionModalHandle } from '../transactions/components/new-transaction-modal'
 import { newTransferModalHandle } from '../transactions'
+import { newTransactionModalHandle } from '../transactions/components/new-transaction-modal'
 
 export const quickActionsDialogHandle = BaseUIDialog.createHandle()
 

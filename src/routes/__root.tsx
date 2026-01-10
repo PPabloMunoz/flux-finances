@@ -3,12 +3,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
+import BodyProvider from '@/components/body-provider'
 import { Toaster } from '@/components/ui/sonner'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
 import { ThemeProvider } from '@/lib/theme-provider'
 import appCss from '../styles.css?url'
-import BodyProvider from '@/components/body-provider'
 
 export const Route = createRootRoute({
   head: () => ({

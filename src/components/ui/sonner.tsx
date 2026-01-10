@@ -6,9 +6,9 @@ import {
   MultiplicationSignCircleIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useTheme } from '@/lib/theme-provider'
 import type { ToasterProps } from 'sonner'
 import { Toaster as Sonner } from 'sonner'
+import { useTheme } from '@/lib/theme-provider'
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { resolvedTheme } = useTheme()
