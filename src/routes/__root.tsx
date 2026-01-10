@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import { Toaster } from '@/components/ui/sonner'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
+import { ThemeProvider } from '@/lib/theme-provider'
 import appCss from '../styles.css?url'
 import BodyProvider from '@/components/body-provider'
 
@@ -42,30 +43,32 @@ const queryClient = new QueryClient()
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <html lang='en'>
-        <head>
-          <HeadContent />
-        </head>
-        <NuqsAdapter>
-          <BodyProvider>
-            <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
+      <ThemeProvider>
+        <html lang='en'>
+          <head>
+            <HeadContent />
+          </head>
+          <NuqsAdapter>
+            <BodyProvider>
+              <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
 
-            {children}
+              {children}
 
-            <QuickActionsModal />
-            <NewAccountModal />
+              <QuickActionsModal />
+              <NewAccountModal />
 
-            <Toaster />
-            <Scripts />
-            {import.meta.env.DEV && (
-              <TanStackDevtools
-                config={{ position: 'bottom-right' }}
-                plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
-              />
-            )}
-          </BodyProvider>
-        </NuqsAdapter>
-      </html>
+              <Toaster />
+              <Scripts />
+              {import.meta.env.DEV && (
+                <TanStackDevtools
+                  config={{ position: 'bottom-right' }}
+                  plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
+                />
+              )}
+            </BodyProvider>
+          </NuqsAdapter>
+        </html>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
