@@ -16,6 +16,7 @@ import { Route as SubIndexRouteImport } from './routes/sub/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as BudgetsIndexRouteImport } from './routes/budgets/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
+import { Route as AuthTwoFactorRouteImport } from './routes/auth/two-factor'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
@@ -58,6 +59,11 @@ const AccountsIndexRoute = AccountsIndexRouteImport.update({
   path: '/accounts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthTwoFactorRoute = AuthTwoFactorRouteImport.update({
+  id: '/auth/two-factor',
+  path: '/auth/two-factor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/auth/signup',
   path: '/auth/signup',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
   '/settings': typeof SettingsIndexRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
   '/settings': typeof SettingsIndexRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/auth/logout': typeof AuthLogoutRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts/': typeof AccountsIndexRoute
   '/budgets/': typeof BudgetsIndexRoute
   '/settings/': typeof SettingsIndexRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/reset-password'
     | '/auth/signup'
+    | '/auth/two-factor'
     | '/accounts'
     | '/budgets'
     | '/settings'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/reset-password'
     | '/auth/signup'
+    | '/auth/two-factor'
     | '/accounts'
     | '/budgets'
     | '/settings'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/auth/reset-password'
     | '/auth/signup'
+    | '/auth/two-factor'
     | '/accounts/'
     | '/budgets/'
     | '/settings/'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthTwoFactorRoute: typeof AuthTwoFactorRoute
   AccountsIndexRoute: typeof AccountsIndexRoute
   BudgetsIndexRoute: typeof BudgetsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/two-factor': {
+      id: '/auth/two-factor'
+      path: '/auth/two-factor'
+      fullPath: '/auth/two-factor'
+      preLoaderRoute: typeof AuthTwoFactorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/signup': {
       id: '/auth/signup'
       path: '/auth/signup'
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLogoutRoute: AuthLogoutRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthTwoFactorRoute: AuthTwoFactorRoute,
   AccountsIndexRoute: AccountsIndexRoute,
   BudgetsIndexRoute: BudgetsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,

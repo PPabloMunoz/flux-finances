@@ -64,3 +64,30 @@ export const UpdateNotificationPreferencesSchema = z.object({
   budgetAlerts: z.boolean(),
   transactionReminders: z.boolean(),
 })
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(6),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+  })
+
+export const TwoFactorEnableSchema = z.object({
+  password: z.string().min(1, 'Password is required'),
+})
+
+export const TwoFactorVerifySchema = z.object({
+  code: z.string().length(6, 'Code must be 6 digits'),
+  trustDevice: z.boolean().optional(),
+})
+
+export const TwoFactorDisableSchema = z.object({
+  password: z.string().min(1, 'Password is required'),
+})
+
+export const TwoFactorGenerateBackupCodesSchema = z.object({
+  password: z.string().min(1, 'Password is required'),
+})

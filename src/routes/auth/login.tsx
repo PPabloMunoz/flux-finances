@@ -36,7 +36,7 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
-      const { error } = await authClient.signIn.email({
+      const { error, data } = await authClient.signIn.email({
         email: value.email,
         password: value.password,
       })
@@ -45,17 +45,35 @@ function RouteComponent() {
       if (error) {
         toast.error(error.message)
       } else {
+        if ('twoFactorRedirect' in data) {
+          navigate({ to: '/auth/two-factor' })
+          return
+        }
         navigate({ to: '/' })
       }
     },
   })
 
   async function handleGoogleLogin() {
-    await authClient.signIn.social({ provider: 'google' })
+    const { error } = await authClient.signIn.social({ provider: 'google' })
+    if (error) {
+      if (error.message === '2FA_REDIRECT' || error.status === 2) {
+        navigate({ to: '/auth/two-factor' })
+      } else {
+        toast.error(error.message)
+      }
+    }
   }
 
   async function handleGithubLogin() {
-    await authClient.signIn.social({ provider: 'github' })
+    const { error } = await authClient.signIn.social({ provider: 'github' })
+    if (error) {
+      if (error.message === '2FA_REDIRECT' || error.status === 2) {
+        navigate({ to: '/auth/two-factor' })
+      } else {
+        toast.error(error.message)
+      }
+    }
   }
 
   return (
