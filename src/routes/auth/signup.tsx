@@ -28,6 +28,7 @@ export const Route = createFileRoute('/auth/signup')({
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const IS_CLOUD = import.meta.env.VITE_PUBLIC_IS_CLOUD === 'true'
 
   const form = useForm({
     defaultValues: {
@@ -98,116 +99,121 @@ function RouteComponent() {
                       Sign up with Google
                     </Button>
                   </Field>
+                  {!IS_CLOUD && (
+                    <>
+                      <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+                        Or continue with
+                      </FieldSeparator>
 
-                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
-                    Or continue with
-                  </FieldSeparator>
-
-                  <FieldGroup className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                    <form.Field name='firstName'>
-                      {(field) => {
-                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                        return (
-                          <Field>
-                            <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
-                            <Input
-                              disabled={isLoading}
-                              name={field.name}
-                              onBlur={field.handleBlur}
-                              onChange={(e) => field.handleChange(e.target.value)}
-                              placeholder='John'
-                              required
-                              type='text'
-                              value={field.state.value}
-                            />
-                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                          </Field>
-                        )
-                      }}
-                    </form.Field>
-                    <form.Field name='lastName'>
-                      {(field) => {
-                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                        return (
-                          <Field>
-                            <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
-                            <Input
-                              disabled={isLoading}
-                              name={field.name}
-                              onBlur={field.handleBlur}
-                              onChange={(e) => field.handleChange(e.target.value)}
-                              placeholder='Doe'
-                              required
-                              type='text'
-                              value={field.state.value}
-                            />
-                            {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                          </Field>
-                        )
-                      }}
-                    </form.Field>
-                  </FieldGroup>
-                  <form.Field name='email'>
-                    {(field) => {
-                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field>
-                          <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                          <Input
-                            disabled={isLoading}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            placeholder='m@example.com'
-                            required
-                            type='email'
-                            value={field.state.value}
-                          />
-                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                        </Field>
-                      )
-                    }}
-                  </form.Field>
-                  <form.Field name='password'>
-                    {(field) => {
-                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field>
-                          <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                          <Input
-                            disabled={isLoading}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            required
-                            type='password'
-                            value={field.state.value}
-                          />
-                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                        </Field>
-                      )
-                    }}
-                  </form.Field>
-                  <form.Field name='confirmPassword'>
-                    {(field) => {
-                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field>
-                          <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
-                          <Input
-                            disabled={isLoading}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            required
-                            type='password'
-                            value={field.state.value}
-                          />
-                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                        </Field>
-                      )
-                    }}
-                  </form.Field>
+                      <FieldGroup className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                        <form.Field name='firstName'>
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched && !field.state.meta.isValid
+                            return (
+                              <Field>
+                                <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                                <Input
+                                  disabled={isLoading}
+                                  name={field.name}
+                                  onBlur={field.handleBlur}
+                                  onChange={(e) => field.handleChange(e.target.value)}
+                                  placeholder='John'
+                                  required
+                                  type='text'
+                                  value={field.state.value}
+                                />
+                                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                              </Field>
+                            )
+                          }}
+                        </form.Field>
+                        <form.Field name='lastName'>
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched && !field.state.meta.isValid
+                            return (
+                              <Field>
+                                <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
+                                <Input
+                                  disabled={isLoading}
+                                  name={field.name}
+                                  onBlur={field.handleBlur}
+                                  onChange={(e) => field.handleChange(e.target.value)}
+                                  placeholder='Doe'
+                                  required
+                                  type='text'
+                                  value={field.state.value}
+                                />
+                                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                              </Field>
+                            )
+                          }}
+                        </form.Field>
+                      </FieldGroup>
+                      <form.Field name='email'>
+                        {(field) => {
+                          const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                          return (
+                            <Field>
+                              <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                              <Input
+                                disabled={isLoading}
+                                name={field.name}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                placeholder='m@example.com'
+                                required
+                                type='email'
+                                value={field.state.value}
+                              />
+                              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                          )
+                        }}
+                      </form.Field>
+                      <form.Field name='password'>
+                        {(field) => {
+                          const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                          return (
+                            <Field>
+                              <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                              <Input
+                                disabled={isLoading}
+                                name={field.name}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                required
+                                type='password'
+                                value={field.state.value}
+                              />
+                              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                          )
+                        }}
+                      </form.Field>
+                      <form.Field name='confirmPassword'>
+                        {(field) => {
+                          const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                          return (
+                            <Field>
+                              <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
+                              <Input
+                                disabled={isLoading}
+                                name={field.name}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                required
+                                type='password'
+                                value={field.state.value}
+                              />
+                              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                          )
+                        }}
+                      </form.Field>
+                    </>
+                  )}
 
                   <Field>
                     <Button type='submit'>Sign up</Button>

@@ -7,6 +7,7 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { createSubscription, deleteSubscription } from '@/features/subscription/actions'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
+import { IS_CLOUD } from '../constants'
 
 const {
   GOOGLE_CLIENT_ID: googleClientId,
@@ -30,7 +31,7 @@ export const auth = betterAuth({
     },
   }),
   emailAndPassword: {
-    enabled: true,
+    enabled: !IS_CLOUD,
     sendResetPassword: async ({ user, url, token }, _request) => {
       console.log(`Simulatting sending email to ${user.email}...`)
       console.log(`URL sended: ${url}`)

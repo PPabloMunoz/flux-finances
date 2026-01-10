@@ -12,7 +12,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Flux Finances — Personal Finance for the Modern Era' },
+      // { title: 'Flux Finances — Personal Finance for the Modern Era' },
+      { title: 'Flux Finances' },
       {
         description:
           'A private, lightning-fast personal finance platform built with TanStack Start. Inspired by Maybe, Flux provides a type-safe and self-hostable way to manage your entire financial life.',

@@ -27,6 +27,7 @@ export const Route = createFileRoute('/auth/login')({
 function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const IS_CLOUD = import.meta.env.VITE_PUBLIC_IS_CLOUD === 'true'
 
   const form = useForm({
     defaultValues: {
@@ -90,58 +91,62 @@ function RouteComponent() {
                       Login with Google
                     </Button>
                   </Field>
-                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
-                    Or continue with
-                  </FieldSeparator>
-                  <form.Field name='email'>
-                    {(field) => {
-                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field>
-                          <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                          <Input
-                            disabled={isLoading}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            placeholder='m@example.com'
-                            required
-                            type='email'
-                            value={field.state.value}
-                          />
-                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                        </Field>
-                      )
-                    }}
-                  </form.Field>
-                  <form.Field name='password'>
-                    {(field) => {
-                      const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
-                      return (
-                        <Field>
-                          <div className='flex items-center'>
-                            <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                            <Link
-                              className='ml-auto text-xs underline-offset-4 hover:underline'
-                              to='/auth/forgot-password'
-                            >
-                              Forgot your password?
-                            </Link>
-                          </div>
-                          <Input
-                            disabled={isLoading}
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            required
-                            type='password'
-                            value={field.state.value}
-                          />
-                          {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                        </Field>
-                      )
-                    }}
-                  </form.Field>
+                  {!IS_CLOUD && (
+                    <>
+                      <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+                        Or continue with
+                      </FieldSeparator>
+                      <form.Field name='email'>
+                        {(field) => {
+                          const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                          return (
+                            <Field>
+                              <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                              <Input
+                                disabled={isLoading}
+                                name={field.name}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                placeholder='m@example.com'
+                                required
+                                type='email'
+                                value={field.state.value}
+                              />
+                              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                          )
+                        }}
+                      </form.Field>
+                      <form.Field name='password'>
+                        {(field) => {
+                          const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                          return (
+                            <Field>
+                              <div className='flex items-center'>
+                                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                                <Link
+                                  className='ml-auto text-xs underline-offset-4 hover:underline'
+                                  to='/auth/forgot-password'
+                                >
+                                  Forgot your password?
+                                </Link>
+                              </div>
+                              <Input
+                                disabled={isLoading}
+                                name={field.name}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                required
+                                type='password'
+                                value={field.state.value}
+                              />
+                              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                            </Field>
+                          )
+                        }}
+                      </form.Field>
+                    </>
+                  )}
                   <Field>
                     <Button type='submit'>Login</Button>
                     <FieldDescription className='text-center'>

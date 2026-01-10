@@ -9,7 +9,7 @@ import {
 import type { IconSvgElement } from '@hugeicons/react'
 import { accountTypeEnum, categoryTypeEnum, transactionTypeEnum } from '@/lib/db/schema'
 
-export const IS_CLOUD = process.env.IS_CLOUD === 'true'
+export const IS_CLOUD = process.env.VITE_PUBLIC_IS_CLOUD === 'true'
 
 export const CURRENCY_CODES = [
   'USD',
