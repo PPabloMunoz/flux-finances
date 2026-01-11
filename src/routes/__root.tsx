@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import BodyProvider from '@/components/body-provider'
+import ErrorPage from '@/components/error-page'
+import NotFoundPage from '@/components/not-found-page'
 import { Toaster } from '@/components/ui/sonner'
 import QuickActionsModal from '@/features/general/quick-actions-modal'
 import { ThemeProvider } from '@/lib/theme-provider'
@@ -22,18 +24,8 @@ export const Route = createRootRoute({
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
-  errorComponent: ({ error }) => (
-    <div className='p-10'>
-      <h1>Root Error Template</h1>
-      <pre>{String(error)}</pre>
-    </div>
-  ),
-  notFoundComponent: () => (
-    <div className='p-10'>
-      <h1>404 - Not Found</h1>
-      <p>The page you are looking for does not exist.</p>
-    </div>
-  ),
+  errorComponent: ErrorPage,
+  notFoundComponent: NotFoundPage,
 })
 
 const queryClient = new QueryClient()
