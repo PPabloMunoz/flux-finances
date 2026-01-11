@@ -35,47 +35,66 @@ function RouteComponent() {
       password: '',
     },
     onSubmit: async ({ value }) => {
-      setIsLoading(true)
-      const { error } = await authClient.signIn.email({
-        email: value.email,
-        password: value.password,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error(error.message)
-      } else {
-        navigate({ to: '/' })
-      }
+      await authClient.signIn.email(
+        {
+          email: value.email,
+          password: value.password,
+        },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: ({ error }) => {
+            toast.error(error.message)
+          },
+          onSuccess: () => {
+            toast.success('Successfully logged in')
+            navigate({ to: '/' })
+          },
+        }
+      )
     },
   })
 
   async function handleGoogleLogin() {
-    const { error } = await authClient.signIn.social({ provider: 'google' })
-    if (error) {
-      if (error.message === '2FA_REDIRECT' || error.status === 2) {
-        navigate({ to: '/auth/two-factor' })
-      } else {
-        toast.error(error.message)
+    await authClient.signIn.social(
+      { provider: 'google' },
+      {
+        onRequest: () => setIsLoading(true),
+        onResponse: () => setIsLoading(false),
+        onError: ({ error }) => {
+          toast.error(error.message)
+        },
+        onSuccess: () => {
+          toast.success('Redirecting...')
+        },
       }
-    }
+    )
   }
 
   async function handleGithubLogin() {
-    const { error } = await authClient.signIn.social({ provider: 'github' })
-    if (error) {
-      if (error.message === '2FA_REDIRECT' || error.status === 2) {
-        navigate({ to: '/auth/two-factor' })
-      } else {
-        toast.error(error.message)
+    await authClient.signIn.social(
+      { provider: 'github' },
+      {
+        onRequest: () => setIsLoading(true),
+        onResponse: () => setIsLoading(false),
+        onError: ({ error }) => {
+          toast.error(error.message)
+        },
+        onSuccess: () => {
+          toast.success('Redirecting...')
+        },
       }
-    }
+    )
   }
 
   return (
     <div className='flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
       <div className='flex w-full max-w-sm flex-col gap-6'>
-        <Link className='flex items-center gap-2 self-center font-medium' to='/'>
+        <Link
+          className='flex items-center gap-2 self-center font-medium'
+          disabled={isLoading}
+          to='/'
+        >
           <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
             <HugeiconsIcon className='size-4' icon={Dollar02Icon} />
           </div>
@@ -140,6 +159,7 @@ function RouteComponent() {
                                 <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                                 <Link
                                   className='ml-auto text-xs underline-offset-4 hover:underline'
+                                  tabIndex={-1}
                                   to='/auth/forgot-password'
                                 >
                                   Forgot your password?
@@ -162,9 +182,14 @@ function RouteComponent() {
                     </>
                   )}
                   <Field>
-                    <Button type='submit'>Login</Button>
+                    <Button disabled={isLoading} type='submit'>
+                      Login
+                    </Button>
                     <FieldDescription className='text-center'>
-                      Don&apos;t have an account? <Link to='/auth/signup'>Sign up</Link>
+                      Don&apos;t have an account?{' '}
+                      <Link disabled={isLoading} to='/auth/signup'>
+                        Sign up
+                      </Link>
                     </FieldDescription>
                   </Field>
                 </FieldGroup>

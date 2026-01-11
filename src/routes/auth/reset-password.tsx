@@ -30,29 +30,32 @@ function RouteComponent() {
       password: '',
       confirmPassword: '',
     },
-    validators: {
-      onChange: ResetPasswordSchema,
-    },
+    validators: { onChange: ResetPasswordSchema },
     onSubmit: async ({ value }) => {
-      setIsLoading(true)
-      const { error } = await authClient.resetPassword({
-        newPassword: value.password,
-        token,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error('Ha ocurrido un error al cambiar la contraseña. Intentalo de nuevo')
-      } else {
-        toast.success('Contraseña cambiada con éxito')
-        navigate({ to: '/' })
-      }
+      await authClient.resetPassword(
+        { newPassword: value.password, token },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: ({ error }) => {
+            toast.error(error.message)
+          },
+          onSuccess: () => {
+            toast.success('Password changed successfully')
+            navigate({ to: '/' })
+          },
+        }
+      )
     },
   })
   return (
     <div className='flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
       <div className='flex w-full max-w-sm flex-col gap-6'>
-        <Link className='flex items-center gap-2 self-center font-medium' to='/'>
+        <Link
+          className='flex items-center gap-2 self-center font-medium'
+          disabled={isLoading}
+          to='/'
+        >
           <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
             <HugeiconsIcon className='size-4' icon={Dollar02Icon} />
           </div>
@@ -115,7 +118,9 @@ function RouteComponent() {
                     }}
                   </form.Field>
                   <Field>
-                    <Button type='submit'>{isLoading ? 'Sending...' : 'Send reset link'}</Button>
+                    <Button disabled={isLoading} type='submit'>
+                      {isLoading ? 'Sending...' : 'Send reset link'}
+                    </Button>
                   </Field>
                 </FieldGroup>
               </form>

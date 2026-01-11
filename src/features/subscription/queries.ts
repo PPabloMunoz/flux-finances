@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
+import { IS_CLOUD } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
@@ -6,6 +7,8 @@ import { functionAuthMiddleware } from '@/middleware/auth'
 export const getUserSubscriptionStatus = createServerFn({ method: 'GET' })
   .middleware([functionAuthMiddleware])
   .handler(async ({ context }) => {
+    if (!IS_CLOUD) return true
+
     const userId = context.session?.user.id
     try {
       if (!userId) throw new Error('Unauthorized')

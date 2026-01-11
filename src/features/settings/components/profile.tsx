@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { deleteAccountAction } from '@/features/auth/actions'
 import {
   ChangePasswordSchema,
   TwoFactorDisableSchema,
@@ -35,6 +34,8 @@ const PersonalInfoValidator = z.object({
 
 export default function ProfileSettings() {
   const { data: currentSession, error } = authClient.useSession()
+  const [isLoading, setIsLoading] = useState(false)
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
@@ -64,9 +65,19 @@ export default function ProfileSettings() {
     validators: { onChange: PersonalInfoValidator },
     onSubmit: async ({ value }) => {
       if (value.fullName === currentSession?.user.name) return toast.info('No changes detected')
-      const { error } = await authClient.updateUser({ name: value.fullName })
-      if (error) toast.error(`Error updating profile: ${error.message}`)
-      else toast.success('Profile updated successfully')
+      await authClient.updateUser(
+        { name: value.fullName },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: ({ error }) => {
+            toast.error(`Error updating profile: ${error.message}`)
+          },
+          onSuccess: () => {
+            toast.success('Profile updated successfully')
+          },
+        }
+      )
     },
   })
 
@@ -78,20 +89,21 @@ export default function ProfileSettings() {
     },
     validators: { onChange: ChangePasswordSchema },
     onSubmit: async ({ value }) => {
-      setIsChangingPassword(true)
-      const { error } = await authClient.changePassword({
-        currentPassword: value.currentPassword,
-        newPassword: value.newPassword,
-      })
-      setIsChangingPassword(false)
-
-      if (error) {
-        toast.error(`Error changing password: ${error.message}`)
-      } else {
-        toast.success('Password changed successfully')
-        setIsPasswordDialogOpen(false)
-        passwordForm.reset()
-      }
+      await authClient.changePassword(
+        { currentPassword: value.currentPassword, newPassword: value.newPassword },
+        {
+          onRequest: () => setIsChangingPassword(true),
+          onResponse: () => setIsChangingPassword(false),
+          onError: ({ error }) => {
+            toast.error(`Error changing password: ${error.message}`)
+          },
+          onSuccess: () => {
+            toast.success('Password changed successfully')
+            setIsPasswordDialogOpen(false)
+            passwordForm.reset()
+          },
+        }
+      )
     },
   })
 
@@ -99,24 +111,25 @@ export default function ProfileSettings() {
     defaultValues: { password: '' },
     validators: { onChange: TwoFactorEnableSchema },
     onSubmit: async ({ value }) => {
-      setIsEnablingTwoFactor(true)
-      const { data, error } = await authClient.twoFactor.enable({
-        password: value.password,
-      })
-      setIsEnablingTwoFactor(false)
-
-      if (error) {
-        toast.error(`Error enabling 2FA: ${error.message}`)
-        return
-      }
-
-      if (data) {
-        setTotpUri(data.totpURI)
-        const secretMatch = data.totpURI.match(/secret=([^&]+)/)
-        setTotpSecret(secretMatch ? secretMatch[1] : '')
-        setBackupCodes(data.backupCodes)
-        setTwoFactorStep('setup')
-      }
+      await authClient.twoFactor.enable(
+        { password: value.password },
+        {
+          onRequest: () => setIsEnablingTwoFactor(true),
+          onResponse: () => setIsEnablingTwoFactor(false),
+          onError: ({ error }) => {
+            toast.error(`Error enabling 2FA: ${error.message}`)
+          },
+          onSuccess: ({ data }) => {
+            if (data) {
+              setTotpUri(data.totpURI)
+              const secretMatch = data.totpURI.match(/secret=([^&]+)/)
+              setTotpSecret(secretMatch ? secretMatch[1] : '')
+              setBackupCodes(data.backupCodes)
+              setTwoFactorStep('setup')
+            }
+          },
+        }
+      )
     },
   })
 
@@ -124,21 +137,21 @@ export default function ProfileSettings() {
     defaultValues: { code: '' },
     validators: { onChange: TwoFactorVerifySchema },
     onSubmit: async ({ value }) => {
-      setIsEnablingTwoFactor(true)
-      const { error } = await authClient.twoFactor.verifyTotp({
-        code: value.code,
-        trustDevice: false,
-      })
-      setIsEnablingTwoFactor(false)
-
-      if (error) {
-        toast.error(`Invalid code: ${error.message}`)
-        return
-      }
-
-      toast.success('Two-factor authentication enabled successfully')
-      setTwoFactorStep('success')
-      verifyTwoFactorForm.reset()
+      await authClient.twoFactor.verifyTotp(
+        { code: value.code },
+        {
+          onRequest: () => setIsEnablingTwoFactor(true),
+          onResponse: () => setIsEnablingTwoFactor(false),
+          onError: ({ error }) => {
+            toast.error(`Error verifying 2FA code: ${error.message}`)
+          },
+          onSuccess: () => {
+            toast.success('Two-factor authentication enabled successfully')
+            setTwoFactorStep('success')
+            verifyTwoFactorForm.reset()
+          },
+        }
+      )
     },
   })
 
@@ -146,20 +159,21 @@ export default function ProfileSettings() {
     defaultValues: { password: '' },
     validators: { onChange: TwoFactorDisableSchema },
     onSubmit: async ({ value }) => {
-      setIsDisablingTwoFactor(true)
-      const { error } = await authClient.twoFactor.disable({
-        password: value.password,
-      })
-      setIsDisablingTwoFactor(false)
-
-      if (error) {
-        toast.error(`Error disabling 2FA: ${error.message}`)
-        return
-      }
-
-      toast.success('Two-factor authentication disabled')
-      setIsDisableTwoFactorDialogOpen(false)
-      disableTwoFactorForm.reset()
+      await authClient.twoFactor.disable(
+        { password: value.password },
+        {
+          onRequest: () => setIsDisablingTwoFactor(true),
+          onResponse: () => setIsDisablingTwoFactor(false),
+          onError: ({ error }) => {
+            toast.error(`Error disabling 2FA: ${error.message}`)
+          },
+          onSuccess: () => {
+            toast.success('Two-factor authentication disabled')
+            setIsDisableTwoFactorDialogOpen(false)
+            disableTwoFactorForm.reset()
+          },
+        }
+      )
     },
   })
 
@@ -167,20 +181,21 @@ export default function ProfileSettings() {
     defaultValues: { password: '' },
     validators: { onChange: TwoFactorGenerateBackupCodesSchema },
     onSubmit: async ({ value }) => {
-      setIsGeneratingBackupCodes(true)
-      const { data, error } = await authClient.twoFactor.generateBackupCodes({
-        password: value.password,
-      })
-      setIsGeneratingBackupCodes(false)
-
-      if (error) {
-        toast.error(`Error generating backup codes: ${error.message}`)
-        return
-      }
-
-      if (data) {
-        setNewBackupCodes(data.backupCodes)
-      }
+      await authClient.twoFactor.generateBackupCodes(
+        { password: value.password },
+        {
+          onRequest: () => setIsGeneratingBackupCodes(true),
+          onResponse: () => setIsGeneratingBackupCodes(false),
+          onError: ({ error }) => {
+            toast.error(`Error generating backup codes: ${error.message}`)
+          },
+          onSuccess: (data) => {
+            if ('backupCodes' in data) {
+              setNewBackupCodes(data.backupCodes as string[])
+            }
+          },
+        }
+      )
     },
   })
 
@@ -190,20 +205,23 @@ export default function ProfileSettings() {
       return
     }
 
-    setIsDeleting(true)
-    const res = await deleteAccountAction()
-    setIsDeleting(false)
-
-    if (!res.ok) {
-      toast.error(res.error)
-    } else {
-      console.log('[DELETE_ACCOUNT] Account deletion initiated')
-      toast.success(
-        'Account deletion initiated. This is a placeholder - full deletion requires backend implementation.'
-      )
-      setIsDeleteDialogOpen(false)
-      setDeleteConfirmation('')
-    }
+    await authClient.deleteUser(
+      { password: '' },
+      {
+        onRequest: () => setIsDeleting(true),
+        onResponse: () => setIsDeleting(false),
+        onError: ({ error }) => {
+          toast.error(`Error deleting account: ${error.message}`)
+        },
+        onSuccess: () => {
+          toast.success(
+            'Account deletion initiated. This is a placeholder - full deletion requires backend implementation.'
+          )
+          setIsDeleteDialogOpen(false)
+          setDeleteConfirmation('')
+        },
+      }
+    )
   }
 
   const downloadBackupCodes = (codes: string[], filename: string) => {
@@ -274,7 +292,7 @@ export default function ProfileSettings() {
                         '',
                         error || (!currentSession && 'cursor-not-allowed opacity-50')
                       )}
-                      disabled={!!error || !currentSession}
+                      disabled={!!error || !currentSession || isLoading}
                       id={field.name}
                       name={field.name}
                       onBlur={field.handleBlur}
@@ -292,13 +310,13 @@ export default function ProfileSettings() {
 
             <div className='flex justify-end gap-2 pt-4'>
               <Button
-                disabled={personalInfoForm.state.isDirty}
+                disabled={personalInfoForm.state.isDirty || isLoading}
                 onClick={() => personalInfoForm.reset()}
                 variant='outline'
               >
                 Reset
               </Button>
-              <Button disabled={personalInfoForm.state.isDirty} type='submit'>
+              <Button disabled={personalInfoForm.state.isDirty || isLoading} type='submit'>
                 Save Changes
               </Button>
             </div>

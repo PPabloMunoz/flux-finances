@@ -27,33 +27,34 @@ function RouteComponent() {
     defaultValues: {
       email: '',
     },
-    validators: {
-      onChange: ForgotPasswordSchema,
-    },
+    validators: { onChange: ForgotPasswordSchema },
     onSubmit: async ({ value }) => {
       const redirectTo = `${PUBLIC_URL}/auth/reset-password`
-      setIsLoading(true)
-      const { error } = await authClient.requestPasswordReset({
-        email: value.email,
-        redirectTo,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error('Intentalo de nuevo')
-      } else {
-        toast.success(
-          'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa también tu carpeta de spam.'
-        )
-        navigate({ to: '/auth/login' })
-      }
+      await authClient.requestPasswordReset(
+        { email: value.email, redirectTo },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: ({ error }) => {
+            toast.error(error.message)
+          },
+          onSuccess: () => {
+            toast.success('Password reset email sent')
+            navigate({ to: '/auth/login' })
+          },
+        }
+      )
     },
   })
 
   return (
     <div className='flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
       <div className='flex w-full max-w-sm flex-col gap-6'>
-        <Link className='flex items-center gap-2 self-center font-medium' to='/'>
+        <Link
+          className='flex items-center gap-2 self-center font-medium'
+          disabled={isLoading}
+          to='/'
+        >
           <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
             <HugeiconsIcon className='size-4' icon={Dollar02Icon} />
           </div>
@@ -97,9 +98,15 @@ function RouteComponent() {
                     }}
                   </form.Field>
                   <Field>
-                    <Button type='submit'>{isLoading ? 'Sending...' : 'Send reset link'}</Button>
+                    <Button disabled={isLoading} type='submit'>
+                      {isLoading ? 'Sending...' : 'Send reset link'}
+                    </Button>
                     <FieldDescription className='text-center'>
-                      Want to login instead? <Link to='/auth/login'>Click here</Link>.
+                      Want to login instead?{' '}
+                      <Link disabled={isLoading} to='/auth/login'>
+                        Click here
+                      </Link>
+                      .
                     </FieldDescription>
                   </Field>
                 </FieldGroup>

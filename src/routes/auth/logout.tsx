@@ -11,9 +11,12 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const logout = async () => {
-      await authClient.signOut()
-      navigate({ to: '/auth/login', replace: true })
+    async function logout() {
+      await authClient.signOut(undefined, {
+        onSuccess: () => {
+          navigate({ to: '/auth/login', replace: true })
+        },
+      })
     }
     logout()
   }, [navigate])

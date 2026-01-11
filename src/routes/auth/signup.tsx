@@ -42,28 +42,57 @@ function RouteComponent() {
       onSubmit: SignupSchema,
     },
     onSubmit: async ({ value }) => {
-      setIsLoading(true)
-      const { error } = await authClient.signUp.email({
-        name: `${value.firstName} ${value.lastName}`,
-        email: value.email,
-        password: value.password,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error(error.message)
-      } else {
-        navigate({ to: '/' })
-      }
+      await authClient.signUp.email(
+        {
+          name: `${value.firstName} ${value.lastName}`,
+          email: value.email,
+          password: value.password,
+        },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: ({ error }) => {
+            toast.error(error.message)
+          },
+          onSuccess: () => {
+            toast.success('Account created successfully')
+            navigate({ to: '/' })
+          },
+        }
+      )
     },
   })
 
   async function handleGoogleSignUp() {
-    await authClient.signIn.social({ provider: 'google' })
+    await authClient.signIn.social(
+      { provider: 'google' },
+      {
+        onRequest: () => setIsLoading(true),
+        onResponse: () => setIsLoading(false),
+        onError: ({ error }) => {
+          toast.error(error.message)
+        },
+        onSuccess: () => {
+          toast.success('Redirecting...')
+        },
+      }
+    )
   }
 
   async function handleGithubSignUp() {
-    await authClient.signIn.social({ provider: 'github' })
+    await authClient.signIn.social(
+      { provider: 'github' },
+      {
+        onRequest: () => setIsLoading(true),
+        onResponse: () => setIsLoading(false),
+        onError: ({ error }) => {
+          toast.error(error.message)
+        },
+        onSuccess: () => {
+          toast.success('Redirecting...')
+        },
+      }
+    )
   }
 
   return (
@@ -216,9 +245,14 @@ function RouteComponent() {
                   )}
 
                   <Field>
-                    <Button type='submit'>Sign up</Button>
+                    <Button disabled={isLoading} type='submit'>
+                      Sign up
+                    </Button>
                     <FieldDescription className='text-center'>
-                      Already have an account? <Link to='/auth/login'>Login</Link>
+                      Already have an account?{' '}
+                      <Link disabled={isLoading} to='/auth/login'>
+                        Login
+                      </Link>
                     </FieldDescription>
                   </Field>
                 </FieldGroup>

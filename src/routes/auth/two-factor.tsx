@@ -1,7 +1,7 @@
-import { Shield02Icon } from '@hugeicons/core-free-icons'
+import { ArrowLeft02Icon, Shield02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm } from '@tanstack/react-form'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -34,20 +34,20 @@ function RouteComponent() {
     },
     validators: { onChange: TotpVerifySchema },
     onSubmit: async ({ value }) => {
-      setIsLoading(true)
-      const { error } = await authClient.twoFactor.verifyTotp({
-        code: value.code,
-        trustDevice: false,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error('Invalid authentication code')
-        return
-      }
-
-      toast.success('Verified successfully')
-      navigate({ to: '/' })
+      await authClient.twoFactor.verifyTotp(
+        { code: value.code },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: () => {
+            toast.error('Invalid authentication code')
+          },
+          onSuccess: () => {
+            toast.success('Verified successfully')
+            navigate({ to: '/' })
+          },
+        }
+      )
     },
   })
 
@@ -57,19 +57,20 @@ function RouteComponent() {
     },
     validators: { onChange: BackupCodeVerifySchema },
     onSubmit: async ({ value }) => {
-      setIsLoading(true)
-      const { error } = await authClient.twoFactor.verifyBackupCode({
-        code: value.code,
-      })
-      setIsLoading(false)
-
-      if (error) {
-        toast.error('Invalid backup code')
-        return
-      }
-
-      toast.success('Verified successfully')
-      navigate({ to: '/' })
+      await authClient.twoFactor.verifyBackupCode(
+        { code: value.code },
+        {
+          onRequest: () => setIsLoading(true),
+          onResponse: () => setIsLoading(false),
+          onError: () => {
+            toast.error('An error occurred while verifying the backup code')
+          },
+          onSuccess: () => {
+            toast.success('Backup code verified successfully')
+            navigate({ to: '/' })
+          },
+        }
+      )
     },
   })
 
@@ -77,7 +78,10 @@ function RouteComponent() {
     <div className='flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
       <div className='flex w-full max-w-sm flex-col gap-6'>
         <Card>
-          <CardHeader className='text-center'>
+          <CardHeader className='relative text-center'>
+            <Link className='absolute top-3 left-4' to='/auth/login'>
+              <HugeiconsIcon icon={ArrowLeft02Icon} />
+            </Link>
             <div className='mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-muted'>
               <HugeiconsIcon className='size-6' icon={Shield02Icon} />
             </div>
