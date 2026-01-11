@@ -11,7 +11,7 @@ export const NewAccountSchema = z.object({
     .string()
     .min(1, 'Account name is required')
     .max(100, 'Account name must be at most 100 characters'),
-  balance: z.coerce.number<string>().min(0, 'Initial balance must be at least 0'),
+  balance: z.coerce.number<string>(),
 })
 
 export const EditAccountSchema = NewAccountSchema.extend({
