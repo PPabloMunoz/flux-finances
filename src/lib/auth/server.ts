@@ -1,6 +1,6 @@
 import { checkout, polar, portal, webhooks } from '@polar-sh/better-auth'
 import { Polar } from '@polar-sh/sdk'
-import { betterAuth } from 'better-auth'
+import { APIError, betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { twoFactor } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
@@ -31,6 +31,41 @@ export const auth = betterAuth({
       account: schema.accountProvider,
     },
   }),
+  user: {
+    deleteUser: {
+      enabled: true,
+      beforeDelete: async (user) => {
+        if (!IS_CLOUD) return
+
+        // Check if user has an active subscription in Polar
+        // If so, cancel it before deleting the user
+        logger.info({ event: 'user_deletion' }, 'User deletion initiated')
+
+        const sub = await db.query.subscriptions.findFirst({
+          where(subscriptions, { eq }) {
+            return eq(subscriptions.userId, user.id)
+          },
+        })
+        if (!sub) return
+
+        try {
+          await polarClient.subscriptions.revoke({ id: sub.id })
+          logger.info(
+            { event: 'subscription_canceled', subscriptionId: sub.id },
+            'Subscription canceled before user deletion'
+          )
+        } catch (err) {
+          logger.error(
+            { err, event: 'subscription_cancellation_failed', subscriptionId: sub.id },
+            'Failed to cancel subscription before user deletion'
+          )
+          throw new APIError('BAD_REQUEST', {
+            message: 'Could not cancel your sub, try cancelling manually and trying again',
+          })
+        }
+      },
+    },
+  },
   emailAndPassword: {
     enabled: !IS_CLOUD,
     sendResetPassword: async ({ user }, _request) => {

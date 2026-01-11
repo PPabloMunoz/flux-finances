@@ -149,28 +149,6 @@ export const exportUserDataAction = createServerFn({ method: 'GET' })
       return { ok: true, data: exportData } satisfies ServerFnResult<typeof exportData>
     } catch (err) {
       logger.error({ err, operation: 'export_user_data' }, 'Failed to export user data')
-      return {
-        ok: false,
-        error: 'Failed to export user data',
-      } satisfies ServerFnResult<never>
-    }
-  })
-
-export const deleteAccountAction = createServerFn({ method: 'POST' })
-  .middleware([functionAuthMiddleware])
-  .handler(async ({ context }) => {
-    const userId = context.session?.user.id
-    try {
-      if (!userId) throw new Error('Unauthorized')
-
-      logger.info({ operation: 'delete_account_requested', userId }, 'Account deletion requested')
-
-      return { ok: true, data: null } satisfies ServerFnResult<null>
-    } catch (err) {
-      logger.error({ err, operation: 'delete_account' }, 'Failed to delete account')
-      return {
-        ok: false,
-        error: 'Failed to delete account',
-      } satisfies ServerFnResult<never>
+      return { ok: false, error: 'Failed to export user data' } satisfies ServerFnResult<never>
     }
   })
