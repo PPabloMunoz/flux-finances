@@ -2,7 +2,6 @@ import {
   Add01FreeIcons,
   ArrowDown01Icon,
   CommandIcon,
-  Dollar02FreeIcons,
   Download02Icon,
   Invoice02Icon,
   Logout05Icon,
@@ -123,9 +122,7 @@ export default function AppHeader() {
               </Popover>
             </div>
             <Link className='flex cursor-pointer items-center gap-2 text-white' to='/'>
-              <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
-                <HugeiconsIcon className='size-4.5' icon={Dollar02FreeIcons} />
-              </div>
+              <img alt='Flux Finances Logo' className='size-5' src='/favicon.svg' />
               <span className='font-medium text-sm tracking-tight'>Flux Finances</span>
             </Link>
 

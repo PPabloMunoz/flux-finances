@@ -30,9 +30,7 @@ function RouteComponent() {
         <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-4 md:px-6'>
           <div className='flex items-center gap-4 md:gap-8'>
             <div className='flex items-center gap-2 text-white'>
-              <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
-                <HugeiconsIcon className='size-4.5' icon={ArrowDown01Icon} />
-              </div>
+              <img alt='Flux Finances Logo' className='size-5' src='/favicon.svg' />
               <span className='font-medium text-sm tracking-tight'>Flux Finances</span>
             </div>
           </div>

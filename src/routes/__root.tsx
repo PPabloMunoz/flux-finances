@@ -21,7 +21,10 @@ export const Route = createRootRoute({
           'A private, lightning-fast personal finance platform built with TanStack Start. Inspired by Maybe, Flux provides a type-safe and self-hostable way to manage your entire financial life.',
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: '/favicon.svg' },
+    ],
   }),
   shellComponent: RootDocument,
   errorComponent: ErrorPage,
