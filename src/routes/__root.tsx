@@ -48,7 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </head>
           <NuqsAdapter>
             <BodyProvider>
-              <div className='pointer-events-none absolute top-0 left-0 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
+              <div className='pointer-events-none absolute top-0 left-0 z-45 h-96 w-full -translate-y-1/2 rounded-full bg-teal-900/5 blur-3xl' />
               {children}
               <QuickActionsModal />
               <Toaster />

@@ -24,7 +24,13 @@ export const authStateFn = createServerFn({ method: 'GET' }).handler(async () =>
   }
 
   const hasSubscription = await getUserSubscriptionStatus()
-  if (IS_CLOUD && !hasSubscription && pathname !== '/sub' && pathname !== '/success')
+  if (
+    IS_CLOUD &&
+    !hasSubscription &&
+    pathname !== '/sub' &&
+    pathname !== '/success' &&
+    pathname !== '/profile'
+  )
     throw redirect({ to: '/sub' })
   if (IS_CLOUD && hasSubscription && pathname === '/sub') throw redirect({ to: '/' })
 

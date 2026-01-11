@@ -7,14 +7,13 @@ import CategoriesSettings from '@/features/settings/components/categories'
 import DataSettings from '@/features/settings/components/data'
 import NotificationsSettings from '@/features/settings/components/notifications'
 import PreferencesSettings from '@/features/settings/components/preferences'
-import ProfileSettings from '@/features/settings/components/profile'
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
   beforeLoad: async () => await authStateFn(),
 })
 
-const tabValues = ['preferences', 'notifications', 'data', 'category', 'profile'] as const
+const tabValues = ['preferences', 'notifications', 'data', 'category'] as const
 
 function RouteComponent() {
   const [tab, setTab] = useQueryState('tab', parseAsStringLiteral(tabValues))
@@ -48,9 +47,6 @@ function RouteComponent() {
             <TabsTrigger className='justify-start' value='category'>
               Categories
             </TabsTrigger>
-            <TabsTrigger className='justify-start' value='profile'>
-              Profile
-            </TabsTrigger>
           </TabsList>
           <div className='flex-1'>
             <TabsContent className='mt-0' value='preferences'>
@@ -64,9 +60,6 @@ function RouteComponent() {
             </TabsContent>
             <TabsContent className='mt-0' value='category'>
               <CategoriesSettings />
-            </TabsContent>
-            <TabsContent className='mt-0' value='profile'>
-              <ProfileSettings />
             </TabsContent>
           </div>
         </Tabs>

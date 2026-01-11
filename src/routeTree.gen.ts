@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as SubIndexRouteImport } from './routes/sub/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as BudgetsIndexRouteImport } from './routes/budgets/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
 import { Route as AuthTwoFactorRouteImport } from './routes/auth/two-factor'
@@ -47,6 +48,11 @@ const SubIndexRoute = SubIndexRouteImport.update({
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BudgetsIndexRoute = BudgetsIndexRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sub': typeof SubIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts': typeof AccountsIndexRoute
   '/budgets': typeof BudgetsIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sub': typeof SubIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/auth/two-factor': typeof AuthTwoFactorRoute
   '/accounts/': typeof AccountsIndexRoute
   '/budgets/': typeof BudgetsIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sub/': typeof SubIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/auth/two-factor'
     | '/accounts'
     | '/budgets'
+    | '/profile'
     | '/settings'
     | '/sub'
     | '/transactions'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/auth/two-factor'
     | '/accounts'
     | '/budgets'
+    | '/profile'
     | '/settings'
     | '/sub'
     | '/transactions'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/auth/two-factor'
     | '/accounts/'
     | '/budgets/'
+    | '/profile/'
     | '/settings/'
     | '/sub/'
     | '/transactions/'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   AuthTwoFactorRoute: typeof AuthTwoFactorRoute
   AccountsIndexRoute: typeof AccountsIndexRoute
   BudgetsIndexRoute: typeof BudgetsIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SubIndexRoute: typeof SubIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/budgets/': {
@@ -326,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthTwoFactorRoute: AuthTwoFactorRoute,
   AccountsIndexRoute: AccountsIndexRoute,
   BudgetsIndexRoute: BudgetsIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SubIndexRoute: SubIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,

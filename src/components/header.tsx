@@ -259,8 +259,7 @@ export default function AppHeader() {
               <PopoverContent className='max-w-45 gap-0.5 p-2'>
                 <Link
                   className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
-                  search={{ tab: 'profile' }}
-                  to='/settings'
+                  to='/profile'
                 >
                   <HugeiconsIcon className='size-3.5' icon={User02Icon} />
                   Profile

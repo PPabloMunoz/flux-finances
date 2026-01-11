@@ -1,24 +1,19 @@
-import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { authClient } from '@/lib/auth/client'
 
-interface SubscribePaywallProps {
-  session?: {
-    user?: {
-      email?: string | null
-      name?: string | null
-    }
-  }
-}
+export function SubscribePaywall() {
+  const [isLoading, setIsLoading] = useState(false)
 
-export function SubscribePaywall({ session }: SubscribePaywallProps) {
   const handleSubscribe = async () => {
+    setIsLoading(true)
     await authClient.checkout({ slug: 'cloud-pro-version' })
+    setIsLoading(false)
   }
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
+    <div className='fixed inset-0 z-46 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
       <Card className='w-full max-w-md border border-white/10 bg-neutral-900 p-8 text-center'>
         <div className='mb-6 flex justify-center'>
           <div className='flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-tr from-teal-500 to-cyan-600'>
@@ -40,13 +35,6 @@ export function SubscribePaywall({ session }: SubscribePaywallProps) {
 
         <h2 className='mb-2 font-semibold text-2xl text-white'>Subscribe to Flux Pro</h2>
         <p className='mb-6 text-neutral-400'>Get full access to all features for just €5/month</p>
-
-        {session?.user?.email && (
-          <div className='mb-4 flex items-center justify-between rounded-lg bg-neutral-800/50 p-3'>
-            <span className='text-neutral-400 text-sm'>Logged in as</span>
-            <span className='font-medium text-sm text-white'>{session.user.email}</span>
-          </div>
-        )}
 
         <div className='mb-6 rounded-lg bg-neutral-800/50 p-4'>
           <div className='font-bold text-3xl text-white'>
@@ -111,17 +99,12 @@ export function SubscribePaywall({ session }: SubscribePaywallProps) {
 
         <Button
           className='w-full bg-white text-black hover:bg-neutral-200'
+          disabled={isLoading}
           onClick={handleSubscribe}
           size='lg'
         >
           Subscribe Now
         </Button>
-
-        <Link to='/auth/logout'>
-          <Button className='mt-3 w-full' variant='outline'>
-            Log out
-          </Button>
-        </Link>
 
         <p className='mt-4 text-neutral-500 text-xs'>Secured by Polar.sh</p>
       </Card>

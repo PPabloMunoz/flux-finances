@@ -1,22 +1,18 @@
-import { ArrowDown01Icon, Logout05Icon, User02Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, Dollar02FreeIcons, Logout05Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { SubscribePaywall } from '@/components/subscribe-paywall'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { authStateFn } from '@/features/auth/queries'
+import ProfileSettings from '@/features/settings/components/profile'
 import { authClient } from '@/lib/auth/client'
-import { IS_CLOUD } from '@/lib/constants'
 
-export const Route = createFileRoute('/sub/')({
+export const Route = createFileRoute('/profile/')({
   component: RouteComponent,
-  beforeLoad: async () => {
-    if (!IS_CLOUD) throw redirect({ to: '/' })
-    return await authStateFn()
-  },
+  beforeLoad: async () => await authStateFn(),
 })
 
-function RouteComponent() {
+export default function RouteComponent() {
   const [isMounted, setIsMounted] = useState(false)
   const session = authClient.useSession()
 
@@ -31,7 +27,7 @@ function RouteComponent() {
           <div className='flex items-center gap-4 md:gap-8'>
             <Link className='flex cursor-pointer items-center gap-2 text-white' to='/'>
               <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
-                <HugeiconsIcon className='size-4.5' icon={ArrowDown01Icon} />
+                <HugeiconsIcon className='size-4.5' icon={Dollar02FreeIcons} />
               </div>
               <span className='font-medium text-sm tracking-tight'>Flux Finances</span>
             </Link>
@@ -50,13 +46,6 @@ function RouteComponent() {
                 <HugeiconsIcon className='size-3' icon={ArrowDown01Icon} />
               </PopoverTrigger>
               <PopoverContent className='max-w-45 gap-0.5 p-2'>
-                <a
-                  className='flex cursor-pointer items-center gap-2 p-2 text-neutral-400 text-xs transition-colors hover:bg-white/5 hover:text-white'
-                  href='/profile'
-                >
-                  <HugeiconsIcon className='size-3.5' icon={User02Icon} />
-                  Profile
-                </a>
                 <Link
                   className='flex items-center gap-2 p-2 text-red-400 text-xs transition-colors hover:bg-white/5 hover:text-red-500'
                   to='/auth/logout'
@@ -71,7 +60,12 @@ function RouteComponent() {
       </nav>
 
       <main className='container mx-auto max-w-5xl space-y-8 px-5 py-10'>
-        <SubscribePaywall />
+        <div className='mb-10'>
+          <h1 className='mb-1 font-medium text-2xl text-white tracking-tight'>Profile</h1>
+          <p className='text-gray-400 text-sm'>Manage your account settings and preferences.</p>
+        </div>
+
+        <ProfileSettings />
       </main>
     </>
   )
