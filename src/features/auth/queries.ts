@@ -11,26 +11,24 @@ import { getUserSubscriptionStatus } from '../subscription/queries'
 import { createUserPreferencesAction } from './actions'
 import { UserPreferencesSchema } from './schema'
 
+const PUBLIC_URLS = ['/profile']
+const CLOUD_ONLY_URLS = ['/sub', '/success']
+
 export const authStateFn = createServerFn({ method: 'GET' }).handler(async () => {
   const req = getRequest()
   const headers = getRequestHeaders()
+  const pathname = new URL(req.url).pathname
+
   const session = await auth.api.getSession({ headers })
   if (!session) throw redirect({ to: '/auth/login' })
 
-  const pathname = new URL(req.url).pathname
-
-  if ((pathname === '/sub' || pathname === '/success') && !IS_CLOUD) {
+  if (PUBLIC_URLS.includes(pathname)) return { session }
+  if (!IS_CLOUD && CLOUD_ONLY_URLS.includes(pathname)) {
     throw redirect({ to: '/' })
   }
 
   const hasSubscription = await getUserSubscriptionStatus()
-  if (
-    IS_CLOUD &&
-    !hasSubscription &&
-    pathname !== '/sub' &&
-    pathname !== '/success' &&
-    pathname !== '/profile'
-  )
+  if (IS_CLOUD && !hasSubscription && !CLOUD_ONLY_URLS.includes(pathname))
     throw redirect({ to: '/sub' })
   if (IS_CLOUD && hasSubscription && pathname === '/sub') throw redirect({ to: '/' })
 

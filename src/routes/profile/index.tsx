@@ -25,12 +25,12 @@ export default function RouteComponent() {
       <nav className='sticky top-0 z-50 border-neutral-900 border-b bg-[#050505]/80 backdrop-blur-md'>
         <div className='mx-auto flex h-14 max-w-500 items-center justify-between px-4 md:px-6'>
           <div className='flex items-center gap-4 md:gap-8'>
-            <Link className='flex cursor-pointer items-center gap-2 text-white' to='/'>
+            <div className='flex items-center gap-2 text-white'>
               <div className='flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-tr from-teal-500 to-cyan-400'>
                 <HugeiconsIcon className='size-4.5' icon={Dollar02FreeIcons} />
               </div>
               <span className='font-medium text-sm tracking-tight'>Flux Finances</span>
-            </Link>
+            </div>
           </div>
 
           <div className='flex items-center gap-3'>
