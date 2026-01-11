@@ -23,11 +23,11 @@ import ExportModal from '@/features/import-export/components/export-modal'
 import { NewTransferModal } from '@/features/transactions'
 import NewTransactionModal from '@/features/transactions/components/new-transaction-modal'
 import { authClient } from '@/lib/auth/client'
-import { IS_CLOUD } from '@/lib/constants'
 
 export default function AppHeader() {
   const [isMounted, setIsMounted] = useState(false)
   const session = authClient.useSession()
+  const IS_CLOUD = import.meta.env.VITE_PUBLIC_IS_CLOUD === 'true'
 
   useEffect(() => {
     setIsMounted(true)
