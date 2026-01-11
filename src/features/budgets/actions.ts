@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { budget, category } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { DeleteBudgetSchema, EditBudgetSchema, NewBudgetSchema } from './schema'
@@ -39,7 +40,7 @@ export const newBudgetAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: newBudget } satisfies ServerFnResult<typeof newBudget>
     } catch (err) {
-      console.error('Error creating new budget:', err)
+      logger.error({ err, operation: 'create_budget' }, 'Failed to create budget')
       return {
         ok: false,
         error: 'Failed to create budget. Check if the category has already a budget.',
@@ -92,7 +93,7 @@ export const updateBudgetAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: updatedBudget } satisfies ServerFnResult<typeof updatedBudget>
     } catch (err) {
-      console.error('Error updating budget:', err)
+      logger.error({ err, operation: 'update_budget' }, 'Failed to update budget')
       return { ok: false, error: 'Failed to update budget' } satisfies ServerFnResult<never>
     }
   })
@@ -120,7 +121,7 @@ export const deleteBudgetAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error deleting budget:', err)
+      logger.error({ err, operation: 'delete_budget' }, 'Failed to delete budget')
       return { ok: false, error: 'Failed to delete budget' } satisfies ServerFnResult<never>
     }
   })

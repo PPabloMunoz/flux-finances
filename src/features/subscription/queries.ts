@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 
 export const getUserSubscriptionStatus = createServerFn({ method: 'GET' })
@@ -16,7 +17,10 @@ export const getUserSubscriptionStatus = createServerFn({ method: 'GET' })
       if (!sub) return false
       return sub.status === 'active'
     } catch (err) {
-      console.error('Error fetching user subscription status:', err)
+      logger.error(
+        { err, operation: 'get_subscription_status' },
+        'Failed to fetch user subscription status'
+      )
       return false
     }
   })

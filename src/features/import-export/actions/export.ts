@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { eq, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { account, category, transaction } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { generateCsv } from '../lib/csv'
@@ -35,7 +36,7 @@ export const exportCategoriesAction = createServerFn({ method: 'POST' })
         data: { csv, fileName: getFileName('categories') },
       } satisfies ServerFnResult<{ csv: string; fileName: string }>
     } catch (err) {
-      console.error('Error exporting categories:', err)
+      logger.error({ err, operation: 'export_categories' }, 'Failed to export categories')
       return { ok: false, error: 'Failed to export categories' } satisfies ServerFnResult<never>
     }
   })
@@ -65,7 +66,7 @@ export const exportAccountsAction = createServerFn({ method: 'POST' })
         data: { csv, fileName: getFileName('accounts') },
       } satisfies ServerFnResult<{ csv: string; fileName: string }>
     } catch (err) {
-      console.error('Error exporting accounts:', err)
+      logger.error({ err, operation: 'export_accounts' }, 'Failed to export accounts')
       return { ok: false, error: 'Failed to export accounts' } satisfies ServerFnResult<never>
     }
   })
@@ -121,7 +122,7 @@ export const exportTransactionsAction = createServerFn({ method: 'POST' })
         data: { csv, fileName: getFileName('transactions') },
       } satisfies ServerFnResult<{ csv: string; fileName: string }>
     } catch (err) {
-      console.error('Error exporting transactions:', err)
+      logger.error({ err, operation: 'export_transactions' }, 'Failed to export transactions')
       return { ok: false, error: 'Failed to export transactions' } satisfies ServerFnResult<never>
     }
   })

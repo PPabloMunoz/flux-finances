@@ -4,6 +4,7 @@ import { getRequest, getRequestHeaders } from '@tanstack/react-start/server'
 import { auth } from '@/lib/auth/server'
 import { IS_CLOUD } from '@/lib/constants'
 import { db } from '@/lib/db'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { getUserSubscriptionStatus } from '../subscription/queries'
@@ -62,7 +63,7 @@ export const getUserPreferencesAction = createServerFn({ method: 'GET' })
       const parsed = UserPreferencesSchema.parse(preferences)
       return { ok: true, data: parsed } satisfies ServerFnResult<typeof parsed>
     } catch (err) {
-      console.error('Error fetching user preferences:', err)
+      logger.error({ err, operation: 'get_user_preferences' }, 'Failed to fetch user preferences')
       return {
         ok: false,
         error: 'Failed to fetch user preferences',

@@ -3,6 +3,7 @@ import { and, desc, eq, gte, ilike, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { account, category, transaction } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 
@@ -125,7 +126,7 @@ export const getTransactionsAction = createServerFn({ method: 'GET' })
         pagination: { page: number; pageSize: number; total: number; totalPages: number }
       }>
     } catch (err) {
-      console.error('Error fetching transactions:', err)
+      logger.error({ err, operation: 'get_transactions' }, 'Failed to fetch transactions')
       return { ok: false, error: 'Failed to fetch transactions' } satisfies ServerFnResult<null>
     }
   })
@@ -174,7 +175,10 @@ export const getTransactionSummaryAction = createServerFn({ method: 'GET' })
         },
       } satisfies ServerFnResult<{ income: number; expenses: number; net: number }>
     } catch (err) {
-      console.error('Error fetching transaction summary:', err)
+      logger.error(
+        { err, operation: 'get_transaction_summary' },
+        'Failed to fetch transaction summary'
+      )
       return {
         ok: false,
         error: 'Failed to fetch transaction summary',

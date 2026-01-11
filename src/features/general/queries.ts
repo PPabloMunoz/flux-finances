@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, between, eq, inArray, lte, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { account, accountBalance, transaction } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 
@@ -59,7 +60,7 @@ export const getNetWorthAction = createServerFn({ method: 'GET' })
 
       return { ok: true, data: networthHistory } satisfies ServerFnResult<number[]>
     } catch (error) {
-      console.error('Error fetching net worth:', error)
+      logger.error({ err: error, operation: 'get_net_worth' }, 'Failed to fetch net worth')
       return { ok: false, error: 'Failed to fetch net worth' } satisfies ServerFnResult<never>
     }
   })
@@ -122,7 +123,10 @@ export const getIncomeExpenseHistoryAction = createServerFn({ method: 'GET' })
         expenseHistory: number[]
       }>
     } catch (error) {
-      console.error('Error fetching income/expense history:', error)
+      logger.error(
+        { err: error, operation: 'get_income_expense_history' },
+        'Failed to fetch income/expense history'
+      )
       return {
         ok: false,
         error: 'Failed to fetch income/expense history',

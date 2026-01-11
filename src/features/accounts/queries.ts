@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { ACCOUNT_TYPES } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { account, accountBalance } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 
@@ -54,7 +55,7 @@ export const getAccountsByTypeAction = createServerFn({ method: 'GET' })
 
       return { ok: true, data: cashAccounts } satisfies ServerFnResult<typeof cashAccounts>
     } catch (err) {
-      console.error('Error fetching cash accounts:', err)
+      logger.error({ err, operation: 'get_cash_accounts' }, 'Failed to fetch cash accounts')
       return { ok: false, error: 'Failed to create account' } satisfies ServerFnResult<never>
     }
   })
@@ -74,7 +75,7 @@ export const getAllAccountsAction = createServerFn({ method: 'GET' })
 
       return { ok: true, data: accounts } satisfies ServerFnResult<typeof accounts>
     } catch (err) {
-      console.error('Error fetching all accounts:', err)
+      logger.error({ err, operation: 'get_all_accounts' }, 'Failed to fetch all accounts')
       return { ok: false, error: 'Failed to fetch accounts' } satisfies ServerFnResult<never>
     }
   })

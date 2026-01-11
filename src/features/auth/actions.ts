@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { userPreferences } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { UpdateNotificationPreferencesSchema, UpdateUserPreferencesSchema } from './schema'
@@ -21,7 +22,10 @@ export const createUserPreferencesAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error creating user preferences:', err)
+      logger.error(
+        { err, operation: 'create_user_preferences' },
+        'Failed to create user preferences'
+      )
       return {
         ok: false,
         error: 'Failed to create user preferences',
@@ -54,7 +58,10 @@ export const updateUserPreferencesAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error updating user preferences:', err)
+      logger.error(
+        { err, operation: 'update_user_preferences' },
+        'Failed to update user preferences'
+      )
       return {
         ok: false,
         error: 'Failed to update user preferences',
@@ -86,7 +93,10 @@ export const updateNotificationPreferencesAction = createServerFn({ method: 'POS
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error updating notification preferences:', err)
+      logger.error(
+        { err, operation: 'update_notification_preferences' },
+        'Failed to update notification preferences'
+      )
       return {
         ok: false,
         error: 'Failed to update notification preferences',
@@ -138,7 +148,7 @@ export const exportUserDataAction = createServerFn({ method: 'GET' })
 
       return { ok: true, data: exportData } satisfies ServerFnResult<typeof exportData>
     } catch (err) {
-      console.error('Error exporting user data:', err)
+      logger.error({ err, operation: 'export_user_data' }, 'Failed to export user data')
       return {
         ok: false,
         error: 'Failed to export user data',
@@ -153,11 +163,11 @@ export const deleteAccountAction = createServerFn({ method: 'POST' })
     try {
       if (!userId) throw new Error('Unauthorized')
 
-      console.log(`[DELETE_ACCOUNT] User ${userId} requested account deletion`)
+      logger.info({ operation: 'delete_account_requested', userId }, 'Account deletion requested')
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error deleting account:', err)
+      logger.error({ err, operation: 'delete_account' }, 'Failed to delete account')
       return {
         ok: false,
         error: 'Failed to delete account',

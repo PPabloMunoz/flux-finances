@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, eq, gte, lte, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { budget, category, transaction } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import type { TBudgetWithSpending } from './schema'
@@ -66,7 +67,7 @@ export const getBudgets = createServerFn({ method: 'GET' })
         TBudgetWithSpending[]
       >
     } catch (err) {
-      console.error('Error fetching budgets with spending:', err)
+      logger.error({ err, operation: 'get_budgets' }, 'Failed to fetch budgets')
       return { ok: false, error: 'Failed to fetch budgets' } satisfies ServerFnResult<never>
     }
   })

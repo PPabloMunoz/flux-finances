@@ -8,6 +8,7 @@ import { createSubscription, deleteSubscription } from '@/features/subscription/
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
 import { IS_CLOUD } from '../constants'
+import { logger } from '../logger'
 
 const {
   GOOGLE_CLIENT_ID: googleClientId,
@@ -32,21 +33,25 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: !IS_CLOUD,
-    sendResetPassword: async ({ user, url, token }, _request) => {
-      console.log(`Simulatting sending email to ${user.email}...`)
-      console.log(`URL sended: ${url}`)
-      console.log(`Token: ${token}`)
+    sendResetPassword: async ({ user }, _request) => {
+      logger.info(
+        { event: 'password_reset_email', email: user.email },
+        'Simulating password reset email'
+      )
     },
     onPasswordReset: async ({ user }, _request) => {
-      console.log('INFO: TODO SEND EMAIL - PASSWORD HAS BEEN RESET')
-      console.log(`Password for user ${user.email} has been reset.`)
+      logger.info(
+        { event: 'password_reset_completed', email: user.email },
+        'Password reset completed'
+      )
     },
   },
   emailVerification: {
     sendVerificationEmail: async (data) => {
-      console.log('Send verification email to:', data.user.email)
-      console.log('Verification link:', data.url)
-      console.log('Verification Token:', data.token)
+      logger.info(
+        { event: 'verification_email', email: data.user.email },
+        'Verification email sent'
+      )
     },
   },
   socialProviders: {
@@ -77,23 +82,37 @@ export const auth = betterAuth({
         webhooks({
           secret: process.env.POLAR_WEBHOOK_SECRET || '',
           onSubscriptionCreated: async ({ data }) => {
-            console.log('Subscription created:', data.id)
+            logger.info(
+              {
+                event: 'subscription_created',
+                subscriptionId: data.id,
+                customerId: data.customer.id,
+              },
+              'Subscription created'
+            )
             const subId = data.id
             const customerId = data.customer.id
             const externalId = data.customer.externalId
             if (!externalId) throw new Error('No externalId found on customer')
 
-            console.log(`Linking subscription ${subId} to user ${externalId}`)
             await createSubscription(subId, customerId, externalId, data.status)
-            console.log('Subscription linked to user successfully')
+            logger.info(
+              { event: 'subscription_linked', subscriptionId: subId, userId: externalId },
+              'Subscription linked to user'
+            )
           },
           onSubscriptionRevoked: async ({ data }) => {
-            console.log('Subscription revoked:', data.id)
+            logger.info(
+              { event: 'subscription_revoked', subscriptionId: data.id },
+              'Subscription revoked'
+            )
             const subId = data.id
 
-            console.log(`Removing subscription ${subId} from database`)
             await deleteSubscription(subId)
-            console.log('Subscription removed successfully')
+            logger.info(
+              { event: 'subscription_removed', subscriptionId: subId },
+              'Subscription removed from database'
+            )
           },
         }),
       ],

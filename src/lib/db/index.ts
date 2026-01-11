@@ -1,5 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
+import { logger } from '../logger'
 import * as schema from './schema'
 
 const DB_URL = process.env.DATABASE_URL
@@ -27,7 +28,7 @@ export const db = drizzle(conn, { schema })
 
 // Close the connection pool when the process exits
 process.on('SIGTERM', async () => {
-  console.log('Closing database connection...')
+  logger.info({ operation: 'db_shutdown' }, 'Closing database connection...')
   await conn.end()
   process.exit(0)
 })

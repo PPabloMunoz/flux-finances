@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { account, accountBalance } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { DeleteAccountSchema, EditAccountSchema, NewAccountSchema } from './schema'
@@ -45,7 +46,7 @@ export const newAccountAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: newAccount } satisfies ServerFnResult<typeof newAccount>
     } catch (err) {
-      console.error('Error creating new account:', err)
+      logger.error({ err, operation: 'create_account' }, 'Failed to create new account')
       return { ok: false, error: 'Failed to create account' } satisfies ServerFnResult<never>
     }
   })
@@ -89,7 +90,7 @@ export const updateAccountAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error updating account:', err)
+      logger.error({ err, operation: 'update_account' }, 'Failed to update account')
       return { ok: false, error: 'Failed to update account' } satisfies ServerFnResult<never>
     }
   })
@@ -113,7 +114,7 @@ export const deleteAccountAction = createServerFn({ method: 'POST' })
 
       return { ok: true, data: null } satisfies ServerFnResult<null>
     } catch (err) {
-      console.error('Error deleting account:', err)
+      logger.error({ err, operation: 'delete_account' }, 'Failed to delete account')
       return { ok: false, error: 'Failed to delete account' } satisfies ServerFnResult<never>
     }
   })

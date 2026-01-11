@@ -1,4 +1,5 @@
 import Papa from 'papaparse'
+import { logger } from '@/lib/logger'
 import type { AccountCsvRow, CategoryCsvRow, TransactionCsvRow } from '../types'
 
 export function parseCsv(csvContent: string): Record<string, string>[] {
@@ -9,7 +10,7 @@ export function parseCsv(csvContent: string): Record<string, string>[] {
   })
 
   if (result.errors.length > 0) {
-    console.warn('CSV parse warnings:', result.errors)
+    logger.warn({ errors: result.errors }, 'CSV parse warnings')
   }
 
   return result.data

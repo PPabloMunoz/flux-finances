@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { account, category, transaction } from '@/lib/db/schema'
+import { logger } from '@/lib/logger'
 import { functionAuthMiddleware } from '@/middleware/auth'
 import type { ServerFnResult } from '@/types/types'
 import { parseAccountCsv, parseCategoryCsv, parseTransactionCsv } from '../lib/csv'
@@ -88,7 +89,7 @@ export const previewImportAction = createServerFn({ method: 'POST' })
         },
       } satisfies ServerFnResult<PreviewResponse>
     } catch (err) {
-      console.error('Error previewing import:', err)
+      logger.error({ err, operation: 'preview_import' }, 'Failed to preview import')
       return { ok: false, error: 'Failed to preview import' } satisfies ServerFnResult<never>
     }
   })
@@ -224,7 +225,7 @@ export const processImportAction = createServerFn({ method: 'POST' })
         data: { imported },
       } satisfies ServerFnResult<{ imported: number }>
     } catch (err) {
-      console.error('Error processing import:', err)
+      logger.error({ err, operation: 'process_import' }, 'Failed to process import')
       return {
         ok: false,
         error: err instanceof Error ? err.message : 'Failed to process import',
