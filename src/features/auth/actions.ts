@@ -122,12 +122,14 @@ export const exportUserDataAction = createServerFn({ method: 'GET' })
         where: (category, { eq }) => eq(category.userId, userId),
       })
 
+      const accountIds = accounts.map((acc) => acc.id)
       const transactions = await db.query.transaction.findMany({
-        where: (transaction, { eq }) => eq(transaction.accountId, accounts[0]?.id ?? ''),
+        where: (transaction, { inArray }) => inArray(transaction.accountId, accountIds),
       })
 
+      const categoriesIds = categories.map((cat) => cat.id)
       const budgets = await db.query.budget.findMany({
-        where: (budget, { eq }) => eq(budget.categoryId, categories[0]?.id ?? ''),
+        where: (budget, { inArray }) => inArray(budget.categoryId, categoriesIds),
       })
 
       const preferences = await db.query.userPreferences.findFirst({
