@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1768642921184,
+      "tag": "0000_deep_wolfpack",
+      "breakpoints": true
+    }
+  ]
+}

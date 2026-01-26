@@ -1,0 +1,17 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+count.txt
+.env
+.env.production
+.env.local
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+todos.json
+.turbo
+flux.db*

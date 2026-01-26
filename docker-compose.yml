@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    container_name: flux-finances
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT:-3000}
+      - VITE_PUBLIC_URL=${VITE_PUBLIC_URL}
+      - DATABASE_URL=/data/flux.db
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - TRUSTED_ORIGINS=${TRUSTED_ORIGINS}
+    volumes:
+      - sqlite_data:/data
+
+volumes:
+  sqlite_data:

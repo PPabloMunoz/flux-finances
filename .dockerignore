@@ -1,0 +1,36 @@
+# Git & VCS
+.git
+.gitignore
+
+# Editor/IDE
+.zed
+.vscode
+
+# Dev-only configs
+node_modules
+biome.json
+components.json
+
+# Dev docs
+PLAN.md
+CONTRIBUTING.md
+README.md
+
+# Cache & telemetry
+.tanstack
+.cta.json
+.bun-cache
+
+# Build output - rebuilt during build
+.output
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files - not needed in image
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+
+flux.db*
