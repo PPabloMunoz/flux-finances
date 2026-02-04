@@ -9,8 +9,10 @@ const { VITE_PUBLIC_URL, TRUSTED_ORIGINS } = process.env
 if (!VITE_PUBLIC_URL) throw new Error('VITE_PUBLIC_URL is not defined')
 if (!TRUSTED_ORIGINS) throw new Error('TRUSTED_ORIGINS is not defined')
 
+const origins = TRUSTED_ORIGINS.split(',')
+
 export const auth = betterAuth({
-  trustedOrigins: [TRUSTED_ORIGINS],
+  trustedOrigins: origins,
   database: drizzleAdapter(db, {
     provider: 'sqlite',
     schema: { ...schema, account: schema.accountProvider },
