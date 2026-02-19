@@ -3,7 +3,7 @@ import { Delete03Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,7 +41,6 @@ export const updateTransactionModalHandle = BaseUIDialog.createHandle()
 
 export default function UpdateTransactionModal() {
   const [isLoading, setIsLoading] = useState(false)
-  const [categoriesToShow, setCategoriesToShow] = useState<TCategory[]>([])
   const queryClient = useQueryClient()
 
   const { data: accounts = [], isPending: accountsPending } = useQuery({
@@ -63,7 +62,6 @@ export default function UpdateTransactionModal() {
       if (!res.ok) {
         throw new Error(res.error)
       }
-      setCategoriesToShow(res.data)
       return res.data
     },
   })
@@ -110,15 +108,12 @@ export default function UpdateTransactionModal() {
   })
   const transactionType = useStore(form.store, (state) => state.values.type)
 
-  useEffect(() => {
-    if (!categories) return
-    setCategoriesToShow(
-      categories.filter((category) =>
-        transactionType === 'inflow' ? category.type === 'inflow' : category.type === 'outflow'
-      )
+  const categoriesToShow = useMemo<TCategory[]>(() => {
+    if (!categories) return []
+    return categories.filter((category) =>
+      transactionType === 'inflow' ? category.type === 'inflow' : category.type === 'outflow'
     )
-    form.setFieldValue('categoryId', '')
-  }, [transactionType, categories, form])
+  }, [categories, transactionType])
 
   return (
     <Dialog handle={updateTransactionModalHandle}>

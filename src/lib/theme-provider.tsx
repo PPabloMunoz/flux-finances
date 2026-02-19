@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useSyncExternalStore } from 'react'
 
 type Theme = 'dark' | 'light'
 
@@ -8,7 +8,7 @@ const THEME_KEY = 'flux-theme'
 const DEFAULT_THEME: Theme = 'dark'
 
 interface ThemeContextType {
-  theme: Theme | undefined
+  theme: Theme
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
   resolvedTheme: Theme
@@ -16,6 +16,26 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null)
+
+function getStoredTheme(): Theme {
+  if (typeof window === 'undefined') return DEFAULT_THEME
+  try {
+    const stored = localStorage.getItem(THEME_KEY) as Theme | null
+    return stored || DEFAULT_THEME
+  } catch {
+    return DEFAULT_THEME
+  }
+}
+
+function subscribe(callback: () => void) {
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === THEME_KEY) {
+      callback()
+    }
+  }
+  window.addEventListener('storage', handleStorage)
+  return () => window.removeEventListener('storage', handleStorage)
+}
 
 /**
  * ThemeScript component to be placed in the <head> of your document.
@@ -48,50 +68,34 @@ export function ThemeScript() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Use undefined for initial state to avoid hydration mismatch between server and client.
-  // The actual value will be picked up from localStorage in the useEffect after mount.
-  const [theme, setThemeState] = useState<Theme | undefined>(undefined)
-
-  useEffect(() => {
-    const stored = localStorage.getItem(THEME_KEY) as Theme | null
-    const initialTheme = stored || DEFAULT_THEME
-    setThemeState(initialTheme)
-
-    // Sync the document classes and color-scheme to ensure consistency
-    const root = document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(initialTheme)
-    root.style.colorScheme = initialTheme
-  }, [])
+  const theme = useSyncExternalStore(
+    subscribe,
+    getStoredTheme,
+    () => DEFAULT_THEME // Server snapshot
+  )
 
   const setTheme = useCallback((newTheme: Theme) => {
     localStorage.setItem(THEME_KEY, newTheme)
-    setThemeState(newTheme)
 
+    // Sync the document classes and color-scheme
     const root = document.documentElement
     root.classList.remove('light', 'dark')
     root.classList.add(newTheme)
     root.style.colorScheme = newTheme
+
+    // Notify other tabs
+    window.dispatchEvent(new StorageEvent('storage', { key: THEME_KEY }))
   }, [])
 
   const toggleTheme = useCallback(() => {
-    // Determine current theme even if state is not yet initialized
-    const current =
-      theme ||
-      (typeof window !== 'undefined'
-        ? (localStorage.getItem(THEME_KEY) as Theme)
-        : DEFAULT_THEME) ||
-      DEFAULT_THEME
-    const next = current === 'dark' ? 'light' : 'dark'
+    const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
   }, [theme, setTheme])
 
-  // fallback to DEFAULT_THEME when theme is undefined (during hydration)
-  const resolvedTheme = theme || DEFAULT_THEME
-  const isDark = resolvedTheme === 'dark'
+  const isDark = theme === 'dark'
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, resolvedTheme, isDark }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, resolvedTheme: theme, isDark }}>
       {children}
     </ThemeContext.Provider>
   )

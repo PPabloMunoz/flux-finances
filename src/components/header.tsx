@@ -11,7 +11,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { DialogTrigger } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import NewAccountModal from '@/features/accounts/components/new-account-modal'
@@ -23,14 +23,20 @@ import { authClient } from '@/lib/auth/client'
 import { useTheme } from '@/lib/theme-provider'
 import { Skeleton } from './ui/skeleton'
 
+const isMountedStore = {
+  subscribe: () => () => {},
+  getSnapshot: () => true,
+  getServerSnapshot: () => false,
+}
+
 export default function AppHeader() {
-  const [isMounted, setIsMounted] = useState(false)
+  const isMounted = useSyncExternalStore(
+    isMountedStore.subscribe,
+    isMountedStore.getSnapshot,
+    isMountedStore.getServerSnapshot
+  )
   const session = authClient.useSession()
   const { toggleTheme, isDark } = useTheme()
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
 
   return (
     <>
