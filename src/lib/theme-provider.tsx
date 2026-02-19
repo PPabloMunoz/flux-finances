@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useSyncExternalStore } from 'react'
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react'
 
 type Theme = 'dark' | 'light'
 
@@ -73,6 +73,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     getStoredTheme,
     () => DEFAULT_THEME // Server snapshot
   )
+
+  // Sync DOM after hydration to ensure classes match the theme
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(theme)
+    root.style.colorScheme = theme
+  }, [theme])
 
   const setTheme = useCallback((newTheme: Theme) => {
     localStorage.setItem(THEME_KEY, newTheme)
